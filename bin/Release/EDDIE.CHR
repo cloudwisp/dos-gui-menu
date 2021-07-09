@@ -1,0 +1,21 @@
+#Spriteset,feet clip dimensions w,h with anchor bottom center
+EDDIE,12,10
+#idle (directionId, frame count, spriteId list)
+0,1,0,
+#North
+1,4,20,21,22,23,
+#NE
+2,4,16,17,18,19,
+#E
+3,4,12,13,14,15,
+#SE
+4,4,8,9,10,11,
+#S
+5,4,4,5,6,7,
+#SW
+6,4,32,33,34,35,
+#W
+7,4,28,29,30,31,
+#NW
+8,4,24,25,26,27,
+#Attack etc?

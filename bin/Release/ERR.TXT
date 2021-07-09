@@ -1,0 +1,16 @@
+free: memory fouled
+Shutting down Allegro
+Exiting due to signal SIGABRT
+Raised at eip=00000000
+eax=00284524 ebx=00000120 ecx=00000017 edx=00000000 esi=00284ae8 edi=00000005
+ebp=0047fa40 esp=00284510 program=E:\MAZERUN.EXE
+cs: sel=00e7  base=004b0000  limit=004affff
+ds: sel=00ef  base=004b0000  limit=004affff
+es: sel=00ef  base=004b0000  limit=004affff
+fs: sel=00ff  base=00000000  limit=0010ffff
+gs: sel=00ff  base=00000000  limit=0010ffff
+ss: sel=00ef  base=004b0000  limit=004affff
+App stack: [00284cd8..00184cd8]  Exceptn stack: [00184c24..00182ce4]
+
+Call frame traceback EIPs:
+  0x000ae955

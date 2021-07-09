@@ -1,0 +1,19 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Compile and Run",
+            "command": "make",
+            "args": [
+                "all"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Run Makefile conf all",
+            "problemMatcher": []
+        }
+    ],
+    "version": "2.0.0"
+}

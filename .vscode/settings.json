@@ -1,0 +1,14 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/roland/dos-source/pquest",
+            "binaryPath": "/home/roland/dos-source/pquest/a.out",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "/home/roland/dos-source/pquest",
+            "binaryPath": "/home/roland/dos-source/pquest/main.exe",
+            "binaryArgs": []
+        }
+    ]
+}
