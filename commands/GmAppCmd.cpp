@@ -3,6 +3,7 @@
 
 
 #include "../ScrptCmd.cpp"
+#include "../GameApp.h"
 
 class LoadWorldCommand : public ScriptCommand, public EventConsumer{
 private:
@@ -26,8 +27,8 @@ public:
             return 0;
         }
         if (!changeEventSent){
-            CWApplication::GetApplication()->EmitEvent("ChangeWorld",world);
             changeEventSent = true;
+            CWApplication::GetApplication()->EmitEvent("ChangeWorld",world);
             return 0;
         }
         if (done){
@@ -36,6 +37,7 @@ public:
         return 0;
     }
     void OnCommandEnd(){
+        dialog->Hide();
         dialog->CloseAndDestroy();
         CWApplication::GetApplication()->UnbindAllEventsForConsumer(this);
     }

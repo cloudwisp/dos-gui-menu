@@ -78,6 +78,8 @@ private:
     bool loadingSequencePending = false;
 
 	void on_start(){
+        //events
+        this->BindEvent("ChangeWorld", this);
         //define sequence of events
         GameMusic::PlaySong("fanfare.mid",0);
         std::vector<string> preLoadImgs;

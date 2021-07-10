@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jul  8 20:58:18 2021
+# Make data base, printed on Fri Jul  9 20:26:05 2021
 
 # Variables
 
@@ -174,6 +174,7 @@ GDK_BACKEND = x11
 QT_ACCESSIBILITY = 1
 # environment
 XRDP_SESSION = 1
+ 
 # environment
 TEXTDOMAINDIR = /usr/share/locale/
 # default
@@ -215,9 +216,9 @@ VSCODE_PID = 1288
 
 # Directories
 
-# . (device 2049, inode 1235635): 38 files, no impossibilities.
+# . (device 2049, inode 1235635): 41 files, no impossibilities.
 
-# 38 files, no impossibilities in 1 directories.
+# 41 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -251,7 +252,7 @@ all:
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'makefile', line 2):
-	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ Main.cpp -o bin/main.exe
+	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ Main.cpp -lgrx20 -lpng -lz -lalleg -o bin/Release/main.exe
 	make launch
 
 # Not a target:
@@ -263,7 +264,7 @@ all:
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-07-08 20:58:11.53350578
+#  Last modified 2021-07-08 21:06:23.531963721
 #  File has been updated.
 #  Successfully updated.
 
@@ -278,7 +279,7 @@ launch:
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'makefile', line 5):
-	dosbox -c "mount p: $(CURDIR)/bin" -c "p:" -c main
+	dosbox -c "mount p: $(CURDIR)/bin/Release" -c "p:" -c main
 
 # files hash-table stats:
 # Load=5/1024=0%, Rehash=0, Collisions=0/17=0%
@@ -286,15 +287,14 @@ launch:
 
 # No 'vpath' search paths.
 
- 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 44 / storage = 451 B / avg = 10 B
-# current buf: size = 8162 B / used = 451 B / count = 44 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 47 / storage = 472 B / avg = 10 B
+# current buf: size = 8162 B / used = 472 B / count = 47 / avg = 10 B
 
-# strcache performance: lookups = 52 / hit rate = 15%
+# strcache performance: lookups = 55 / hit rate = 14%
 # hash-table stats:
-# Load=44/8192=1%, Rehash=0, Collisions=1/52=2%
-# Finished Make data base on Thu Jul  8 20:58:18 2021
+# Load=47/8192=1%, Rehash=0, Collisions=1/55=2%
+# Finished Make data base on Fri Jul  9 20:26:05 2021
 
  

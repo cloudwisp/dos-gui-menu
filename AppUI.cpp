@@ -659,6 +659,11 @@ class UITextWindow : public UIWindow {
 private:
     UITextArea *textArea = NULL;
 public:
+
+	void SetText(char* text){
+		textArea->SetText(text);
+	}
+
     UITextWindow(char *text, int drawWidth, int drawHeight) : UIWindow(drawWidth, drawHeight){
         textArea = new UITextArea(drawWidth, drawHeight);
         textArea->SetText(text);
