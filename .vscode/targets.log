@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jul  9 20:26:05 2021
+# Make data base, printed on Sat Jul 10 17:35:28 2021
 
 # Variables
 
@@ -63,7 +63,7 @@ PATH = /usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin:/usr/local/dos-djgpp/bin:/sbi
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/ubuntu-dev-vm2:@/tmp/.ICE-unix/20130,unix/ubuntu-dev-vm2:/tmp/.ICE-unix/20130
+SESSION_MANAGER = local/ubuntu-dev-vm2:@/tmp/.ICE-unix/2479,unix/ubuntu-dev-vm2:/tmp/.ICE-unix/2479
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -81,7 +81,7 @@ LS_COLORS =
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 1288
+GIO_LAUNCHED_DESKTOP_FILE_PID = 2946
 # automatic
 %F = $(notdir $%)
 # environment
@@ -93,7 +93,7 @@ VSCODE_PIPE_LOGGING = true
 # environment
 PWD = /home/roland/dos-source/pquest
 # environment
-SSH_AGENT_PID = 20225
+SSH_AGENT_PID = 2574
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -104,6 +104,8 @@ VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProce
 HOME = /home/roland
 # environment
 LESSCLOSE = /bin/lesspipe %s %s
+# environment
+VSCODE_CODE_CACHE_PATH = /home/roland/.config/Code/CachedData/2d23c42a936db1c7b3b06f918cde29561cc47cd6
 # environment
 LOGNAME = roland
 # environment
@@ -131,9 +133,9 @@ SHLVL = 1
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-5a53167b-b9ee-4d9b-bdbb-d48a97a2a50d.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-b86f9d34-6f5b-45d5-9427-305b45aca3ac.sock
 # environment
-XDG_SESSION_ID = c6
+XDG_SESSION_ID = c3
 # environment
 USER = roland
 # makefile
@@ -144,14 +146,12 @@ XDG_CURRENT_DESKTOP = Unity
 %D = $(patsubst %/,%,$(dir $%))
 # default
 MAKE_COMMAND := make
-# environment
-VSCODE_NODE_CACHED_DATA_DIR = /home/roland/.config/Code/CachedData/507ce72a4466fbb27b715c3722558bb15afa9f48
 # default
 .VARIABLES := 
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-958fa0c2-1.57.1-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-958fa0c2-1.58.0-main.sock
 # environment
 UID = 1000
 # makefile
@@ -174,13 +174,14 @@ GDK_BACKEND = x11
 QT_ACCESSIBILITY = 1
 # environment
 XRDP_SESSION = 1
- 
 # environment
 TEXTDOMAINDIR = /usr/share/locale/
 # default
 MAKEFILES := 
 # environment
 XRDP_SOCKET_PATH = /var/run/xrdp/sockdir
+# environment
+VSCODE_BROWSER_CODE_LOADING = bypassHeatCheck
 # automatic
 <F = $(notdir $<)
 # environment
@@ -206,9 +207,9 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 1288
+VSCODE_PID = 2946
 # variable set hash-table stats:
-# Load=98/1024=10%, Rehash=0, Collisions=11/126=9%
+# Load=99/1024=10%, Rehash=0, Collisions=10/127=8%
 
 # Pattern-specific Variable Values
 
@@ -277,6 +278,7 @@ makefile:
 launch:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
+ 
 #  File has not been updated.
 #  recipe to execute (from 'makefile', line 5):
 	dosbox -c "mount p: $(CURDIR)/bin/Release" -c "p:" -c main
@@ -295,6 +297,6 @@ launch:
 # strcache performance: lookups = 55 / hit rate = 14%
 # hash-table stats:
 # Load=47/8192=1%, Rehash=0, Collisions=1/55=2%
-# Finished Make data base on Fri Jul  9 20:26:05 2021
+# Finished Make data base on Sat Jul 10 17:35:28 2021
 
  

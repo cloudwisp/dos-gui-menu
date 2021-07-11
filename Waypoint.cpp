@@ -65,4 +65,10 @@ public:
 
 };
 
+class StageEndWaypoint : public EventWaypoint {
+    public:
+    StageEndWaypoint(GameWorld* world) : EventWaypoint(world, "StageEnd", 0, true, true){
+    }
+};
+
 #endif // Waypoint_cpp

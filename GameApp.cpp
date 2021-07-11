@@ -74,6 +74,7 @@ private:
     HealthWidget *endDisplay = NULL;
     TitleScreen *titleScreen = NULL;
     UITextWindow *loadingScreen = NULL;
+    GameEndScreen* gameEndScreen = NULL;
 
     bool loadingSequencePending = false;
 
@@ -85,9 +86,10 @@ private:
         std::vector<string> preLoadImgs;
         preLoadImgs.push_back("mazerun.png");
         preLoadImgs.push_back("screenbg.png");
-        script->AddCommand(new PreLoadImageCommand(true,"Making Magic...",preLoadImgs));
+        script->AddCommand(new PreLoadImageCommand(true,"Please Wait...",preLoadImgs));
         script->AddCommand(new ShowTitleScreenCommand("mazerun.png"));
-        script->AddCommand(new LoadWorldCommand(initialWorld,"Loading World"));
+        script->AddCommand(new ShowStoryScreenCommand("screenbg.png"));
+        script->AddCommand(new LoadWorldCommand(initialWorld,"Entering the Palace of Hierolia..."));
         //script->AddCommand(new EmitEventCommand((EventEmitter*) this, (EventConsumer*) this,"ChangeWorld",CreateEventData(initialWorld,0)));
 	}
 
@@ -193,7 +195,6 @@ private:
                 GetHero()->traps--;
             }
             return;
-
         }
 
 	}
@@ -228,12 +229,20 @@ private:
 
 		mainWindow->AddChild((UIDrawable *) active_world);
 		active_world->BringToFront();
-		active_world->OnWorldActivated();
+		active_world->Activate();
 		GameWorld::SetActiveWorld(active_world); //for static access without a reference to this class
 		//viewport->SetWorld(active_world);
 		//TODO: any things that need to be one when a world is changed, events?
 	}
 
+    void RemoveActiveWorld(){
+        if (_cw_current_world_set == 1){
+            mainWindow->RemoveChild((UIDrawable *) _cw_current_world);
+            //remove hero from the current world
+            _cw_current_world->RemoveWorldElement((GameWorldElement*) GetHero());
+
+        }
+    }
 
 public:
 
@@ -247,6 +256,12 @@ public:
 		if (event == "ChangeWorld"){
             ChangeWorld(data.data1);
 		}
+        if (event == "CompleteGame"){
+            CompleteGame();
+        }
+        if (source == gameEndScreen && event == "WindowClosed"){
+            End();
+        }
 		//pass events onto parent
 		CWApplication::OnEvent(source,event,data);
 	}
@@ -264,6 +279,7 @@ public:
         }
         //hook to certain events
         worldObjects[gameWorld]->BindEvent("ChangeWorld", (EventConsumer*)this);
+        worldObjects[gameWorld]->BindEvent("CompleteGame", this);
         worldObjects[gameWorld]->BindEvent("LeftMouseButtonClick", (EventConsumer*) this);
         worldObjects[gameWorld]->TakeHero(GetHero());
         worldObjects[gameWorld]->CreateWorldElements();
@@ -284,17 +300,19 @@ public:
 	    if (_cw_current_world_set == 1 && worldObjects[gameWorld] == GetActiveWorld()){ return; } //already active
 	    //LoadingScreen::Show();
         InitWorld(gameWorld);
-        if (_cw_current_world_set == 1){
-
-            mainWindow->RemoveChild((UIDrawable *) _cw_current_world);
-            //remove hero from the current world
-            _cw_current_world->RemoveWorldElement((GameWorldElement*) GetHero());
-
-        }
+        RemoveActiveWorld();
         SetActiveWorld(worldObjects[gameWorld]);
         EmitEvent("WorldChanged", gameWorld);
         //LoadingScreen::Hide();
 	}
+
+    void CompleteGame(){
+        RemoveActiveWorld();
+        gameEndScreen = new GameEndScreen();
+        gameEndScreen->BindEvent("WindowClosed", this);
+        UIWindowController::Get()->AddWindow(gameEndScreen);
+        UIWindowController::Get()->SetFocusedWindow(gameEndScreen);
+    }
 
 	GameWorld *GetActiveWorld(){
         return _cw_current_world;
@@ -357,6 +375,7 @@ public:
 	    if (titleScreen){ delete titleScreen; }
 	    if (healthDisplay){ delete healthDisplay; }
 	    if (endDisplay){ delete endDisplay; }
+        if (gameEndScreen) { delete gameEndScreen; }
 	    GameScript::Destroy();
 	}
 

@@ -26,7 +26,7 @@ public:
     }
 
     void OnCommandEnd(){
-
+        window->CloseAndDestroy();
     }
 
     void OnEvent(EventEmitter* source, std::string event, EventData data){
@@ -34,6 +34,39 @@ public:
     }
 
     ShowTitleScreenCommand(char *titleImagePath) : ScriptCommand(), EventConsumer() {
+        imgPath = titleImagePath;
+    }
+};
+
+class ShowStoryScreenCommand : public ScriptCommand, public EventConsumer {
+private:
+    int dialogClosed = 0;
+    char *imgPath = NULL;
+    bool done = false;
+    StoryScreen *window = NULL;
+public:
+    void OnCommandStart(){
+        UIAppScreen *screen = UIWindowController::Get()->GetScreen();
+        window = new StoryScreen(screen->width,screen->height,imgPath,(EventConsumer*) this);
+		UIWindowController::Get()->AddWindow(window,1);
+    }
+
+    int OnCommandUpdate(){
+        if (done){
+            return 1;
+        }
+        return 0;
+    }
+
+    void OnCommandEnd(){
+        window->CloseAndDestroy();
+    }
+
+    void OnEvent(EventEmitter* source, std::string event, EventData data){
+        done = true;
+    }
+
+    ShowStoryScreenCommand(char *titleImagePath) : ScriptCommand(), EventConsumer() {
         imgPath = titleImagePath;
     }
 };

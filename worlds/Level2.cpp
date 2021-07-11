@@ -13,7 +13,11 @@ private:
     AggressiveCharacter *monster2 = NULL;
     AggressiveCharacter *monster3 = NULL;
     AggressiveCharacter *monster4 = NULL;
-    TeleportWaypoint *bottomWaypoint = NULL;
+    StageEndWaypoint * stageEnd = NULL;
+protected:
+    void HandleStageClose() override {
+        GameWorld::GetActiveWorld()->EmitEvent("CompleteGame");
+    }
 public:
 
     void CreateWorldElements(){
@@ -21,8 +25,9 @@ public:
         monster2 = new AggressiveCharacter("Monster 2", "EDDIE",2, 3.2);
         monster3 = new AggressiveCharacter("Monster 3", "EDDIE",2, 3.2);
         monster4 = new AggressiveCharacter("Monster 4", "EDDIE",2, 3.2);
-        bottomWaypoint = new TeleportWaypoint("bottomDoor", WORLD_LEVEL1,6, 4);
-        AddWorldElementAtTile(bottomWaypoint, 2, 27);
+        stageEnd = new StageEndWaypoint(this);
+
+        AddWorldElementAtTile(stageEnd, 2, 27);
 
         AddWorldElementAtTile(monster1, 24, 9);
         AddWorldElementAtTile(monster2, 36, 4);
@@ -37,7 +42,7 @@ public:
         GameMusic::PlaySong("GROOT.MID",1);
     }
 
-    Level2(int viewportWidth, int viewportHeight) : GameWorld("Second Level", "LEVEL2", viewportWidth, viewportHeight){
+    Level2(int viewportWidth, int viewportHeight) : GameWorld("Stage 2", "LEVEL2", viewportWidth, viewportHeight){
 
     }
     ~Level2(){
@@ -45,7 +50,7 @@ public:
         if (monster2){ delete monster2; }
         if (monster3){ delete monster3; }
         if (monster4){ delete monster4; }
-        if (bottomWaypoint){ delete bottomWaypoint; }
+        if (stageEnd){ delete stageEnd; }
     }
 };
 

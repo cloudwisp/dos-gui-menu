@@ -654,27 +654,6 @@ public:
     }
 };
 
-
-class UITextWindow : public UIWindow {
-private:
-    UITextArea *textArea = NULL;
-public:
-
-	void SetText(char* text){
-		textArea->SetText(text);
-	}
-
-    UITextWindow(char *text, int drawWidth, int drawHeight) : UIWindow(drawWidth, drawHeight){
-        textArea = new UITextArea(drawWidth, drawHeight);
-        textArea->SetText(text);
-        textArea->SetAlign(GR_ALIGN_CENTER,GR_ALIGN_CENTER);
-        AddChild((UIDrawable*) textArea);
-    }
-    ~UITextWindow(){
-        delete textArea;
-    }
-};
-
 class UIWindowController;
 UIWindowController *_windowController = NULL;
 
@@ -781,5 +760,29 @@ UIMsgBox* UIMsgBox::Create(char *text, int drawWidth, int drawHeight){
     return msgBox;
 }
 
+class UITextWindow : public UIWindow {
+private:
+    UITextArea *textArea = NULL;
+public:
+
+	void SetText(char* text){
+		textArea->SetText(text);
+	}
+
+    UITextWindow(char *text, int drawWidth, int drawHeight) : UIWindow(drawWidth, drawHeight){
+        textArea = new UITextArea(drawWidth, drawHeight);
+        textArea->SetText(text);
+        textArea->SetAlign(GR_ALIGN_CENTER,GR_ALIGN_CENTER);
+        AddChild((UIDrawable*) textArea);
+    }
+
+	UITextWindow(char *text) : UIWindow(UIWindowController::Get()->GetScreen()->width, UIWindowController::Get()->GetScreen()->height) {
+		UITextWindow(text, UIWindowController::Get()->GetScreen()->width, UIWindowController::Get()->GetScreen()->height);
+	}
+
+    ~UITextWindow(){
+        delete textArea;
+    }
+};
 
 #endif

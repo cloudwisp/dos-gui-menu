@@ -5,6 +5,7 @@
 #include "GameRes.cpp"
 #include "ChrTypes.cpp"
 #include "GameWrld.h"
+#include "GameUI.cpp"
 
 bool compare_y_pos(GameWorldElement *s1, GameWorldElement *s2){
     return s1->GetPosition().y < s2->GetPosition().y;
@@ -30,6 +31,8 @@ private:
 
     HeroCharacter* _hero = NULL;
 
+    clock_t timeStart;
+    clock_t timeEnd;
 
     void updateDrawOrder()
     {
@@ -319,6 +322,20 @@ private:
 	    }
 	}
 
+    void HandleStageEnd() {
+        //show stage end screen;
+        timeEnd = clock();
+        float timeTaken =  clockToMilliseconds(timeEnd-timeStart)/1000;
+        std::string endDisplay = std::string(worldName).append(" Complete");
+        
+        StageEndScreen *stageEnd = new StageEndScreen(endDisplay, timeTaken, this);
+        UIWindowController::Get()->AddWindow(stageEnd);
+        UIWindowController::Get()->SetFocusedWindow(stageEnd);
+    }
+
+protected:
+    virtual void HandleStageClose() = 0;
+    virtual void OnWorldActivated() = 0;
 public:
     char *mapId;
     char *worldName;
@@ -326,6 +343,14 @@ public:
 
 	int worldX = 0;
 	int worldY = 0;
+
+    void OnEvent(EventEmitter *source, std::string event, EventData data)  override {
+        if (event == "StageEnd"){
+            HandleStageEnd();
+        } else if (event == "StageCompleteClosed"){
+            HandleStageClose();
+        }
+    };
 
 	void SetWorldPosition(int x, int y){
 		if (x < 0){ x = 0; }
@@ -335,7 +360,6 @@ public:
 		worldX = x;
 		worldY = y;
 	}
-
 
     void Update(){
 		remove_flagged_elements();
@@ -446,9 +470,11 @@ public:
         return _hero;
     }
 
-    virtual void CreateWorldElements(){
-    }
-    virtual void OnWorldActivated(){
+    virtual void CreateWorldElements() = 0;
+
+    void Activate(){
+        timeStart = clock();
+        OnWorldActivated();
     }
 
     GameWorld(char *world_name, char *map_id, int viewportWidth, int viewportHeight) : UIDrawable(viewportWidth, viewportHeight){
