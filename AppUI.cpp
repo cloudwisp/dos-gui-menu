@@ -308,7 +308,9 @@ public:
 	}
 
 	~UIDrawable(){
-		GrDestroyContext(ctx);
+		if (ctx){
+			GrDestroyContext(ctx);
+		}
 	}
 
 	void Draw(GrContext *ontoContext){
@@ -630,6 +632,39 @@ public:
 	    lineWidths.clear();
 	}
 
+};
+
+class UIScrollingText : public UIDrawable {
+private:
+	UITextArea* _innerText;
+	void draw_internal(){
+		GrClearContextC(ctx, GrAllocColor(0,0,0));
+		_innerText->y = 0-ScrollTop;
+	}
+	
+	int ScrollTop = 0;
+public:
+
+	void ScrollDown(){
+		int newScroll = ScrollTop+1;
+		if (newScroll > _innerText->height - height){
+			return;
+		}
+		ScrollTop++;
+	}
+
+	void ScrollUp(){
+		int newScroll = ScrollTop - 1;
+		if (newScroll < 0){
+			return;
+		}
+		ScrollTop--;
+	}
+
+	UIScrollingText(UITextArea* innerText, int height) : UIDrawable(innerText->width, height){
+		_innerText = innerText;
+		AddChild(_innerText);
+	}
 };
 
 class UIMsgBox : public UIWindow {

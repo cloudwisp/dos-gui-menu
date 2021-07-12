@@ -610,4 +610,431 @@ Before load image EDDIE.PNG
 Before return spriteset
 GetSpriteSet ITEM
 Before load image ITEM.PNG
-Before return spriteset
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1WALL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1WALL.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1FEAT
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FEAT.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV1SOLID.CSV
+GetSpriteSet HERO
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet EDDIE
+Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1WALL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1WALL.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1FEAT
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FEAT.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV1SOLID.CSV
+GetSpriteSet HERO
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet EDDIE
+Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV2FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2WALLS
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2WALLS.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2FEATD
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2FEATD.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2FEATI
+Before GetSpriteSet
+GetSpriteSet INSIDE
+Before load image INSIDE.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2FEATI.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV2SOLID.CSV
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1WALL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1WALL.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1FEAT
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FEAT.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV1SOLID.CSV
+GetSpriteSet HERO
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet EDDIE
+Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV2FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2WALLS
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2WALLS.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2FEATD
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2FEATD.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2FEATI
+Before GetSpriteSet
+GetSpriteSet INSIDE
+Before load image INSIDE.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2FEATI.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV2CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV2CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV2SOLID.CSV
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1WALL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1WALL.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1FEAT
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FEAT.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV1SOLID.CSV
+GetSpriteSet HERO
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet EDDIE
+Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1WALL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1WALL.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1FEAT
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FEAT.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV1SOLID.CSV
+GetSpriteSet HERO
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet EDDIE
+Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FLOOR.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1WALL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1WALL.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1FEAT
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1FEAT.CSV
+Before populate tile layer canvas
+Before return tile layer
+GetTileLayer LV1CEIL
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+Before return spriteset
+after GetSpriteSet
+read tilemapLV1CEIL.CSV
+Before populate tile layer canvas
+Before return tile layer
+read tilemapLV1SOLID.CSV
+GetSpriteSet HERO
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet EDDIE
+Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet ITEM
+Before load image ITEM.PNG
+Before return spriteset
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG
+GetTileLayer LV1FLOOR
+Before GetSpriteSet
+GetSpriteSet DUNGEON
+Before load image DUNGEON.PNG

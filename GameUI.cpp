@@ -4,6 +4,7 @@
 #include <grx20.h>
 #include "AppUI.h"
 #include "AppEvent.h"
+#include <time.h>
 
 class HealthWidget : public UIDrawable {
 private:
@@ -82,8 +83,12 @@ private:
     int imgLoaded = 0;
     char *titleImgPath = NULL;
     EventConsumer* _onDoneListener = NULL;
+    UIScrollingText* scrollContainer = NULL;
     UITextArea* scrollingText = NULL;
-    int top = 0;
+    int scrollSpeed = 100; //ms per pixel
+    clock_t lastTick = clock();
+    clock_t firstTick = clock();
+    int delay = 2000;
 
     void draw_internal(){
         if (!imgLoaded){
@@ -96,8 +101,18 @@ private:
 public:
 
     void Update(){
-        top--;
-        scrollingText->y = top;
+        clock_t now = clock();
+        int msSinceFirst = clockToMilliseconds(now-firstTick);
+        if (msSinceFirst < delay){
+            return;
+        }
+
+        int msSince = clockToMilliseconds(now-lastTick);
+        
+        if (msSince >= scrollSpeed){
+            scrollContainer->ScrollDown();
+            lastTick = now;
+        }
     }
 
     void OnKeyUp(int ScanCode){
@@ -111,14 +126,19 @@ public:
     StoryScreen(int screenWidth, int screenHeight, char *imgPath, EventConsumer* onDoneListener) : UIWindow(screenWidth, screenHeight) {
         titleImgPath = imgPath;
         _onDoneListener = onDoneListener;
+        int borderBuffer = 50;
 
-        scrollingText = new UITextArea(screenWidth, screenHeight);
+
+        scrollingText = new UITextArea(screenWidth-(borderBuffer*2), 300);
         scrollingText->SetText("But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?");
-
-        AddChild(scrollingText);
+        scrollContainer = new UIScrollingText(scrollingText, screenHeight-(borderBuffer*2));
+        scrollContainer->x = borderBuffer;
+        scrollContainer->y = borderBuffer;
+        AddChild(scrollContainer);
     }
     ~StoryScreen(){
         delete scrollingText;
+        delete scrollContainer;
     }
 
 };
