@@ -9,7 +9,7 @@
 #include "Common.h"
 #include "GameElem.cpp"
 
-class GameCharacter : public GameWorldElement {
+class GameCharacter : public GameWorldElement, public EventEmitter {
 	private:
 
 	GameCharModel *model = NULL;
@@ -103,6 +103,8 @@ class GameCharacter : public GameWorldElement {
     int enduranceLossPerSecondWhenRunning = 10;
     int healthRegenPerSecond = 1;
     double runningMultiplier = 1.5;
+    bool alive = true;
+    int lives = 1;
 
     void toggleRunning(){
         if (running){
@@ -146,11 +148,38 @@ class GameCharacter : public GameWorldElement {
 		focused = 0;
 	}
 
+    void KillCharacter(){
+        alive = false;
+        direction = CHARDIR_DEAD;
+        endurance = 0;
+        health = 0;
+        EmitEvent("CharacterDied");
+    }
+
 	void OnAttacked(GameCharacter* otherChar){
+        if (!alive){
+            return;
+        }
         //TBD: some chance of missing?
         health -= otherChar->strength;
         if (health < 0){ health = 0; }
+        if (health == 0){
+            KillCharacter();
+        }
 	}
+
+    bool Resurrect(){
+        if (alive || lives == 0){
+            return false;
+        }
+
+        direction = CHARDIR_IDLE;
+        alive = true;
+        lives--;
+        health = totalHealth;
+        endurance = totalEndurance;
+        return true;
+    }
 
 	void Update(){
         clock_t now = clock();

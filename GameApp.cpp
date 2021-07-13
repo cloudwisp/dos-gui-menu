@@ -5,6 +5,8 @@
 #include <string.h>
 #include <time.h>
 #include <pc.h>
+#include <vector>
+#include <algorithm>
 
 #include "Common.h"
 #include "AppUI.h"
@@ -52,6 +54,7 @@ private:
 
 	GameWorld *_cw_current_world = NULL;
 	int _cw_current_world_set = 0;
+    int _cw_current_world_id = -1;
 
 	GameInventory *inventory = NULL;
 
@@ -202,26 +205,21 @@ private:
 	/*
         World binding means that the class has been instantiated, and that events have been subscribed
 	*/
-	int boundWorlds[255] = {0};
-	int boundWorldCount = 0;
+	std::vector<int> boundWorlds;
+
 	GameWorld *worldObjects[255] = {NULL}; //this will contain the actual loaded objects, using index from world const val
-    int world_is_bound(int world){
-        int i;
-        for (i = 0; i < boundWorldCount; i++){
-            if (boundWorlds[i]==world){
-                return 1;
-            }
-        }
-        return 0;
-    }
-    int add_bound_world(int world){
-        boundWorlds[boundWorldCount] = world;
-        boundWorldCount++;
+    bool world_is_bound(int world){
+        return std::find(boundWorlds.begin(), boundWorlds.end(), world) != boundWorlds.end();
     }
 
-	void SetActiveWorld(GameWorld *active_world){
+    int add_bound_world(int world){
+        boundWorlds.push_back(world);
+    }
+
+	void SetActiveWorld(GameWorld *active_world, int worldId){
 	    _cw_current_world = active_world;
 		_cw_current_world_set = 1;
+        _cw_current_world_id = worldId;
 		active_world->width = viewportWidth;
 		active_world->height = viewportHeight;
 		active_world->x = viewportX;
@@ -240,7 +238,7 @@ private:
             mainWindow->RemoveChild((UIDrawable *) _cw_current_world);
             //remove hero from the current world
             _cw_current_world->RemoveWorldElement((GameWorldElement*) GetHero());
-
+            UnloadWorld(_cw_current_world_id);
         }
     }
 
@@ -253,6 +251,16 @@ public:
 				EmitEvent("WorldClick", _cw_current_world->worldX+data.data1, _cw_current_world->worldY+data.data2);
 			}
 		}
+
+        if (event == "CharacterDied" && source == hero){
+            if (hero->Resurrect()){
+                script->AddCommand(new LoadWorldCommand(initialWorld,"Respawning..."));
+            } else {
+                // game over.
+                CompleteGame();
+            }
+        }
+
 		if (event == "ChangeWorld"){
             ChangeWorld(data.data1);
 		}
@@ -287,21 +295,23 @@ public:
 	}
 
 	void UnloadWorlds(){
-        int i, worldId;
-        for (i = 0; i < boundWorldCount; i++){
-            worldId = boundWorlds[i];
+        for (int worldId : boundWorlds){
             if (worldObjects[worldId]){
                 delete worldObjects[worldId];
             }
         }
 	}
 
+    void UnloadWorld(int worldId){
+        boundWorlds.erase(std::remove(boundWorlds.begin(), boundWorlds.end(), worldId), boundWorlds.end());
+        delete worldObjects[worldId];
+    }
+
 	void ChangeWorld(int gameWorld){
-	    if (_cw_current_world_set == 1 && worldObjects[gameWorld] == GetActiveWorld()){ return; } //already active
-	    //LoadingScreen::Show();
+	    RemoveActiveWorld();
+        //LoadingScreen::Show();
         InitWorld(gameWorld);
-        RemoveActiveWorld();
-        SetActiveWorld(worldObjects[gameWorld]);
+        SetActiveWorld(worldObjects[gameWorld], gameWorld);
         EmitEvent("WorldChanged", gameWorld);
         //LoadingScreen::Hide();
 	}
@@ -321,6 +331,7 @@ public:
     HeroCharacter *GetHero(){
         if (hero != NULL){ return hero; }
         hero = new HeroCharacter("HERO");
+        hero->BindEvent("CharacterDied", this);
         return hero;
     }
 

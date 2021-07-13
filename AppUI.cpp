@@ -645,20 +645,22 @@ private:
 	int ScrollTop = 0;
 public:
 
-	void ScrollDown(){
+	bool ScrollDown(){
 		int newScroll = ScrollTop+1;
 		if (newScroll > _innerText->height - height){
-			return;
+			return false;
 		}
 		ScrollTop++;
+		return true;
 	}
 
-	void ScrollUp(){
+	bool ScrollUp(){
 		int newScroll = ScrollTop - 1;
 		if (newScroll < 0){
-			return;
+			return false;
 		}
 		ScrollTop--;
+		return true;
 	}
 
 	UIScrollingText(UITextArea* innerText, int height) : UIDrawable(innerText->width, height){

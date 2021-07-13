@@ -43,7 +43,7 @@ struct GameCharModelStr {
     SpriteSet *spriteset = NULL;
     int groundClipWidth;
     int groundClipHeight;
-    int sprites[9][20];
+    int sprites[10][20];
 };
 
 struct CachedImage {

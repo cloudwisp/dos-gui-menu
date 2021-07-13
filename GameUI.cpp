@@ -89,6 +89,9 @@ private:
     clock_t lastTick = clock();
     clock_t firstTick = clock();
     int delay = 2000;
+    int scrollEndCloseDelay = 2000;
+    int scrollEnded = false;
+    clock_t scrollEndTick = clock();
 
     void draw_internal(){
         if (!imgLoaded){
@@ -98,27 +101,44 @@ private:
         GrBitBlt(ctx,0,0,titleImg,0,0,width-1,height-1,GrIMAGE);
     }
 
+    void EndOfStory(){
+        CloseAndDestroy();
+        _onDoneListener->OnEvent(this,"StoryScreenClosed",CreateEventData(0,0));
+    }
+
 public:
 
     void Update(){
         clock_t now = clock();
+        //close transition scenario
+        if (scrollEnded){
+            int msSinceEnd = clockToMilliseconds(now-scrollEndTick);
+            if (msSinceEnd >= scrollEndCloseDelay){
+                EndOfStory();
+            }
+            return;
+        }
+
+        //delay scenario before scrolling
         int msSinceFirst = clockToMilliseconds(now-firstTick);
         if (msSinceFirst < delay){
             return;
         }
 
+        //scrolling text
         int msSince = clockToMilliseconds(now-lastTick);
-        
         if (msSince >= scrollSpeed){
-            scrollContainer->ScrollDown();
+            if (!scrollContainer->ScrollDown()){
+                scrollEnded = true;
+                scrollEndTick = clock();
+            }
             lastTick = now;
         }
     }
 
     void OnKeyUp(int ScanCode){
         if (ScanCode == KEY_ENTER){
-            CloseAndDestroy();
-            _onDoneListener->OnEvent(this,"StoryScreenClosed",CreateEventData(0,0));
+            EndOfStory();
         }
         UIWindow::OnKeyUp(ScanCode);
     }

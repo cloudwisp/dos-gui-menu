@@ -17,6 +17,9 @@ private:
     struct dimension _dimension;
 
 	void set_dir_from_vector(int vectX, int vectY){
+		if (direction == CHARDIR_DEAD){
+			return;
+		}
 		if (vectX == 0 && vectY == 0){
 			direction = CHARDIR_IDLE;
 		} else if (vectX == 0){

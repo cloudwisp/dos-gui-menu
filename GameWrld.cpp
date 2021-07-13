@@ -377,7 +377,7 @@ public:
 			}
 		}
 		if (_hero){
-            //drop it into the world
+            //place pending drop items into the world
             while (_hero->GetInventory()->HasDropItem()){
                 AddWorldElement(_hero->GetInventory()->GetNextDropItem(),_hero->GetPosition().x, _hero->GetPosition().y);
             }

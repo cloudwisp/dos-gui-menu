@@ -10,6 +10,7 @@ const int CHARDIR_S = 5;
 const int CHARDIR_SW = 6;
 const int CHARDIR_W = 7;
 const int CHARDIR_NW = 8;
+const int CHARDIR_DEAD = 9;
 
 class GameCharacter;
 
