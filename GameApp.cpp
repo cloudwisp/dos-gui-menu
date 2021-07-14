@@ -254,7 +254,7 @@ public:
 
         if (event == "CharacterDied" && source == hero){
             if (hero->Resurrect()){
-                script->AddCommand(new LoadWorldCommand(initialWorld,"Respawning..."));
+                script->AddCommand(new LoadWorldCommand(_cw_current_world_id,"Respawning..."));
             } else {
                 // game over.
                 CompleteGame();

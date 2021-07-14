@@ -24,7 +24,7 @@ int main()
     GrSetMode(GR_width_height_bpp_graphics,screenWidth,screenHeight,bitDepth);
 
     install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, "");
-    app = new GameApplication(320, 200, 8, 320, 200, 0, 0, WORLD_LEVEL1);
+    app = new GameApplication(screenWidth, screenHeight, bitDepth, 320, 200, 0, 0, WORLD_LEVEL1);
 	app->EnableMouse();
 	app->Start();
 	allegro_exit();

@@ -37,7 +37,11 @@ private:
 public:
 
     void OnInteraction(GameWorldElement *otherElement){
-        _hero->health+=_healAmount;
+        if (_hero->health + _healAmount > _hero->totalHealth){
+            _hero->health = _hero->totalHealth;
+        } else {
+            _hero->health+=_healAmount;
+        }
         flagForRemoval = 1;
         flagForDestroy = 1;
     }
@@ -59,6 +63,38 @@ public:
         interactableInWorld=0;
         _hero = hero;
         _healAmount = healAmount;
+        SetSpriteset(GameResources::GetSpriteSet("ITEM"));
+    }
+};
+
+
+class OneUp : public GameWorldElement {
+private:
+    HeroCharacter *_hero = NULL;
+public:
+
+    void OnInteraction(GameWorldElement *otherElement){
+        _hero->lives++;
+        flagForRemoval = 1;
+        flagForDestroy = 1;
+    }
+    void update(GameMap* worldMap){
+
+    }
+
+    void render(){
+
+    }
+
+    OneUp(HeroCharacter *hero) : GameWorldElement("OneUp", 16,16){
+        spriteId = 31;
+        allowPickup = 0;
+        allowDrop = 0;
+        autoPickup = 0;
+        autoInteraction = 1;
+        dynamic = 0;
+        interactableInWorld=0;
+        _hero = hero;
         SetSpriteset(GameResources::GetSpriteSet("ITEM"));
     }
 };

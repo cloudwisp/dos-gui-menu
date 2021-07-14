@@ -2,6 +2,7 @@
 #define AppEvent_CPP
 
 #include "AppEvent.h"
+#include <queue>
 
 struct EventDataStr {
 	int data1;
@@ -13,6 +14,21 @@ struct EventHandlerStr {
 	EventConsumer *consumer;
 	void (*callback)(EventEmitter *source, EventData data);
 };
+
+struct Event {
+	std::string event;
+	EventEmitter* source;
+	EventConsumer* consumer;
+	EventData data;
+};
+
+class EventQueue {
+public:
+	static std::queue<Event> Pending;
+	static void AddEvent(Event event);
+	static void EmitAllQueued();
+};
+
 
 class EventConsumer {
 public:
@@ -80,12 +96,31 @@ public:
 				if (_handlers[i].consumer == NULL){
 					_handlers[i].callback(this, data);
 				} else {
-					_handlers[i].consumer->OnEvent(this, event, data);
+					Event evt;
+					evt.consumer = _handlers[i].consumer;
+					evt.source = this;
+					evt.event = event;
+					evt.data = data;
+
+					EventQueue::AddEvent(evt);
 				}
 			}
 		}
 	}
 
 };
+
+std::queue<Event> EventQueue::Pending;
+void EventQueue::AddEvent(Event event){
+	Pending.push(event);
+};
+void EventQueue::EmitAllQueued(){
+	while(Pending.size() > 0){
+		Event evt = Pending.front();
+		Pending.pop();
+		evt.consumer->OnEvent(evt.source, evt.event, evt.data);
+	}
+};
+
 
 #endif

@@ -224,6 +224,7 @@ private:
 	}
 
 	void _update(){
+		EventQueue::EmitAllQueued();
 		update();
 		UIWindowController::Update();
 		EmitEvent("Update");

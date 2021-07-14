@@ -462,8 +462,6 @@ public:
 
     void TakeHero(HeroCharacter *hero){
         _hero = hero;
-        //AddCharacter((GameCharacter*) hero,0,0);
-        //AddWorldElement((GameWorldElement*) hero,0,0);
     }
 
     HeroCharacter*  GetHero(){

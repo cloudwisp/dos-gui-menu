@@ -14,6 +14,12 @@ private:
     AggressiveCharacter *monster3 = NULL;
     AggressiveCharacter *monster4 = NULL;
     StageEndWaypoint * stageEnd = NULL;
+    std::vector<GameWorldElement*> _disposableWorldElements;
+
+    void AddDisposableElement(GameWorldElement* elem, int tileX, int tileY){
+        _disposableWorldElements.push_back(elem);
+        AddWorldElementAtTile(elem, tileX, tileY);
+    }
 protected:
     void HandleStageClose() override {
         GameWorld::GetActiveWorld()->EmitEvent("CompleteGame");
@@ -21,19 +27,12 @@ protected:
 public:
 
     void CreateWorldElements(){
-        monster1 = new AggressiveCharacter("Monster 1", "EDDIE",2, 3.2);
-        monster2 = new AggressiveCharacter("Monster 2", "EDDIE",2, 3.2);
-        monster3 = new AggressiveCharacter("Monster 3", "EDDIE",2, 3.2);
-        monster4 = new AggressiveCharacter("Monster 4", "EDDIE",2, 3.2);
-        stageEnd = new StageEndWaypoint(this);
-
-        AddWorldElementAtTile(stageEnd, 2, 27);
-
-        AddWorldElementAtTile(monster1, 24, 9);
-        AddWorldElementAtTile(monster2, 36, 4);
-        AddWorldElementAtTile(monster3, 47, 14);
-        AddWorldElementAtTile(monster3, 63, 16);
-        //potion = new HealingPotion("a potion",50,GetHero());
+        AddDisposableElement(new AggressiveCharacter("Monster 1", "EDDIE",2, 3.2), 24, 9);
+        AddDisposableElement(new AggressiveCharacter("Monster 2", "EDDIE",2, 3.2), 36, 4);
+        AddDisposableElement(new AggressiveCharacter("Monster 3", "EDDIE",2, 3.2), 47, 14);
+        AddDisposableElement(new AggressiveCharacter("Monster 4", "EDDIE",2, 3.2), 63, 16);
+        AddDisposableElement(new StageEndWaypoint(this), 2, 27);
+        AddDisposableElement(new HealingPotion("a potion", GetHero()->totalHealth * 0.5, GetHero()), 16, 12);
     }
 
     void OnWorldActivated(){
@@ -46,11 +45,11 @@ public:
 
     }
     ~Level2(){
-        if (monster1){ delete monster1; }
-        if (monster2){ delete monster2; }
-        if (monster3){ delete monster3; }
-        if (monster4){ delete monster4; }
-        if (stageEnd){ delete stageEnd; }
+        for(GameWorldElement* elem : _disposableWorldElements){
+            if (elem){
+                delete elem;
+            }
+        }
     }
 };
 
