@@ -86,6 +86,13 @@ public:
 		Unfreeze();
 	}
 
+	void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+		if (ScanCode == KEY_ENTER || ScanCode == KEY_NUMPAD_ENTER){
+			SetState(BUTTONSTATE_SELECTED);
+			EmitEvent("Click");
+		}
+	}
+
 	void OnEvent(EventEmitter *source, const char *event, EventData data){
 		if (source == this){
 
@@ -202,16 +209,19 @@ public:
 
 	void OnEvent(EventEmitter* source, std::string event, EventData data) override {
 		if (event == "GotFocus"){
-			debugOut("Got focus");
 			innerText->ShowCursor();
 			Unfreeze();
 		}
 		if (event == "LostFocus"){
-			debugOut("lost focus");
 			innerText->HideCursor();
 			Unfreeze();
 		}
 		UIDrawable::OnEvent(source, event, data);
+	}
+
+	void SetText(std::string text){
+		innerText->SetText(text);
+		Unfreeze();
 	}
 
 	UITextBox(int width, int height, int maxChars) : UIDrawable(width, height){

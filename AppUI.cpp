@@ -13,7 +13,6 @@ class UIDrawable : public EventEmitter, public EventConsumer {
 private:
 	virtual void draw_internal() = 0;
 
-
 	int indexOfChild(UIDrawable* child){
         int i;
         for (i = 0; i < childCount; i++){
@@ -47,6 +46,8 @@ private:
 	}
 
 protected:
+
+	bool needsRedraw = false;
 
     void UnfocusAllChildren(){
         int i;
@@ -185,6 +186,7 @@ public:
             GetTopElement()->UnfocusAllChildren();
             focus = 1;
             EmitEvent("GotFocus");
+			needsRedraw = true;
 	    }
 	}
 
@@ -192,48 +194,8 @@ public:
 		if (focus){
             focus = 0;
             EmitEvent("LostFocus");
+			needsRedraw = true;
 		}
-	}
-
-
-	UIDrawable* GetNextTabStop(UIDrawable *currentStop, int *takeNext){
-		if (tabstop && (currentStop == NULL || (currentStop != this && *takeNext == 1))){
-			*takeNext = 1;
-			return this;
-		}
-		if (childCount == 0){
-			return NULL;
-		}
-
-		UIDrawable *orderedChildren[255];
-		int i, j;
-		for (i = 0; i < childCount; i++){
-			orderedChildren[i] = children[i];
-		}
-		//sort by tab stop
-		for (i = 0; i < childCount; i++){
-			for (j = i+1; j < childCount; j++){
-				if (orderedChildren[j]->tabstop > orderedChildren[i]->tabstop){
-					UIDrawable *tmp = orderedChildren[i];
-					orderedChildren[i] = orderedChildren[j];
-					orderedChildren[j] = tmp;
-				}
-			}
-		}
-		//TODO: handle switching to next stop when element is hidden
-		UIDrawable *nextStop;
-		for (i = 0; i < childCount; i++){
-			if (currentStop && orderedChildren[i] == currentStop){
-				*takeNext = 1;
-			}
-			if (!orderedChildren[i]->visible){ continue; }
-			nextStop = orderedChildren[i]->GetNextTabStop(currentStop, takeNext);
-			if (nextStop && *takeNext){
-				//something was found in the descendents, return it
-				return nextStop;
-			}
-		}
-		return NULL;
 	}
 
 	void PropagateMouseEvent(int subX, int subY, const char *event){
@@ -314,8 +276,23 @@ public:
 		}
 	}
 
+	bool NeedsRedraw(){
+		if (needsRedraw){
+			return true;
+		}
+		bool anyNeed = false;
+		int i, o;
+		for (o = 0; o < childDisplayOrderCount; o++){
+			i = childDisplayOrder[o];
+			if (children[i]->NeedsRedraw()){
+				anyNeed = true;
+			}
+		}
+		return anyNeed;
+	}
+
 	void Draw(GrContext *ontoContext){
-		if (!freeze){
+		if (!freeze || NeedsRedraw()){
 			draw_internal();
 			int i, o;
 			for (o = 0; o < childDisplayOrderCount; o++){
@@ -323,13 +300,14 @@ public:
 				if (!children[i]->visible){ continue; }
 				children[i]->Draw(ctx);
 			}
+			needsRedraw = false;
 		}
 		if (ontoContext == NULL){ return; }
-		GrBitBlt(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 		if (focus){
-			GrSetContext(ontoContext);
+			GrSetContext(ctx);
 			GrBox(0, 0, width-1, height-1, GrWhite());
 		}
+		GrBitBlt(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}
 };
 
@@ -434,6 +412,10 @@ private:
 		int lastStop = 0;
 		if (focusedElement){
 			tabContainer = findTabContainer(focusedElement);
+			char* ctext = (char*) malloc(sizeof(char)*50);
+			sprintf(ctext, "tab container stop %d", tabContainer->containertabstop);
+			debugOut(std::string(ctext));
+			free(ctext);
 			lastStop = focusedElement->tabstop;
 			if (!tabContainer){ // not attached
 				tabContainer = this;
@@ -452,17 +434,21 @@ private:
 			UIDrawable* firstContainerStop = NULL;
 			UIDrawable* nextTabContainer = NULL;
 			int lowestSoFar = 255;
+			debugOut("end of tabs in container, find next");
 			nextTabContainer = findNextTabContainer(this, parentStop, firstContainerStop, NULL, &lowestSoFar);
 			UIDrawable* focusFirst;
 			lowestSoFar = 255;
 			UIDrawable* searchContainer;
 			if (nextTabContainer){
 				//found one, focus first element in this container
+				debugOut("found a container");
 				searchContainer = nextTabContainer;
 			} else if (firstContainerStop){
 				//wrap around to first one with a stop > 0 within window
+				debugOut("using the first one");
 				searchContainer = firstContainerStop;
 			} else {
+				debugOut("Using the window itself");
 				searchContainer = this;
 			}
 			focusFirst = GetFirstStopInParent(searchContainer, NULL, &lowestSoFar);
