@@ -38,8 +38,8 @@ public:
         UIWindow::CheckInputs();
     }
 
-    void OnKeyUp(int ScanCode){
-        UIWindow::OnKeyUp(ScanCode);
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
 
     GameMainWindow(int drawWidth, int drawHeight) : UIWindow(drawWidth, drawHeight){
@@ -128,20 +128,20 @@ private:
             //main window focused, main section to handle player input controls
 
             //x axis
-            if (TrueKeyState(KEY_LEFT)){
+            if (TrueKeyState(KEY_LEFT_ARROW) || (TrueKeyState(KEY_KP_4) && ShiftState & SHIFTSTATE_NUM_LOCK_ON)){
                 heroVectX = -1;
                 heroMove = 1;
-            } else if (TrueKeyState(KEY_RIGHT)){
+            } else if (TrueKeyState(KEY_RIGHT_ARROW) || (TrueKeyState(KEY_KP_6) && ShiftState & SHIFTSTATE_NUM_LOCK_ON)){
                 heroVectX = 1;
                 heroMove = 1;
             } else {
                 heroVectX = 0;
             }
             //y axis
-            if (TrueKeyState(KEY_DOWN)){
+            if (TrueKeyState(KEY_DOWN_ARROW) || (TrueKeyState(KEY_KP_2) && ShiftState & SHIFTSTATE_NUM_LOCK_ON)){
                 heroVectY = 1;
                 heroMove = 1;
-            } else if (TrueKeyState(KEY_UP)){
+            } else if (TrueKeyState(KEY_UP_ARROW) || (TrueKeyState(KEY_KP_8) && ShiftState & SHIFTSTATE_NUM_LOCK_ON)){
                 heroVectY = -1;
                 heroMove = 1;
             } else {
@@ -163,9 +163,9 @@ private:
         }
 	}
 
-	void on_keyup(int ScanCode, int *cancelInputPropagation){
+	void on_keyup(int ScanCode, int ShiftState, int Ascii, int *cancelInputPropagation){
         if (GetFocusedWindow() == mainWindow && script->NeedsControl()){
-            script->OnKeyUp(ScanCode);
+            script->OnKeyUp(ScanCode, ShiftState, Ascii);
             (*cancelInputPropagation) = 1;
             return;
         }

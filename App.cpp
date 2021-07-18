@@ -201,7 +201,6 @@ private:
 		eventElementCount = 0; //reset counter for next run
 	}
 
-
 	void _check_inputs(){
 		int cancelInputPropagation = 0;
 		check_inputs(&cancelInputPropagation);
@@ -212,11 +211,11 @@ private:
         //flush the KeyUp buffer
         while (KeyUpWaiting()){
             cancelInputPropagation = 0;
-            int ScanCode = GetNextKeyUpCode();
-            on_keyup(ScanCode,&cancelInputPropagation);
+			KeyUpInfo keyInfo = GetNextKeyUpCode();
+            on_keyup(keyInfo.ScanCode, keyInfo.ShiftState, keyInfo.AsciiCharacter, &cancelInputPropagation);
             if (!cancelInputPropagation){
-                focusedWindow->OnKeyUp(ScanCode);
-                EmitEvent("KeyUp", ScanCode);
+                focusedWindow->OnKeyUp(keyInfo.ScanCode, keyInfo.ShiftState, keyInfo.AsciiCharacter);
+                EmitEvent("KeyUp", keyInfo.ScanCode, keyInfo.ShiftState);
             }
 
         }
@@ -239,7 +238,7 @@ private:
 	}
 
 	virtual void check_inputs(int *cancelInputPropagation) = 0;
-	virtual void on_keyup(int ScanCode, int *cancelInputPropagation) = 0;
+	virtual void on_keyup(int ScanCode, int ShiftState, int Ascii, int *cancelInputPropagation) = 0;
 	virtual void update() = 0;
 	virtual void render() = 0;
 	virtual void on_start() = 0;

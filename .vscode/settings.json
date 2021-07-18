@@ -42,6 +42,11 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "utility": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "keyboard.c": "cpp",
+        "cmath": "cpp",
+        "deque": "cpp",
+        "algorithm": "cpp",
+        "numeric": "cpp"
     }
 }

@@ -1,6 +1,7 @@
-make all --dry-run --always-make --keep-going --print-directory
+make all --dry-run --keep-going --print-directory
 make: Entering directory '/home/roland/dos-source/pquest'
 /usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ Main.cpp -lgrx20 -lpng -lz -lalleg -o bin/Release/main.exe
+/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ CharEditor/CharEdit.cpp -lgrx20 -lpng -lz -o bin/Release/CharEdit.exe
 make launch
 make: Leaving directory '/home/roland/dos-source/pquest'
  

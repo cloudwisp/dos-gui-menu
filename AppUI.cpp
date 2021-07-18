@@ -113,7 +113,8 @@ public:
 	int freeze;
 
 	int focus;
-	int tabstop;
+	int tabstop; // when set to a value over zero, will tell the window to focus the element during key tabbing in the order defined by this value.
+	int containertabstop = 0; // when set to a value over zero, will group tab stop child elements together
 	UIDrawable *parent = NULL;
 	UIDrawable *children[255] = {NULL};
 	UIDrawable *window = NULL;
@@ -126,7 +127,7 @@ public:
 		return ctx;
 	}
 
-	virtual void OnKeyUp(int KeyCode) {}
+	virtual void OnKeyUp(int KeyCode, int ShiftState, int Ascii) {}
 	virtual void OnMouseOver(){}
 	virtual void OnMouseOut(){}
 	virtual void CheckInputs(){}
@@ -337,18 +338,163 @@ class UIWindow : public UIDrawable {
 private:
 
     UIDrawable *focusedElement = NULL;
+	
+	UIDrawable* findTabContainer(UIDrawable *child){
+		if (child->parent == NULL){
+			return NULL; //not attached to tree.
+		}
+
+		if (child->parent && child->parent->containertabstop > 0){
+			//found container;
+			return child->parent;
+		}
+
+		if (child->parent && child->parent == this){
+			//reached top of tree, return the window
+			return child->parent;
+		}
+
+		if (child == this){
+			//in case the window is passed to method.
+			return child;
+		}
+
+		return findTabContainer(child->parent); //traverse one level up and try again.
+	}
+
+	UIDrawable* findNextTabElementWithinTabContainer(UIDrawable *parent, int prevTabStop, UIDrawable* lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
+		for (int i = 0; i < parent->childDisplayOrderCount; i++){
+			UIDrawable* thisElem = parent->children[parent->childDisplayOrder[i]];
+			if (thisElem->tabstop > prevTabStop){
+				//candidate for next tab element
+				if (lowestNextTabStopSoFarElem && thisElem->tabstop < *lowestNextTabStopSoFar){
+					// found a lower tab stop than the previous found tab stop
+					lowestNextTabStopSoFarElem = thisElem;
+					*lowestNextTabStopSoFar = thisElem->tabstop;
+				} else if (!lowestNextTabStopSoFarElem){
+					//no lowest stored, store this one as the first.
+					lowestNextTabStopSoFarElem = thisElem;
+					*lowestNextTabStopSoFar = thisElem->tabstop;
+				}
+			}
+			if (thisElem->childCount > 0){
+				//try to find the next one within the sub-tree (the elements may not be direct children of the tab container)
+				UIDrawable* foundNextElement = findNextTabElementWithinTabContainer(thisElem, prevTabStop, lowestNextTabStopSoFarElem, lowestNextTabStopSoFar);
+				if (foundNextElement && foundNextElement->tabstop < *lowestNextTabStopSoFar){
+					//the one found within the tree is lower than the lowest discovered from previous elements in this tree, record it
+					lowestNextTabStopSoFarElem = foundNextElement;
+					*lowestNextTabStopSoFar = foundNextElement->tabstop;
+				}
+			}
+		}
+		if (lowestNextTabStopSoFarElem){
+			return lowestNextTabStopSoFarElem;
+		}
+
+		return NULL;
+	}
+
+	UIDrawable* findNextTabContainer(UIDrawable *parent, int prevContainerTabStop, UIDrawable* firstContainerTabStop, UIDrawable* lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
+		for (int i = 0; i < parent->childDisplayOrderCount; i++){
+			UIDrawable* thisElem = parent->children[parent->childDisplayOrder[i]];
+			if (thisElem->containertabstop > 0 && firstContainerTabStop == NULL){
+				firstContainerTabStop = thisElem;
+			}
+			if (thisElem->containertabstop > prevContainerTabStop){
+				//candidate for next tab element
+				if (lowestNextTabStopSoFarElem && thisElem->containertabstop < *lowestNextTabStopSoFar){
+					// found a lower tab stop than the previous found tab stop
+					lowestNextTabStopSoFarElem = thisElem;
+					*lowestNextTabStopSoFar = thisElem->containertabstop;
+				} else if (!lowestNextTabStopSoFarElem){
+					//no lowest stored, store this one as the first.
+					lowestNextTabStopSoFarElem = thisElem;
+					*lowestNextTabStopSoFar = thisElem->containertabstop;
+				}
+			}
+			if (thisElem->childCount > 0){
+				//try to find the next one within the sub-tree (the elements may not be direct children of the tab container)
+				UIDrawable* foundNextElement = findNextTabContainer(thisElem, prevContainerTabStop, firstContainerTabStop, lowestNextTabStopSoFarElem, lowestNextTabStopSoFar);
+				if (foundNextElement && foundNextElement->containertabstop < *lowestNextTabStopSoFar){
+					//the one found within the tree is lower than the lowest discovered from previous elements in this tree, record it
+					lowestNextTabStopSoFarElem = foundNextElement;
+					*lowestNextTabStopSoFar = foundNextElement->containertabstop;
+				}
+			}
+		}
+		if (lowestNextTabStopSoFarElem){
+			return lowestNextTabStopSoFarElem;
+		}
+
+		return NULL;
+	}
+
+	void FocusNextTabStop(){
+		UIDrawable* tabContainer = this;
+		int lastStop = 0;
+		if (focusedElement){
+			tabContainer = findTabContainer(focusedElement);
+			lastStop = focusedElement->tabstop;
+			if (!tabContainer){ // not attached
+				tabContainer = this;
+				lastStop = 0;
+			}
+		}
+		int parentStop = tabContainer->containertabstop;
+		int lowestTabStop = 255;
+		UIDrawable* nextTabWithinParent = findNextTabElementWithinTabContainer(tabContainer, lastStop, NULL, &lowestTabStop);
+		if (nextTabWithinParent){
+			//found one, focus it
+			nextTabWithinParent->Focus();
+			focusedElement = nextTabWithinParent;
+		} else {
+			//didn't find one within the container, need to find the next container, or wrap around to the beginning.
+			UIDrawable* firstContainerStop = NULL;
+			UIDrawable* nextTabContainer = NULL;
+			int lowestSoFar = 255;
+			nextTabContainer = findNextTabContainer(this, parentStop, firstContainerStop, NULL, &lowestSoFar);
+			UIDrawable* focusFirst;
+			lowestSoFar = 255;
+			UIDrawable* searchContainer;
+			if (nextTabContainer){
+				//found one, focus first element in this container
+				searchContainer = nextTabContainer;
+			} else if (firstContainerStop){
+				//wrap around to first one with a stop > 0 within window
+				searchContainer = firstContainerStop;
+			} else {
+				searchContainer = this;
+			}
+			focusFirst = GetFirstStopInParent(searchContainer, NULL, &lowestSoFar);
+			if (focusFirst){
+				focusFirst->Focus();
+				focusedElement = focusFirst;
+			}
+		}
+	}
+
+	UIDrawable* GetFirstStopInParent(UIDrawable* parent, UIDrawable* lowestTabStopSoFarElem, int* lowestTabStopSoFar){
+		for (int i = 0; i < parent->childCount; i++){
+			UIDrawable* thisItem = parent->children[parent->childDisplayOrder[i]];
+			if (thisItem->tabstop > 0){
+				if (lowestTabStopSoFarElem == NULL || thisItem->tabstop < *lowestTabStopSoFar){
+					lowestTabStopSoFarElem = thisItem;
+					*lowestTabStopSoFar = thisItem->tabstop;
+				}
+			};
+			if (thisItem->childCount > 0){
+				GetFirstStopInParent(thisItem, lowestTabStopSoFarElem, lowestTabStopSoFar);
+			}
+		}
+		if (lowestTabStopSoFarElem == NULL){
+			return NULL;
+		} else {
+			return lowestTabStopSoFarElem;
+		}
+	}
 
 	void _set_next_focused(){
-		int takeNext;
-		UIDrawable *nextFocusedElement;
-		nextFocusedElement = GetNextTabStop(focusedElement, &takeNext);
-		if (nextFocusedElement){
-			if (focusedElement){
-				focusedElement->UnFocus();
-			}
-			nextFocusedElement->Focus();
-			focusedElement = nextFocusedElement;
-		}
+		FocusNextTabStop();
 	}
 
 	void draw_internal(){
@@ -359,13 +505,13 @@ public:
     int closed = 0;
     int destroy = 0;
     //classes inheriting from UIWindow should make sure to call this method as well if they override
-    void OnKeyUp(int ScanCode){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_TAB){
             //set focused element
             _set_next_focused();
         } else if (focusedElement){
             //send any other key press to the focused element
-            focusedElement->OnKeyUp(ScanCode);
+            focusedElement->OnKeyUp(ScanCode, ShiftState, Ascii);
         }
     }
 
@@ -508,21 +654,24 @@ public:
 
 class UITextArea : public UIDrawable {
 private:
-	char *text;
+	std::string text = std::string();
 	GrTextOption textOptions;
 	GrColor backgroundColor;
-
 	std::vector<int> lineWidths = std::vector<int>(1);
 	std::vector<std::string> lines = std::vector<std::string>(1);
 	int _charHeight = 0;
 
 	char _horizAlign;
 	char _vertAlign;
+	bool drawCursor = false;
+	int cursorPosition = 0;
+	int cursorLine = 0;
+	int cursorColumn = 0;
 
-	void _parse_text(char *text){
+	void _parse_text(){
 		lineWidths.clear();
 		lines.clear();
-		if (strlen(text) == 0){
+		if (text.size() == 0){
 			return;
 		}
 		//does not parse at word level
@@ -531,15 +680,23 @@ private:
 		lineWidth = 0;
 		int curLine = 0;
 		lines.push_back(std::string(""));
-		for (i = 0; i < strlen(text); i++){
-			if (text[i] == '\n'){
+		for (i = 0; i < text.size(); i++){
+			if (text.at(i) == '\n'){
 				lineWidths.push_back(lineWidth);
 				lines.push_back(std::string(""));
 				curLine++;
 				lineWidth = 0;
+				if (cursorPosition - 1 == i){
+					cursorLine = curLine;
+					cursorColumn = 0;
+				}
 				continue;
 			}
-			charWidth = GrFontCharWidth(textOptions.txo_font, (int) text[i]);
+			if (cursorPosition - 1 == i){
+				cursorLine = curLine;
+				cursorColumn = lines[curLine].size();
+			}
+			charWidth = GrFontCharWidth(textOptions.txo_font, (int) text.at(i));
 			if (lineWidth + charWidth > width){
 				lineWidths.push_back(lineWidth);
 				lines.push_back(std::string(""));
@@ -581,6 +738,15 @@ private:
 				x = width - (lineWidths[i]);
 			}
 			GrDrawString((void *) lines[i].c_str(), lines[i].length(), x, y, &textOptions);
+			if (drawCursor && cursorLine == i){
+				int cursorX = 0;
+				if (lines[i].size() > 0){
+					int charWidth = lineWidths[i] / lines[i].size();
+					cursorX = cursorColumn * charWidth + charWidth;
+				}
+				
+				GrLine(cursorX, y, cursorX, y + _charHeight, textOptions.txo_fgcolor.v);
+			}
 			y+=_charHeight;
 		}
 
@@ -591,16 +757,77 @@ protected:
 public:
 
 	void SetText(char *txt){
-		text = txt;
-		_parse_text(text);
+		SetText(std::string(txt));
 	}
-	char* GetText(){
+
+	void SetText(std::string txt){
+		cursorPosition = txt.size();
+		text = txt;
+		_parse_text();
+	}
+
+	std::string GetText(){
 		return text;
+	}
+
+	void CharAdd(char character){
+		text.insert(cursorPosition, 1, character);
+		cursorPosition++;
+		_parse_text();
+	}
+
+	void CharBackspace(){
+		if (cursorPosition == 0){
+			return;
+		}
+		text.erase(cursorPosition - 1, 1);
+		cursorPosition--;
+		_parse_text();
+	}
+
+	void CharDelete(){
+		if (cursorPosition >= text.size() - 1){
+			return;
+		}
+		text.erase(cursorPosition, 1);
+		_parse_text();
+	}
+
+	void CursorLeft(){
+		if (cursorPosition > 0){
+			cursorPosition--;
+			_parse_text();
+		}
+	}
+
+	void CursorRight(){
+		if (cursorPosition < text.size()){
+			cursorPosition++;
+			_parse_text();
+		}
+	}
+
+	void CursorUp(){
+		if (cursorLine > 0){
+			cursorLine--;
+			if (lines[cursorLine].size() -1 < cursorColumn){
+				cursorColumn = lines[cursorLine].size() - 1;
+			}
+		}
+	}
+
+	void CursorDown(){
+		if (cursorLine < lines.size() - 1){
+			cursorLine++;
+			if (lines[cursorLine].size() - 1 < cursorColumn){
+				cursorColumn = lines[cursorLine].size() - 1;
+			}
+		}
 	}
 
 	void SetFont(GrFont *font){
 		textOptions.txo_font = font;
-		_parse_text(text); //change in font affects line breaks
+		_parse_text(); //change in font affects line breaks
 	}
 
 	void SetColor(GrColor foreColor, GrColor backColor){
@@ -612,6 +839,14 @@ public:
 	void SetAlign(char horizAlign, char vertAlign){
 		_horizAlign = horizAlign;
 		_vertAlign = vertAlign;
+	}
+
+	void ShowCursor(){
+		drawCursor = true;
+	}
+
+	void HideCursor(){
+		drawCursor = false;
 	}
 
 	UITextArea(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
@@ -674,8 +909,8 @@ private:
     UITextArea *textArea = NULL;
 public:
     static UIMsgBox* Create(char *text, int drawWidth, int drawHeight);
-    void OnKeyUp(int ScanCode){
-        UIWindow::OnKeyUp(ScanCode);
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
         if (ScanCode == KEY_ENTER){
             CloseAndDestroy();
         }

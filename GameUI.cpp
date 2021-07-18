@@ -57,12 +57,12 @@ private:
 
 public:
 
-    void OnKeyUp(int ScanCode){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_ENTER){
             CloseAndDestroy();
             _onDoneListener->OnEvent(this,"TitleScreenClosed",CreateEventData(0,0));
         }
-        UIWindow::OnKeyUp(ScanCode);
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
 
     TitleScreen(int screenWidth, int screenHeight, char *imgPath, EventConsumer* onDoneListener) : UIWindow(screenWidth, screenHeight) {
@@ -136,11 +136,11 @@ public:
         }
     }
 
-    void OnKeyUp(int ScanCode){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_ENTER){
             EndOfStory();
         }
-        UIWindow::OnKeyUp(ScanCode);
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
 
     StoryScreen(int screenWidth, int screenHeight, char *imgPath, EventConsumer* onDoneListener) : UIWindow(screenWidth, screenHeight) {
@@ -179,12 +179,12 @@ private:
     }
 public:
 
-    void OnKeyUp(int ScanCode){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_ENTER){
             CloseAndDestroy();
             EmitEvent("WindowClosed");
         }
-        UIWindow::OnKeyUp(ScanCode);
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
 
     GameEndScreen() : UIWindow(UIWindowController::Get()->GetScreen()->width, UIWindowController::Get()->GetScreen()->height){
@@ -220,12 +220,12 @@ private:
     }
 public:
 
-    void OnKeyUp(int ScanCode){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_ENTER){
             CloseAndDestroy();
             _onDoneListener->OnEvent(this,"StageCompleteClosed",CreateEventData(0,0));
         }
-        UIWindow::OnKeyUp(ScanCode);
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
 
     StageEndScreen(std::string stageCompleteTitle, float secs, EventConsumer *onDoneListener) : UIWindow(320, 200) {

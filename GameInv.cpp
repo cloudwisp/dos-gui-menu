@@ -82,20 +82,20 @@ private:
         UIDrawable::CheckInputs();
     }
 
-    void OnKeyUp(int ScanCode){
-        UIWindow::OnKeyUp(ScanCode);
-        if (ScanCode == KEY_RIGHT){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
+        if (ScanCode == KEY_RIGHT_ARROW){
             if (highlightedSlot >= slots-1){ return; }
             highlightedSlot++;
-        } else if (ScanCode == KEY_LEFT){
+        } else if (ScanCode == KEY_LEFT_ARROW){
             if (highlightedSlot == 0){
                 return;
             }
             highlightedSlot--;
-        } else if (ScanCode == KEY_DOWN){
+        } else if (ScanCode == KEY_DOWN_ARROW){
             if (highlightedSlot + itemsWide >= slots){ return; }
             highlightedSlot += itemsWide;
-        } else if (ScanCode == KEY_UP){
+        } else if (ScanCode == KEY_UP_ARROW){
             if (highlightedSlot - itemsWide < 0){ return; }
             highlightedSlot -= itemsWide;
         } else if (ScanCode == KEY_ENTER){

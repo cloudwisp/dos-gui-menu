@@ -50,9 +50,9 @@ public:
         }
     }
 
-    void OnKeyUp(int ScanCode){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (activeCommand != NULL){
-            activeCommand->OnKeyUp(ScanCode);
+            activeCommand->OnKeyUp(ScanCode, ShiftState, Ascii);
         }
     }
 

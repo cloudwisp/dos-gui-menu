@@ -9,7 +9,7 @@ public:
     virtual int OnCommandUpdate() = 0; //return 1 when done
     virtual void OnCommandEnd() = 0;
     virtual void CheckInputs(){}
-    virtual void OnKeyUp(int ScanCode){}
+    virtual void OnKeyUp(int ScanCode, int ShiftState, int Ascii){}
     ScriptCommand(){
     }
     ~ScriptCommand(){

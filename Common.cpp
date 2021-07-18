@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <fstream>
+#include <time.h>
+#include "Const.h"
 #include "Common.h"
 
 double clockToMilliseconds(clock_t ticks){

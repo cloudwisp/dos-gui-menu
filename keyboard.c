@@ -79,6 +79,7 @@
 #include <dpmi.h>
 #include <go32.h>
 #include <pc.h>
+#include <bios.h>
 #include "Const.h"
 #include "keyboard.h"
 
@@ -87,8 +88,8 @@
 
 int KeyboardStateFlag = OLD_HANDLER;    /* Current keybd handler */
 
-//FUNCTIONS///////////////////////////////////////////////////////////////////
 
+//FUNCTIONS///////////////////////////////////////////////////////////////////
 
 /*****************************************************************************
  * Function KeyIntHandler :
@@ -123,20 +124,79 @@ int KeyIntHandler(void)
      * it corresponds to 10000000 in binary and by ADDing it to ScanCode, the
      * conditional if expression is set to 1 if the ScanCode's highbit is also
      * 1 and set to 0 otherwise */
-    if (ScanCode & 0x80)
+    if (ScanCode == 0xE0){
+        //extended scancode
+        IsPreviousCodeExtended = 1;
+    }
+    else if (ScanCode & 0x80)
     {
+        
         /*Key is up*/
         ScanCode &= 0x7F;
-        KeyStateArray[ScanCode] = 0;
-		KeyUpBuffer[KeyUpBufferCount] = ScanCode;
+        
+        int storeCodeOffset = 0;
+        UINT16 storeBufferCode = ScanCode;
+        if (IsPreviousCodeExtended){
+            storeCodeOffset = 0x7F; //add 127 to KeyStateArray index for storing extended values
+            storeBufferCode =  (0xE0 << 8) | ScanCode; //create a new scan code for the 2x byte value stored as 16-bit value - this should match the consts for comparison
+            IsPreviousCodeExtended = 0;
+        }
+
+        KeyStateArray[ScanCode + storeCodeOffset] = 0;
+		KeyUpBuffer[KeyUpBufferCount] = storeBufferCode;
+
+        //un toggle any shift states,
+        for (int i = 0; i < 16; i++){
+            if (ScanCode == ShiftStateOrderedKeys[i] || ScanCode == ShiftStateOrderedKeysAlternate[i]){
+                if (i >= 4 && i <= 7){
+                    //lock style keys should be toggled from existing state
+                    if (ShiftState & ShiftStateOrderedMasks[i]){
+                        //was on previously, now needs to be turned off. set nth bit to 0
+                        ShiftState &= ~(1UL << i);
+                    } else {
+                        //was off previously, now needs to be turned on. Set nth bit to 1
+                        ShiftState |= 1UL << i;
+                    }
+                } else {
+                    //since it's key up, toggle the state to OFF
+                    ShiftState &= ~(1UL << i);
+                }
+            }
+        }
+
+        UINT16 ShiftStateAtDown = LastDownShiftState[ScanCode + storeCodeOffset];
+        ShiftStateBuffer[KeyUpBufferCount] = ShiftStateAtDown;
+        AsciiBuffer[KeyUpBufferCount] = GetAsciiFromScanCode(storeBufferCode, ShiftStateAtDown);
 		KeyUpBufferCount++;
     }
 
     else
 	{
 		/*Key is down*/
-        KeyStateArray[ScanCode] = 1; /* Reflects that the key is being pressed */
-		PressedArray[ScanCode] = 1;
+        int storeCodeOffset = 0;
+        if (IsPreviousCodeExtended){
+            storeCodeOffset = 0x7F; //add 127 to KeyStateArray index for storing extended values
+            IsPreviousCodeExtended = 0;
+        }
+
+        KeyStateArray[ScanCode + storeCodeOffset] = 1; /* Reflects that the key is being pressed */
+		PressedArray[ScanCode + storeCodeOffset] = 1;
+
+        //un toggle any shift states,
+        for (int i = 0; i < 16; i++){
+            if (ScanCode == ShiftStateOrderedKeys[i] || ScanCode == ShiftStateOrderedKeysAlternate[i]){
+                if (i >= 4 && i <= 7){
+                    //lock style keys can be handle by key up only
+                    continue;
+                } else {
+                    //since it's key down, toggle the state to ON
+                    ShiftState |= 1UL << i;
+                }
+            }
+        }
+
+        LastDownShiftState[ScanCode + storeCodeOffset] = ShiftState;
+
 	}
 
     /* This command tells the PIC (programmable interrupt controller) that the
@@ -148,6 +208,36 @@ int KeyIntHandler(void)
     return RET_SUCCESS;
 }
 END_OF_FUNCTION(KeyIntHandler);  /* Used for locking */
+
+/// Get an ascii code from scan code. The scan code is expected to match the value stored in the constants, and not the code from a single byte handle by the ISR itself.
+UINT8 GetAsciiFromScanCode(UINT16 ScanCode, UINT16 ShiftState){
+
+    UINT16 lookupId = ScanCode;
+    if(ScanCode >> 8 == 0xE0){
+        //extended code matching constants was passed in, convert it to array lookup value
+        // Get rid of the extended code
+        ScanCode &= 0xFF;
+        lookupId = ScanCode + 0x7F;
+    }
+
+    if (ShiftState & SHIFTSTATE_NUM_LOCK_ON && NumLockAsciiMap[lookupId] > 0x0){
+        // first check if the num lock collection contains an ascii character (num pad chars)
+        return NumLockAsciiMap[lookupId];
+    }
+
+    if (ShiftState & SHIFTSTATE_SHIFT_LEFT || ShiftState & SHIFTSTATE_SHIFT_RIGHT){
+        //shift key is down, return a value from the shift lookup table
+        return ShiftAsciiMap[lookupId];
+    }
+
+    if (ShiftState & SHIFTSTATE_CAPS_LOCK_ON){
+        //caps mode, return a value from the caps lookup table
+        return CapsAsciiMap[lookupId];
+    }
+
+    return StdAsciiMap[lookupId];
+}
+END_OF_FUNCTION(GetAsciiFromScanCode);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -162,6 +252,10 @@ END_OF_FUNCTION(KeyIntHandler);  /* Used for locking */
 
 int SetKb(void)
 {
+    //Before overriding the ISR, capture the shift state so we have the correct toggle position for caps lock/etc
+    ShiftState = _bios_keybrd(_NKEYBRD_SHIFTSTATUS);
+    PopulateAsciiMaps();
+
 	int i;
 
     /* If the next expression is not true, the calls to SetKb() and ResetKb()
@@ -183,6 +277,19 @@ int SetKb(void)
 	LOCK_VARIABLE(KeyStateArray);
 	LOCK_VARIABLE(PressedArray);
 	LOCK_FUNCTION((void *)KeyIntHandler);
+    LOCK_VARIABLE(ShiftStateBuffer);
+    LOCK_VARIABLE(ShiftStateOrderedKeys);
+    LOCK_VARIABLE(ShiftState);
+    LOCK_VARIABLE(ShiftStateOrderedKeysAlternate);
+    LOCK_VARIABLE(ShiftStateOrderedMasks);
+    LOCK_VARIABLE(IsPreviousCodeExtended);
+    LOCK_VARIABLE(AsciiBuffer);
+    LOCK_VARIABLE(CapsAsciiMap);
+    LOCK_VARIABLE(NumLockAsciiMap);
+    LOCK_VARIABLE(StdAsciiMap);
+    LOCK_VARIABLE(ShiftAsciiMap);
+    LOCK_VARIABLE(LastDownShiftState);
+    LOCK_FUNCTION((void *)GetAsciiFromScanCode);
 
 
     /* Load the address of the function that defines the new interrupt handler
@@ -262,12 +369,21 @@ int KeyState(int ScanCode)
 {
 	int result;
 
-    /* Scan codes should only be between 0 and 127 */
-	assert(ScanCode < 128);
     assert(KeyboardStateFlag == NEW_HANDLER); /* Check if SetKb() mode is on */
 
-	result = KeyStateArray[ScanCode] | PressedArray[ScanCode];
-    PressedArray[ScanCode] = 0; /* Clear PressedArray */
+    // Check for the extended code
+    if(ScanCode >> 8 == 0xE0)
+    {
+        // Get rid of the extended code
+        ScanCode &= 0xFF;
+        result = KeyStateArray[ScanCode + 0x7F] | PressedArray[ScanCode + 0x7F];
+        PressedArray[ScanCode + 0x7F] = 0; /* Clear PressedArray */
+    }
+    else
+    {
+        result = KeyStateArray[ScanCode] | PressedArray[ScanCode];
+        PressedArray[ScanCode] = 0; /* Clear PressedArray */
+    }
 
     /* Returns 1 if either the key is being pressed , or has been pressed
      * since the routine was last called for that scancode */
@@ -292,22 +408,41 @@ int TrueKeyState(int ScanCode)
 {
 	int result;
 
-    /* Scan codes should only be between 0 and 127 */
-	assert(ScanCode < 128);
     assert(KeyboardStateFlag == NEW_HANDLER); /* Check if Setkb() mode is on */
 
-    result = KeyStateArray[ScanCode];   /* Retrieve key status */
+    // Check for the extended code
+    if(ScanCode >> 8 == 0xE0)
+    {
+        // Get rid of the extended code
+        ScanCode &= 0xFF;
+        result = KeyStateArray[ScanCode + 0x7F];
+    }
+    else
+    {
+        result = KeyStateArray[ScanCode];
+    }
+
 	return result;
+}
+
+unsigned int GetShiftState(){
+    return ShiftState;
 }
 
 int KeyUpWaiting(){
 	return (KeyUpBufferCount > 0);
 }
 
-int GetNextKeyUpCode(){
-	if (KeyUpBufferCount == 0){ return -1; }
+KeyUpInfo GetNextKeyUpCode(){
+    KeyUpInfo keyInfo;
+    keyInfo.ScanCode = 0;
+    keyInfo.ShiftState = 0;
+    if (KeyUpBufferCount == 0){ return keyInfo; }
 	KeyUpBufferCount--;
-	return KeyUpBuffer[KeyUpBufferCount];
+    keyInfo.ScanCode = KeyUpBuffer[KeyUpBufferCount];
+	keyInfo.ShiftState = ShiftStateBuffer[KeyUpBufferCount];
+    keyInfo.AsciiCharacter = AsciiBuffer[KeyUpBufferCount];
+    return keyInfo;
 }
 
 #endif
