@@ -1,24 +1,6 @@
 
 end of tabs in container, find next
 found a container
-Got focus
-tab container stop 1
-lost focus
-Got focus
-tab container stop 1
-end of tabs in container, find next
-found a container
-lost focus
-Got focus
-tab container stop 2
-lost focus
-Got focus
-tab container stop 2
-end of tabs in container, find next
-found a container
-lost focus
-end of tabs in container, find next
-found a container
 tab container stop 1
 tab container stop 1
 end of tabs in container, find next
@@ -30,32 +12,10 @@ found a container
 tab container stop 3
 end of tabs in container, find next
 Using the window itself
-tab container stop 3
-end of tabs in container, find next
-Using the window itself
-tab container stop 3
-end of tabs in container, find next
-Using the window itself
-end of tabs in container, find next
-found a container
 tab container stop 1
+tab container stop -252
 tab container stop 1
-end of tabs in container, find next
-found a container
-tab container stop 2
-tab container stop 2
-end of tabs in container, find next
-found a container
-end of tabs in container, find next
-found a container
-tab container stop 1
-tab container stop 1
-end of tabs in container, find next
-found a container
-tab container stop 2
-tab container stop 2
-end of tabs in container, find next
-found a container
+tab container stop -252
 end of tabs in container, find next
 found a container
 tab container stop 1
@@ -68,31 +28,91 @@ end of tabs in container, find next
 found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
+tab container stop 1
+tab container stop 1
+end of tabs in container, find next
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container
 tab container stop 3
 end of tabs in container, find next
-Using the window itself
-tab container stop 3
+tab container stop 1
+tab container stop 1
 end of tabs in container, find next
-Using the window itself
+found a container
+tab container stop 2
+tab container stop 2
+end of tabs in container, find next
+found a container

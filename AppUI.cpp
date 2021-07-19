@@ -372,12 +372,9 @@ private:
 		return NULL;
 	}
 
-	UIDrawable* findNextTabContainer(UIDrawable *parent, int prevContainerTabStop, UIDrawable* firstContainerTabStop, UIDrawable* lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
+	UIDrawable* findNextTabContainer(UIDrawable *parent, int prevContainerTabStop, UIDrawable* lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
 		for (int i = 0; i < parent->childDisplayOrderCount; i++){
 			UIDrawable* thisElem = parent->children[parent->childDisplayOrder[i]];
-			if (thisElem->containertabstop > 0 && firstContainerTabStop == NULL){
-				firstContainerTabStop = thisElem;
-			}
 			if (thisElem->containertabstop > prevContainerTabStop){
 				//candidate for next tab element
 				if (lowestNextTabStopSoFarElem && thisElem->containertabstop < *lowestNextTabStopSoFar){
@@ -392,7 +389,7 @@ private:
 			}
 			if (thisElem->childCount > 0){
 				//try to find the next one within the sub-tree (the elements may not be direct children of the tab container)
-				UIDrawable* foundNextElement = findNextTabContainer(thisElem, prevContainerTabStop, firstContainerTabStop, lowestNextTabStopSoFarElem, lowestNextTabStopSoFar);
+				UIDrawable* foundNextElement = findNextTabContainer(thisElem, prevContainerTabStop, lowestNextTabStopSoFarElem, lowestNextTabStopSoFar);
 				if (foundNextElement && foundNextElement->containertabstop < *lowestNextTabStopSoFar){
 					//the one found within the tree is lower than the lowest discovered from previous elements in this tree, record it
 					lowestNextTabStopSoFarElem = foundNextElement;
@@ -431,11 +428,10 @@ private:
 			focusedElement = nextTabWithinParent;
 		} else {
 			//didn't find one within the container, need to find the next container, or wrap around to the beginning.
-			UIDrawable* firstContainerStop = NULL;
 			UIDrawable* nextTabContainer = NULL;
 			int lowestSoFar = 255;
 			debugOut("end of tabs in container, find next");
-			nextTabContainer = findNextTabContainer(this, parentStop, firstContainerStop, NULL, &lowestSoFar);
+			nextTabContainer = findNextTabContainer(this, parentStop, NULL, &lowestSoFar);
 			UIDrawable* focusFirst;
 			lowestSoFar = 255;
 			UIDrawable* searchContainer;
@@ -443,19 +439,37 @@ private:
 				//found one, focus first element in this container
 				debugOut("found a container");
 				searchContainer = nextTabContainer;
-			} else if (firstContainerStop){
-				//wrap around to first one with a stop > 0 within window
-				debugOut("using the first one");
-				searchContainer = firstContainerStop;
 			} else {
-				debugOut("Using the window itself");
-				searchContainer = this;
+				searchContainer = GetFirstContainerStop(this, NULL, &lowestSoFar);
+				if (!searchContainer){
+					searchContainer = this; //fallback to window, if there is no tab stop container.
+				}
 			}
 			focusFirst = GetFirstStopInParent(searchContainer, NULL, &lowestSoFar);
 			if (focusFirst){
 				focusFirst->Focus();
 				focusedElement = focusFirst;
 			}
+		}
+	}
+
+	UIDrawable* GetFirstContainerStop(UIDrawable *parent, UIDrawable* lowestTabStopSoFarElem, int* lowestTabStopSoFar){
+		for (int i = 0; i < parent->childCount; i++){
+			UIDrawable* thisItem = parent->children[parent->childDisplayOrder[i]];
+			if (thisItem->containertabstop > 0){
+				if (lowestTabStopSoFarElem == NULL || thisItem->containertabstop < *lowestTabStopSoFar){
+					lowestTabStopSoFarElem = thisItem;
+					*lowestTabStopSoFar = thisItem->containertabstop;
+				}
+			};
+			if (thisItem->childCount > 0){
+				GetFirstStopInParent(thisItem, lowestTabStopSoFarElem, lowestTabStopSoFar);
+			}
+		}
+		if (lowestTabStopSoFarElem == NULL){
+			return NULL;
+		} else {
+			return lowestTabStopSoFarElem;
 		}
 	}
 
