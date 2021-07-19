@@ -61,8 +61,22 @@ private:
 		Freeze();
 	}
 
+
 	int _inMouseOver = 0;
+	clock_t lastClick = clock();
 public:
+
+	void Update(){
+		
+		if (_state == BUTTONSTATE_PRESSED && !_inMouseOver){
+			//flip back to un-pressed state after button is pressed using keyboard.
+			clock_t now = clock();
+			if (clockToMilliseconds(now-lastClick) > 250){
+				SetState(BUTTONSTATE_NORMAL);
+				needsRedraw = true;
+			}	
+		}
+	}
 
 	void SetColor(GrColor backColor, GrColor textColor) {
 		_bg = backColor;
@@ -88,9 +102,14 @@ public:
 
 	void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
 		if (ScanCode == KEY_ENTER || ScanCode == KEY_NUMPAD_ENTER){
-			SetState(BUTTONSTATE_SELECTED);
-			EmitEvent("Click");
+			SetState(BUTTONSTATE_PRESSED);
+			Click();
 		}
+	}
+
+	void Click(){
+		lastClick = clock();
+		EmitEvent("Click");
 	}
 
 	void OnEvent(EventEmitter *source, const char *event, EventData data){
@@ -112,7 +131,7 @@ public:
 					//return to normal state
 					SetState(BUTTONSTATE_NORMAL);
 				}
-				EmitEvent("Click");
+				Click();
 			}
 
 		} else {

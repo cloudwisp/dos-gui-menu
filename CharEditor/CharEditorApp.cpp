@@ -5,19 +5,19 @@
 #include "../keyboard.h"
 #include <memory.h>
 #include "../AppCtrls.cpp"
+#include "CharEditUI.cpp"
 
 class CharEditorApp : public CWApplication {
 private:
 
     UITextBox* box1;
     UITextBox* box2;
-    UITextBox* box3;
-    UITextBox* box4;
     UIButton* button;
     UIWindow* mainWindow;
     UIPanel* leftPanel;
     UIPanel* midPanel;
     UIPanel* rightPanel;
+    UISpriteSheetNavigator* spriteNav;
 
     void check_inputs(int *cancelInputPropagation){
         /*UINT16 ShiftState = Get_Shift_State();
@@ -45,7 +45,7 @@ public:
 
     void OnEvent(EventEmitter* source, std::string event, EventData data){
         if (source == button && event == "Click"){
-            box3->SetText("Go!");
+            //todo
         }
     }
 
@@ -64,6 +64,7 @@ public:
         rightPanel = new UIPanel(GrAllocColor(0,0,0), 320/3, 200);
         rightPanel->x = 2* (320/3);
         rightPanel->containertabstop = 3;
+
         mainWindow->AddChild(leftPanel);
         mainWindow->AddChild(midPanel);
         mainWindow->AddChild(rightPanel);
@@ -77,14 +78,11 @@ public:
         leftPanel->AddChild(box1);
         leftPanel->AddChild(box2);
 
-        box3 = new UITextBox(100,20, 30);
-        box3->tabstop = 4;
-        box4 = new UITextBox(100,20,30);
-        box4->tabstop = 5;
-        box4->y = 22;
+        spriteNav = new UISpriteSheetNavigator(midPanel->width, midPanel->height);
+        spriteNav->SetSpriteSet("EDDIE");
+        spriteNav->tabstop = 4;
         
-        midPanel->AddChild(box3);
-        midPanel->AddChild(box4);
+        midPanel->AddChild(spriteNav);
 
         button = new UIButton(100, 20);
         button->SetText("Click me");
@@ -100,8 +98,7 @@ public:
         delete leftPanel;
         delete midPanel;
         delete rightPanel;
-        delete box3;
-        delete box4;
+        delete spriteNav;
         delete button;
     }
 };
