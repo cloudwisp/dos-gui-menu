@@ -243,6 +243,10 @@ public:
 		Unfreeze();
 	}
 
+	std::string GetText(){
+		return innerText->GetText();
+	}
+
 	UITextBox(int width, int height, int maxChars) : UIDrawable(width, height){
 		_fg = GrAllocColor(255,255,255);
 		_bg = GrAllocColor(10,10,10);
@@ -258,6 +262,58 @@ public:
 	}
 	~UITextBox(){
 		delete innerText;
+	}
+};
+
+class UIModalWindow : public UIWindow {
+private:
+	UIButton* cancelButton;
+	UIButton* okButton;
+	UITextArea *title;
+	std::string _prompt;
+public:
+
+	void OnEvent(EventEmitter* source, std::string event, EventData data){
+		if (source == cancelButton && event == "Click"){
+			EmitEvent("Cancel");
+			CloseAndDestroy();
+		} else if (source == okButton && event == "Click"){
+			EmitEvent("Ok");  //emit for whoever launched the dialog to inspect and fetch values from controls added to the window.
+			CloseAndDestroy();
+		}
+	}
+
+	UIModalWindow(int width, int height, std::string prompt) : UIWindow(width, height){
+		_prompt = prompt;
+
+		title = new UITextArea(width, 30);
+		title->SetColor(GrAllocColor(255,255,255), GrAllocColor(60,60,60));
+		title->SetText(prompt);
+		title->SetAlign(CW_ALIGN_LEFT, CW_ALIGN_CENTER);
+		AddChild(title);
+
+		cancelButton = new UIButton(width/2, 20);
+		cancelButton->y = height - 20;
+		cancelButton->x = 0;
+		cancelButton->tabstop = 100;
+		cancelButton->SetText("Cancel");
+		cancelButton->BindEvent("Click", this);
+
+		AddChild(cancelButton);
+
+		okButton = new UIButton(width / 2, 20);
+		okButton->y = height - 20;
+		okButton->x = width / 2;
+		okButton->tabstop = 101;
+		okButton->SetText("OK");
+		okButton->BindEvent("Click", this);
+		AddChild(okButton);
+	}
+
+	~UIModalWindow(){
+		delete cancelButton;
+		delete okButton;
+		delete title;
 	}
 };
 

@@ -18,6 +18,8 @@ private:
     UIPanel* midPanel;
     UIPanel* rightPanel;
     UISpriteSheetNavigator* spriteNav;
+    UIModalWindow *openModal;
+    UITextBox *modalText;
 
     void check_inputs(int *cancelInputPropagation){
         /*UINT16 ShiftState = Get_Shift_State();
@@ -26,9 +28,36 @@ private:
         debugOut(std::string(ctext));*/
     };
 
+    void BuildOpenSpriteModal(){
+        UIAppScreen* scr = UIAppScreen::Get();
+        openModal = new UIModalWindow(scr->width * 0.8, scr->height * 0.8, "Open Sprite (name without extension)");
+        openModal->x = (scr->width * 0.2) / 2;
+        openModal->y = (scr->height * 0.2) / 2;
+        openModal->BindEvent("Ok", this);
+        openModal->BindEvent("Cancel", this);
+
+        modalText = new UITextBox(200, 20, 8);
+        modalText->tabstop = 1;
+        modalText->x = 20;
+        modalText->y = 20;        
+        openModal->AddChild(modalText);
+        
+        UIWindowController::Get()->AddWindow(openModal,1);
+        modalText->Focus();
+    }
+
+    void DestroyModalControls(){
+        delete modalText;
+    }
+
 	void on_keyup(int ScanCode, int ShiftState, int Ascii, int *cancelInputPropagation){
         if (ScanCode == KEY_ESC){
             End();
+        }
+
+        if (ScanCode == KEY_O && (ShiftState & SHIFTSTATE_CTRL_LEFT || ShiftState & SHIFTSTATE_CTRL_RIGHT)){
+            *cancelInputPropagation = 1;
+            BuildOpenSpriteModal();
         }
     };
 
@@ -46,6 +75,13 @@ public:
     void OnEvent(EventEmitter* source, std::string event, EventData data){
         if (source == button && event == "Click"){
             //todo
+        }
+        if (source == openModal && event == "Ok"){
+            std::string spriteName = std::string(modalText->GetText());
+            spriteNav->SetSpriteSet(spriteName);
+            DestroyModalControls();
+        } else if (source == openModal && event == "Cancel"){
+            DestroyModalControls();
         }
     }
 

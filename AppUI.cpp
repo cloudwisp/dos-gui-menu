@@ -104,6 +104,9 @@ protected:
 		}
     }
 
+	virtual void FocusNotify(UIDrawable* focusedDrawable){
+	}
+
 public:
 	GrContext *ctx = NULL;
 	int x;
@@ -186,6 +189,9 @@ public:
             GetTopElement()->UnfocusAllChildren();
             focus = 1;
             EmitEvent("GotFocus");
+			if (window){
+				window->FocusNotify(this);
+			}
 			needsRedraw = true;
 	    }
 	}
@@ -409,10 +415,6 @@ private:
 		int lastStop = 0;
 		if (focusedElement){
 			tabContainer = findTabContainer(focusedElement);
-			char* ctext = (char*) malloc(sizeof(char)*50);
-			sprintf(ctext, "tab container stop %d", tabContainer->containertabstop);
-			debugOut(std::string(ctext));
-			free(ctext);
 			lastStop = focusedElement->tabstop;
 			if (!tabContainer){ // not attached
 				tabContainer = this;
@@ -425,19 +427,16 @@ private:
 		if (nextTabWithinParent){
 			//found one, focus it
 			nextTabWithinParent->Focus();
-			focusedElement = nextTabWithinParent;
 		} else {
 			//didn't find one within the container, need to find the next container, or wrap around to the beginning.
 			UIDrawable* nextTabContainer = NULL;
 			int lowestSoFar = 255;
-			debugOut("end of tabs in container, find next");
 			nextTabContainer = findNextTabContainer(this, parentStop, NULL, &lowestSoFar);
 			UIDrawable* focusFirst;
 			lowestSoFar = 255;
 			UIDrawable* searchContainer;
 			if (nextTabContainer){
 				//found one, focus first element in this container
-				debugOut("found a container");
 				searchContainer = nextTabContainer;
 			} else {
 				searchContainer = GetFirstContainerStop(this, NULL, &lowestSoFar);
@@ -448,7 +447,6 @@ private:
 			focusFirst = GetFirstStopInParent(searchContainer, NULL, &lowestSoFar);
 			if (focusFirst){
 				focusFirst->Focus();
-				focusedElement = focusFirst;
 			}
 		}
 	}
@@ -501,6 +499,10 @@ private:
 		GrClearContextC(ctx,GrAllocColor(10,10,10));
 	}
 
+	void FocusNotify(UIDrawable* focusedDrawable){
+		focusedElement = focusedDrawable;
+	}
+
 public:
     int closed = 0;
     int destroy = 0;
@@ -515,6 +517,13 @@ public:
         }
     }
 
+	void OnEvent(EventEmitter* source, std::string event, EventData data){
+		if (event == "GotFocus"){
+			//the cast here is a little hacky, but we know we've registered GotFocus for UIDrawables only;
+			focusedElement = (UIDrawable*) source;
+		}
+	}
+
     void Close(){
         closed = 1;
     }
@@ -527,16 +536,27 @@ public:
         destroy = 0;
     }
 
+	void DescendentAdded(UIDrawable* descendent){
+		descendent->BindEvent("GotFocus", this);
+	}
+
+	void DescendentRemoved(UIDrawable* descendent){
+		descendent->UnbindAllEventsForConsumer(this);
+	}
+
     UIWindow(int drawWidth,int drawHeight) : UIDrawable(drawWidth, drawHeight) {
+		window = this;
     }
 };
 
-
+UIAppScreen* currentScreen;
 class UIAppScreen : public UIDrawable {
 private:
 	void draw_internal(){
 		GrClearContextC(ctx,GrAllocColor(10,10,10));
 	}
+
+	static UIAppScreen* current;
 
 	void Vsync()
 	{
@@ -578,10 +598,15 @@ public:
 	}
 
 	UIAppScreen (int screenWidth, int screenHeight) : UIDrawable(screenWidth, screenHeight){
-
+		currentScreen = this;
 	}
+
+	static UIAppScreen* Get();
 };
 
+UIAppScreen* UIAppScreen::Get(){
+	return currentScreen;
+}
 
 class UIPointer : public UIDrawable {
 
