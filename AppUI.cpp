@@ -6,6 +6,9 @@
 #include <pc.h>
 #include "AppUI.h"
 #include "AppEvent.cpp"
+#include <cstring>
+
+#include "AppUITheme.h"
 
 typedef UIDrawable *UIDrawableCollection[255];
 
@@ -106,6 +109,14 @@ protected:
 
 	virtual void FocusNotify(UIDrawable* focusedDrawable){
 	}
+
+	//child drawable container
+	GrContext *innerContext = NULL;
+	int innerContextX = 0;
+	int innerContextY = 0;
+	int innerWidth;
+	int innerHeight;
+	bool singleContext = false;
 
 public:
 	GrContext *ctx = NULL;
@@ -261,11 +272,30 @@ public:
         GrClearContextC(ctx,GrAllocColor(0,0,0));
 	}
 
-	UIDrawable(int drawWidth, int drawHeight){
+	void SetInnerDimensions(int innerDrawWidth, int innerDrawHeight, int innerX, int innerY){
+		if (singleContext){
+			return;
+		}
+		GrDestroyContext(innerContext);
+		innerWidth = innerDrawWidth;
+		innerHeight = innerDrawHeight;
+		innerContextX = innerX;
+		innerContextY = innerY;
+		innerContext = GrCreateContext(innerDrawWidth, innerDrawHeight, NULL, NULL);
+		GrClearContextC(innerContext, GrAllocColor(0,0,0));
+	}
+
+	UIDrawable(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight, drawWidth, drawHeight, true) {
+	}
+
+	UIDrawable(int drawWidth, int drawHeight, int innerDrawWidth, int innerDrawHeight, bool asSingleContext){
 		x = 0;
 		y = 0;
 		width = drawWidth;
 		height = drawHeight;
+		innerWidth = innerDrawWidth;
+		innerHeight = innerDrawHeight;
+		singleContext = asSingleContext;
 		visible = 1;
 		freeze = 0;
 		focus = 0;
@@ -274,11 +304,18 @@ public:
 		childDisplayOrderCount = 0;
 		ctx = GrCreateContext(width, height, NULL, NULL);
 		GrClearContextC(ctx,GrAllocColor(0,0,0));
+		if (!asSingleContext){
+			innerContext = GrCreateContext(innerWidth, innerHeight, NULL, NULL);
+			GrClearContextC(innerContext, GrAllocColor(0,0,0));
+		}
 	}
 
 	~UIDrawable(){
 		if (ctx){
 			GrDestroyContext(ctx);
+		}
+		if (innerContext){
+			GrDestroyContext(innerContext);
 		}
 	}
 
@@ -298,13 +335,20 @@ public:
 	}
 
 	void Draw(GrContext *ontoContext){
+		GrContext* childCanvas;
+		if (singleContext){
+			childCanvas = ctx;
+		} else {
+			childCanvas = innerContext;
+		}
+
 		if (!freeze || NeedsRedraw()){
 			draw_internal();
 			int i, o;
 			for (o = 0; o < childDisplayOrderCount; o++){
                 i = childDisplayOrder[o];
 				if (!children[i]->visible){ continue; }
-				children[i]->Draw(ctx);
+				children[i]->Draw(childCanvas);
 			}
 			needsRedraw = false;
 		}
@@ -312,6 +356,9 @@ public:
 		if (focus){
 			GrSetContext(ctx);
 			GrBox(0, 0, width-1, height-1, GrWhite());
+		}
+		if (!singleContext){
+			GrBitBlt(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);
 		}
 		GrBitBlt(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}
@@ -544,11 +591,80 @@ public:
 		descendent->UnbindAllEventsForConsumer(this);
 	}
 
-    UIWindow(int drawWidth,int drawHeight) : UIDrawable(drawWidth, drawHeight) {
-		window = this;
+    UIWindow(int drawWidth,int drawHeight) : UIWindow(drawWidth, drawHeight, drawWidth, drawHeight, true) {
     }
-};
 
+	UIWindow(int drawWidth, int drawHeight, int innerWidth, int innerHeight, bool asSingleContext) : UIDrawable(drawWidth, drawHeight, innerWidth, innerHeight, asSingleContext){
+		window = this;
+	}
+};
+ 
+class UITitledWindow : public UIWindow {
+private:
+
+	std::string _title;
+
+	GrTextOption titleTextOptions;
+
+	GrFont* titleFont;
+
+	void draw_internal() override{
+		GrClearContextC(ctx, ColorFromRGB(THEME_WINDOW_BACKGROUND_COLOR));
+		GrSetContext(ctx);
+		if (THEME_WINDOW_BORDER_WIDTH > 0){
+			GrBox(0,0, width-1, height-1, ColorFromRGB(THEME_WINDOW_BORDER_COLOR));
+		}
+		
+		GrFilledBox(THEME_WINDOW_BORDER_WIDTH, THEME_WINDOW_BORDER_WIDTH, innerWidth, THEME_WINDOW_TITLE_HEIGHT, ColorFromRGB(THEME_WINDOW_TITLE_BACKGROUND_COLOR));
+		int titleTextSize = GrFontStringWidth(titleFont, _title.c_str(), _title.size(), GR_BYTE_TEXT);
+		int fontHeight = GrFontCharHeight(titleFont, "A");
+		int centeredX = (innerWidth / 2);// - (titleTextSize / 2);
+		int centeredY = (THEME_WINDOW_TITLE_HEIGHT / 2) - (fontHeight / 2);
+		GrDrawString((void*)_title.c_str(), _title.size(), THEME_WINDOW_BORDER_WIDTH + centeredX, THEME_WINDOW_BORDER_WIDTH + centeredY, &titleTextOptions);
+	}
+
+	GrFont* resolveFont(char* fontName){
+		if (fontName == "GrFont_PC6x8"){
+			return &GrFont_PC6x8;
+		}
+		if (fontName == "GrFont_PC8x8"){
+			return &GrFont_PC8x8;
+		}
+		if (fontName == "GrFont_PC8x14"){
+			return &GrFont_PC8x14;
+		}
+		if (fontName == "GrFont_PC8x16"){
+			return &GrFont_PC8x16;
+		}
+		GrFont* resolved = GrLoadFont(fontName);
+		if (resolved == NULL){
+			return &GrDefaultFont;
+		}
+	}
+
+protected:
+
+public:
+	UITitledWindow(int drawWidth, int drawHeight, std::string title) : UIWindow(drawWidth, drawHeight, drawWidth - (THEME_WINDOW_BORDER_WIDTH * 2), drawHeight - THEME_WINDOW_TITLE_HEIGHT - (THEME_WINDOW_BORDER_WIDTH * 2), false){
+		_title = title;
+		innerWidth = drawWidth - (THEME_WINDOW_BORDER_WIDTH * 2);
+		innerHeight = drawHeight - THEME_WINDOW_TITLE_HEIGHT - (THEME_WINDOW_BORDER_WIDTH * 2);
+		innerContextY = THEME_WINDOW_TITLE_HEIGHT + THEME_WINDOW_BORDER_WIDTH;
+		innerContextX = THEME_WINDOW_BORDER_WIDTH;
+
+		titleFont = resolveFont(THEME_WINDOW_TITLE_FONT);
+
+		titleTextOptions.txo_font = titleFont;
+		titleTextOptions.txo_fgcolor.v = ColorFromRGB(THEME_WINDOW_TITLE_TEXT_COLOR);
+		titleTextOptions.txo_bgcolor.v = GrNOCOLOR;
+		titleTextOptions.txo_direct = GR_TEXT_RIGHT;
+		titleTextOptions.txo_xalign = GR_ALIGN_CENTER;
+		titleTextOptions.txo_yalign = GR_ALIGN_CENTER;
+		titleTextOptions.txo_chrtype = GR_BYTE_TEXT;
+
+	}
+};
+ 
 UIAppScreen* currentScreen;
 class UIAppScreen : public UIDrawable {
 private:

@@ -265,11 +265,10 @@ public:
 	}
 };
 
-class UIModalWindow : public UIWindow {
+class UIModalWindow : public UITitledWindow {
 private:
 	UIButton* cancelButton;
 	UIButton* okButton;
-	UITextArea *title;
 	std::string _prompt;
 public:
 
@@ -283,17 +282,11 @@ public:
 		}
 	}
 
-	UIModalWindow(int width, int height, std::string prompt) : UIWindow(width, height){
+	UIModalWindow(int width, int height, std::string prompt) : UITitledWindow(width, height, prompt){
 		_prompt = prompt;
 
-		title = new UITextArea(width, 30);
-		title->SetColor(GrAllocColor(255,255,255), GrAllocColor(60,60,60));
-		title->SetText(prompt);
-		title->SetAlign(CW_ALIGN_LEFT, CW_ALIGN_CENTER);
-		AddChild(title);
-
 		cancelButton = new UIButton(width/2, 20);
-		cancelButton->y = height - 20;
+		cancelButton->y = innerHeight - 20;
 		cancelButton->x = 0;
 		cancelButton->tabstop = 100;
 		cancelButton->SetText("Cancel");
@@ -302,7 +295,7 @@ public:
 		AddChild(cancelButton);
 
 		okButton = new UIButton(width / 2, 20);
-		okButton->y = height - 20;
+		okButton->y = innerHeight - 20;
 		okButton->x = width / 2;
 		okButton->tabstop = 101;
 		okButton->SetText("OK");
@@ -313,7 +306,6 @@ public:
 	~UIModalWindow(){
 		delete cancelButton;
 		delete okButton;
-		delete title;
 	}
 };
 
