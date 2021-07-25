@@ -91,10 +91,10 @@ public:
 
 class UISpritePreview : public UIDrawable{
 private:
-    GrImage* scaledImg;
-    GrContext* spriteCtx;
-    GrImage* spriteImg;
-    SpriteSet* activeSpriteset;
+    GrImage* scaledImg = NULL;
+    GrContext* spriteCtx = NULL;
+    GrImage* spriteImg = NULL;
+    SpriteSet* activeSpriteset = NULL;
     bool updated = false;
     float scaleFactor = 1;
     int feetW = 0;
@@ -134,9 +134,6 @@ public:
         if (spriteCtx){
             GrDestroyContext(spriteCtx);
         }
-        if (spriteImg){
-            GrImageDestroy(spriteImg);
-        }
 
         if (scaledImg){
             GrImageDestroy(scaledImg);
@@ -173,9 +170,6 @@ public:
         }
         if (spriteCtx){
             GrDestroyContext(spriteCtx);
-        }
-        if (spriteImg){
-            GrImageDestroy(spriteImg);
         }
     }
 };

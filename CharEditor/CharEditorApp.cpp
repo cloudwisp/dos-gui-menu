@@ -10,20 +10,20 @@
 class CharEditorApp : public CWApplication {
 private:
 
-    UITextArea* lbl_feetWidth;
-    UITextArea* lbl_feetHeight;
-    UITextBox* txt_feetWidth;
-    UITextBox* txt_feetHeight;
-    UIButton* button;
-    UIWindow* mainWindow;
-    UIStackedPanel* leftPanel;
-    UIStackedPanel* midPanel;
-    UIStackedPanel* rightPanel;
-    UISpriteSheetNavigator* spriteNav;
-    UISpritePreview* preview;
-    UIModalWindow *openModal;
-    UITextBox *modalText;
-    SpriteSet* loadedSpriteset;
+    UITextArea* lbl_feetWidth = NULL;
+    UITextArea* lbl_feetHeight = NULL;
+    UITextBox* txt_feetWidth = NULL;
+    UITextBox* txt_feetHeight = NULL;
+    UIButton* button = NULL;
+    UIWindow* mainWindow = NULL;
+    UIStackedPanel* leftPanel = NULL;
+    UIStackedPanel* midPanel = NULL;
+    UIStackedPanel* rightPanel = NULL;
+    UISpriteSheetNavigator* spriteNav = NULL;
+    UISpritePreview* preview = NULL;
+    UIModalWindow *openModal = NULL;
+    UITextBox *modalText = NULL;
+    SpriteSet* loadedSpriteset = NULL;
     int lastFeetWidth = 0;
     int lastFeetHeight = 0;
 
@@ -132,35 +132,35 @@ public:
         
         UIWindowController::Get()->AddWindow(mainWindow, 1);
 
-        leftPanel = new UIStackedPanel(GrAllocColor(0,0,0), 320/3, 200);
+        leftPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight);
         leftPanel->containertabstop = 1;
-        midPanel = new UIStackedPanel(GrAllocColor(0,0,0), 320/3, 200);
-        midPanel->x = 320/3;
+        midPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight);
+        midPanel->x = screenWidth/3;
         midPanel->containertabstop = 2;
-        rightPanel = new UIStackedPanel(GrAllocColor(0,0,0), 320/3, 200);
-        rightPanel->x = 2* (320/3);
+        rightPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight);
+        rightPanel->x = 2* (screenWidth/3);
         rightPanel->containertabstop = 3;
 
         mainWindow->AddChild(leftPanel);
         mainWindow->AddChild(midPanel);
         mainWindow->AddChild(rightPanel);
 
-        lbl_feetWidth = new UITextArea(100,20);
+        lbl_feetWidth = new UITextArea(100,10);
         lbl_feetWidth->SetText("Feet Clip Width:");
         leftPanel->AddChild(lbl_feetWidth);
 
-        txt_feetWidth = new UITextBox(100,20,30);
+        txt_feetWidth = new UITextBox(100,14,30);
         txt_feetWidth->SetText("1");
         txt_feetWidth->BindEvent("Changed", this);
         txt_feetWidth->SetIntMode(true);
         txt_feetWidth->tabstop = 1;
         leftPanel->AddChild(txt_feetWidth);
 
-        lbl_feetHeight = new UITextArea(100,20);
+        lbl_feetHeight = new UITextArea(100,10);
         lbl_feetHeight->SetText("Feet Clip Height:");
         leftPanel->AddChild(lbl_feetHeight);
 
-        txt_feetHeight = new UITextBox(100,20, 30);
+        txt_feetHeight = new UITextBox(100,14, 30);
         txt_feetHeight->SetText("1");
         txt_feetHeight->BindEvent("Changed", this);
         txt_feetHeight->SetIntMode(true);

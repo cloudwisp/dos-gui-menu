@@ -109,4 +109,13 @@ Before load image HERO.PNG
 Before return spriteset
 GetSpriteSet eddie
 Before load image EDDIE.PNG
+Before return spriteset
+GetSpriteSet hero
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet hero
+Before load image HERO.PNG
+Before return spriteset
+GetSpriteSet hero
+Before load image HERO.PNG
 Before return spriteset
