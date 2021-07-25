@@ -2,6 +2,7 @@
 #define UICmd_CPP
 
 #include "../ScrptCmd.cpp"
+#include "../AppUI.cpp"
 
 class ShowDialogCommand : public ScriptCommand{
 private:

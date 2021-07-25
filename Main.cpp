@@ -7,7 +7,6 @@
 #include "keyboard.c"
 #include "GameApp.cpp"
 #include "GameChar.cpp"
-#include "AppCtrls.cpp"
 #include "GameWrld.h"
 
 unsigned _stklen = 1048576;  /* need a 1MB stack */

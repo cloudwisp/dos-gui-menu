@@ -2,7 +2,7 @@
 #define GameUI_cpp
 
 #include <grx20.h>
-#include "AppUI.h"
+#include "UI/AppUI.h"
 #include "AppEvent.h"
 #include <time.h>
 
