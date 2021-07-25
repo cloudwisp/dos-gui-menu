@@ -119,6 +119,8 @@ private:
         int y1 = plotAnchorY - (feetH * scaleFactor);
         int y2 = plotAnchorY;
         GrBox(x1,y1,x2,y2,GrAllocColor(255,0,255));
+        //draw sprite boundary
+        GrBox(0,0, (activeSpriteset->spriteWidth * scaleFactor) - 1, (activeSpriteset->spriteHeight * scaleFactor) - 1, GrAllocColor(255,255,255));
         Freeze();
     }
 public:

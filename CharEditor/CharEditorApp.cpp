@@ -4,7 +4,6 @@
 #include "../App.cpp"
 #include "../keyboard.h"
 #include <memory.h>
-#include "../AppCtrls.cpp"
 #include "CharEditUI.cpp"
 
 class CharEditorApp : public CWApplication {
