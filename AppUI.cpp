@@ -136,7 +136,7 @@ public:
     int childDisplayOrder[255];
 	int childDisplayOrderCount = 0;
 	int childCount = 0;
-
+	int highlight = 0;
 
 	GrContext *GetContext(){
 		return ctx;
@@ -148,7 +148,20 @@ public:
 	virtual void CheckInputs(){}
 	virtual void Update(){}
 
-	void AddChild(UIDrawable *subElement){
+	void UnHighlightAllChildren(){
+		highlight = 0;
+		for (int i = 0; i < childCount; i++){
+			children[i]->UnHighlightAllChildren();
+		}
+		needsRedraw = true;
+	}
+
+	void Highlight(){
+		highlight = 1;
+		needsRedraw = true;
+	}
+
+	virtual void AddChild(UIDrawable *subElement){
 		if (subElement == this){
 			return;
 		}
@@ -163,7 +176,7 @@ public:
 		}
 	}
 
-	void RemoveChild(UIDrawable *subElement){
+	virtual void RemoveChild(UIDrawable *subElement){
         int i, removed, z;
         removed = 0;
         for (i = childCount-1; i >= 0; i--){
@@ -217,11 +230,15 @@ public:
 
 	void PropagateMouseEvent(int subX, int subY, const char *event){
 		int i, o;
+		
 		for (o = childDisplayOrderCount-1; o >= 0; o--){
             i = childDisplayOrder[o];
 			if (!children[i]->visible){ continue; }
-			if (subX > children[i]->x && subX < (children[i]->x+children[i]->width) && subY > children[i]->y && subY < children[i]->y+children[i]->height){
-				children[i]->PropagateMouseEvent(subX-children[i]->x, subY-children[i]->y, event);
+			if (subX > children[i]->x + innerContextX
+				 && subX < innerContextX + children[i]->x+children[i]->width
+				 && subY > children[i]->y + innerContextY
+				 && subY < innerContextY + children[i]->y + children[i]->height){
+				children[i]->PropagateMouseEvent(subX-children[i]->x-innerContextX, subY-children[i]->y-innerContextY, event);
 			}
 		}
 		EmitEvent(event, subX, subY);
@@ -239,8 +256,11 @@ public:
 		for (o = childDisplayOrderCount-1; o >= 0; o--){
             i = childDisplayOrder[o];
 			if (!children[i]->visible){ continue; }
-			if (subX > children[i]->x && subX < (children[i]->x+children[i]->width) && subY > children[i]->y && subY < children[i]->y+children[i]->height){
-				children[i]->IdentifyVisibleElementsAtPosition(subX-children[i]->x, subY-children[i]->y, elements, elementCount);
+			if (subX > children[i]->x + innerContextX
+				&& subX < innerContextX + children[i]->x + children[i]->width
+				&& subY > children[i]->y + innerContextY
+				&& subY < innerContextY + children[i]->y + children[i]->height){
+				children[i]->IdentifyVisibleElementsAtPosition(subX-children[i]->x-innerContextX, subY-children[i]->y-innerContextY, elements, elementCount);
 			}
 		}
 	}
@@ -356,6 +376,10 @@ public:
 		if (focus){
 			GrSetContext(ctx);
 			GrBox(0, 0, width-1, height-1, GrWhite());
+		}
+		if (highlight){
+			GrSetContext(ctx);
+			GrBox(0,0, width-1, height-1, GrAllocColor(255,255,0));
 		}
 		if (!singleContext){
 			GrBitBlt(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);
@@ -789,6 +813,39 @@ private:
 public:
 
 	UIPanel(GrColor bgColor, int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
+		backgroundColor = bgColor;
+	}
+};
+
+//Container for child elements stacked vertically. The container will update coordinates of the child elements.
+class UIStackedPanel : public UIDrawable {
+private:
+	GrColor backgroundColor;
+	int tailY = 0;
+	void draw_internal(){
+		GrClearContextC(ctx, backgroundColor);
+	}
+public:
+
+	void AddChild(UIDrawable* subElement) override {
+		subElement->y = tailY;
+		subElement->x = 0;
+		tailY += subElement->height;
+		UIDrawable::AddChild(subElement);
+	}
+
+	void RemoveChild(UIDrawable* subElement) override {
+		int thisY = subElement->y;
+		int subY = subElement->height;
+		for (int i = 0; i < childCount; i++){
+			if (children[i]->y > thisY){
+				children[i]->y -= subY;
+			}
+		}
+		UIDrawable::RemoveChild(subElement);
+	}
+
+	UIStackedPanel(GrColor bgColor, int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
 		backgroundColor = bgColor;
 	}
 };

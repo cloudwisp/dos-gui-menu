@@ -142,10 +142,20 @@ private:
 		getmousepos(&button, &x, &y);
 
 		screen->IdentifyVisibleElementsAtPosition(x, y, eventElements, &eventElementCount);
+		
+		screen->UnHighlightAllChildren();
+		for (int i = 0; i < eventElementCount; i++){
+			if (eventElements[i] == screen || eventElements[i]->window == eventElements[i]){
+				continue;
+			}
+			eventElements[i]->Highlight();
+		}
 
 		if (x != mousePointer->x || y != mousePointer->y){
 			//moved
 			EmitEvent("MouseMove", x, y);
+			mousePointer->x = x;
+			mousePointer->y = y;
 			_mousein_mouseout();
 			screen->PropagateMouseEvent(x, y, "MouseMove");
 		}
@@ -254,17 +264,6 @@ public:
         return _app;
     }
 
-	void OnEvent(EventEmitter *source, std::string event, EventData data){
-		if (source == this){
-			//internal events
-			if (event == "MouseMove"){
-				mousePointer->x = data.data1;
-				mousePointer->y = data.data2;
-			}
-		}
-		//any events bound on external objects using the EventConsumer interface should come in here - check source and handle event
-	}
-
 	void Start(){
 	    on_start();
 	    _loop();
@@ -281,7 +280,6 @@ public:
 		mousePointer->x = 50;
 		mousePointer->y = 50;
 		screen->AddChild(mousePointer);
-		BindEvent("MouseMove", (EventConsumer*) this);
 		_mouse_enabled = 1;
 		screen->SetMouseEnabled();
 	}

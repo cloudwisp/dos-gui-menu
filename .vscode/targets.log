@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Jul 24 08:58:32 2021
+# Make data base, printed on Sat Jul 24 13:42:39 2021
 
 # Variables
 
@@ -63,7 +63,7 @@ PATH = /usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin:/usr/local/dos-djgpp/bin:/sbi
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/ubuntu-dev-vm2:@/tmp/.ICE-unix/3516,unix/ubuntu-dev-vm2:/tmp/.ICE-unix/3516
+SESSION_MANAGER = local/ubuntu-dev-vm2:@/tmp/.ICE-unix/3264,unix/ubuntu-dev-vm2:/tmp/.ICE-unix/3264
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -81,7 +81,7 @@ LS_COLORS =
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 4813
+GIO_LAUNCHED_DESKTOP_FILE_PID = 3723
 # automatic
 %F = $(notdir $%)
 # environment
@@ -93,7 +93,7 @@ VSCODE_PIPE_LOGGING = true
 # environment
 PWD = /home/roland/dos-source/pquest
 # environment
-SSH_AGENT_PID = 3610
+SSH_AGENT_PID = 3356
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -133,7 +133,7 @@ SHLVL = 1
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-7fc653d5-5c2a-40a4-add3-cb759bd58653.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-397e5723-92fd-4d45-acef-9b8a44f0c518.sock
 # environment
 XDG_SESSION_ID = c3
 # environment
@@ -207,7 +207,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 4813
+VSCODE_PID = 3723
 # variable set hash-table stats:
 # Load=99/1024=10%, Rehash=0, Collisions=10/127=8%
 
@@ -217,9 +217,9 @@ VSCODE_PID = 4813
 
 # Directories
 
-# . (device 2049, inode 1235635): 42 files, no impossibilities.
+# . (device 2049, inode 1235635): 43 files, no impossibilities.
 
-# 42 files, no impossibilities in 1 directories.
+# 43 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -253,23 +253,22 @@ all:
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'makefile', line 2):
-	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ Main.cpp -lgrx20 -lpng -lz -lalleg -o bin/Release/main.exe
-	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ CharEditor/CharEdit.cpp -lgrx20 -lpng -lz -o bin/Release/CharEdit.exe
+	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ -w Main.cpp -lgrx20 -lpng -lz -lalleg -o bin/Release/main.exe
 	make launch
 
 launchchar:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 12):
+#  recipe to execute (from 'makefile', line 11):
 	dosbox -c "mount p: $(CURDIR)/bin/Release" -c "p:" -c charedit
 
 charedit:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 9):
-	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ CharEditor/CharEdit.cpp -lgrx20 -lpng -lz -o bin/Release/CharEdit.exe
+#  recipe to execute (from 'makefile', line 8):
+	/usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ -w CharEditor/CharEdit.cpp -lgrx20 -lpng -lz -o bin/Release/CharEdit.exe
 	make launchchar
 
 # Not a target:
@@ -279,10 +278,10 @@ charedit:
 #  File has not been updated.
 
 # Not a target:
+ 
 makefile:
 #  Implicit rule search has been done.
- 
-#  Last modified 2021-07-14 13:14:40.541739301
+#  Last modified 2021-07-24 13:30:32.817570225
 #  File has been updated.
 #  Successfully updated.
 
@@ -296,7 +295,7 @@ launch:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 6):
+#  recipe to execute (from 'makefile', line 5):
 	dosbox -c "mount p: $(CURDIR)/bin/Release" -c "p:" -c main
 
 # files hash-table stats:
@@ -307,12 +306,12 @@ launch:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 50 / storage = 503 B / avg = 10 B
-# current buf: size = 8162 B / used = 503 B / count = 50 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 51 / storage = 516 B / avg = 10 B
+# current buf: size = 8162 B / used = 516 B / count = 51 / avg = 10 B
 
-# strcache performance: lookups = 60 / hit rate = 16%
+# strcache performance: lookups = 61 / hit rate = 16%
 # hash-table stats:
-# Load=50/8192=1%, Rehash=0, Collisions=1/60=2%
-# Finished Make data base on Sat Jul 24 08:58:32 2021
+# Load=51/8192=1%, Rehash=0, Collisions=1/61=2%
+# Finished Make data base on Sat Jul 24 13:42:39 2021
 
  

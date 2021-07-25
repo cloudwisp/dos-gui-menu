@@ -10,16 +10,22 @@
 class CharEditorApp : public CWApplication {
 private:
 
-    UITextBox* box1;
-    UITextBox* box2;
+    UITextArea* lbl_feetWidth;
+    UITextArea* lbl_feetHeight;
+    UITextBox* txt_feetWidth;
+    UITextBox* txt_feetHeight;
     UIButton* button;
     UIWindow* mainWindow;
-    UIPanel* leftPanel;
-    UIPanel* midPanel;
-    UIPanel* rightPanel;
+    UIStackedPanel* leftPanel;
+    UIStackedPanel* midPanel;
+    UIStackedPanel* rightPanel;
     UISpriteSheetNavigator* spriteNav;
+    UISpritePreview* preview;
     UIModalWindow *openModal;
     UITextBox *modalText;
+    SpriteSet* loadedSpriteset;
+    int lastFeetWidth = 0;
+    int lastFeetHeight = 0;
 
     void check_inputs(int *cancelInputPropagation){
         /*UINT16 ShiftState = Get_Shift_State();
@@ -75,14 +81,48 @@ public:
     void OnEvent(EventEmitter* source, std::string event, EventData data){
         if (source == button && event == "Click"){
             //todo
+            BuildOpenSpriteModal();
+            return;
         }
+
+        if (source == spriteNav && event == "SpriteChanged"){
+            if (loadedSpriteset){
+                preview->UpdateImage(loadedSpriteset, data.data1);
+            }
+            return;
+        }
+
+        if (source == txt_feetWidth && event == "Changed"){
+            lastFeetWidth = 0;
+            if (txt_feetWidth->GetText().size() > 0){
+                lastFeetWidth = atoi(txt_feetWidth->GetText().c_str());
+                preview->SetFeet(lastFeetWidth, lastFeetHeight);
+            }
+            return;
+        }
+
+        if (source == txt_feetHeight && event == "Changed"){
+            lastFeetHeight = 0;
+            if (txt_feetHeight->GetText().size() > 0){
+                lastFeetHeight = atoi(txt_feetHeight->GetText().c_str());
+                preview->SetFeet(lastFeetWidth, lastFeetHeight);
+            }
+        }
+
         if (source == openModal && event == "Ok"){
             std::string spriteName = std::string(modalText->GetText());
-            spriteNav->SetSpriteSet(spriteName);
+            loadedSpriteset = GameResources::GetSpriteSet(spriteName);
+            spriteNav->SetSpriteSet(loadedSpriteset);
+            preview->UpdateImage(loadedSpriteset, 0);
             DestroyModalControls();
-        } else if (source == openModal && event == "Cancel"){
-            DestroyModalControls();
+            return;
         }
+        if (source == openModal && event == "Cancel"){
+            DestroyModalControls();
+            return;
+        }
+
+        CWApplication::OnEvent(source, event, data);
     }
 
     CharEditorApp(int screenWidth, int screenHeight) : CWApplication(screenWidth,screenHeight,8,20){
@@ -92,12 +132,12 @@ public:
         
         UIWindowController::Get()->AddWindow(mainWindow, 1);
 
-        leftPanel = new UIPanel(GrAllocColor(0,0,0), 320/3, 200);
+        leftPanel = new UIStackedPanel(GrAllocColor(0,0,0), 320/3, 200);
         leftPanel->containertabstop = 1;
-        midPanel = new UIPanel(GrAllocColor(0,0,0), 320/3, 200);
+        midPanel = new UIStackedPanel(GrAllocColor(0,0,0), 320/3, 200);
         midPanel->x = 320/3;
         midPanel->containertabstop = 2;
-        rightPanel = new UIPanel(GrAllocColor(0,0,0), 320/3, 200);
+        rightPanel = new UIStackedPanel(GrAllocColor(0,0,0), 320/3, 200);
         rightPanel->x = 2* (320/3);
         rightPanel->containertabstop = 3;
 
@@ -105,23 +145,39 @@ public:
         mainWindow->AddChild(midPanel);
         mainWindow->AddChild(rightPanel);
 
-        box1 = new UITextBox(100,20,30);
-        box1->tabstop = 1;
-        box2 = new UITextBox(100,20, 30);
-        box2->tabstop = 2;
-        box2->y = 22;
+        lbl_feetWidth = new UITextArea(100,20);
+        lbl_feetWidth->SetText("Feet Clip Width:");
+        leftPanel->AddChild(lbl_feetWidth);
 
-        leftPanel->AddChild(box1);
-        leftPanel->AddChild(box2);
+        txt_feetWidth = new UITextBox(100,20,30);
+        txt_feetWidth->SetText("1");
+        txt_feetWidth->BindEvent("Changed", this);
+        txt_feetWidth->SetIntMode(true);
+        txt_feetWidth->tabstop = 1;
+        leftPanel->AddChild(txt_feetWidth);
+
+        lbl_feetHeight = new UITextArea(100,20);
+        lbl_feetHeight->SetText("Feet Clip Height:");
+        leftPanel->AddChild(lbl_feetHeight);
+
+        txt_feetHeight = new UITextBox(100,20, 30);
+        txt_feetHeight->SetText("1");
+        txt_feetHeight->BindEvent("Changed", this);
+        txt_feetHeight->SetIntMode(true);
+        txt_feetHeight->tabstop = 2;
+        leftPanel->AddChild(txt_feetHeight);
 
         spriteNav = new UISpriteSheetNavigator(midPanel->width, midPanel->height);
-        spriteNav->SetSpriteSet("EDDIE");
+        spriteNav->BindEvent("SpriteChanged", this);
         spriteNav->tabstop = 4;
         
         midPanel->AddChild(spriteNav);
 
+        preview = new UISpritePreview(100, 100);
+        rightPanel->AddChild(preview);
+        
         button = new UIButton(100, 20);
-        button->SetText("Click me");
+        button->SetText("Open Spriteset");
         button->BindEvent("Click", this);
 
         rightPanel->AddChild(button);
@@ -129,13 +185,16 @@ public:
     }
 
     ~CharEditorApp(){
-        delete box1;
-        delete box2;
+        delete lbl_feetWidth;
+        delete txt_feetWidth;
+        delete lbl_feetHeight;
+        delete txt_feetHeight;
         delete leftPanel;
         delete midPanel;
         delete rightPanel;
         delete spriteNav;
         delete button;
+        delete preview;
     }
 };
 

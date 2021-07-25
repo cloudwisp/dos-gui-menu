@@ -112,7 +112,7 @@ public:
 		EmitEvent("Click");
 	}
 
-	void OnEvent(EventEmitter *source, const char *event, EventData data){
+	void OnEvent(EventEmitter *source, std::string event, EventData data){
 		if (source == this){
 
 			if (event == "MouseOver"){
@@ -171,6 +171,8 @@ private:
 	GrColor highlight;
 	GrColor shadow;
 	int _borderWidth = 2;
+	bool intMode = false;
+	bool multiLine = false;
 
 	void draw_internal(){
 		//draw stuff
@@ -191,14 +193,21 @@ private:
 		// debugOut(std::string(ctext));
 		// free(ctext);
 
+		if (!multiLine && Ascii == 0x0A){
+			//ignore line feed
+			return;
+		}
+
 		if (KeyCode == KEY_BACKSPACE){
             innerText->CharBackspace();
+			EmitEvent("Changed");
 			Unfreeze();
             return;
         }
 
         if (KeyCode == KEY_DELETE){
             innerText->CharDelete();
+			EmitEvent("Changed");
         }
 
         if (KeyCode == KEY_RIGHT_ARROW){
@@ -217,8 +226,11 @@ private:
             innerText->CursorUp();
         }
         
-        if (Ascii > 0x0){
+		if (intMode && Ascii > 0x0 && (Ascii > 0x39 || Ascii < 0x30)){
+			//Outside of valid range
+		} else if (Ascii > 0x0){
             innerText->CharAdd((char) Ascii);
+			EmitEvent("Changed");
         }
 
 		Unfreeze();
@@ -227,6 +239,9 @@ private:
 public:
 
 	void OnEvent(EventEmitter* source, std::string event, EventData data) override {
+		if (event == "LeftMouseButtonUp"){
+			Focus();
+		}
 		if (event == "GotFocus"){
 			innerText->ShowCursor();
 			Unfreeze();
@@ -241,6 +256,14 @@ public:
 	void SetText(std::string text){
 		innerText->SetText(text);
 		Unfreeze();
+	}
+
+	void SetIntMode(bool limitToInt){
+		intMode = limitToInt;
+	}
+
+	void SetMultiline(bool isMultiline){
+		multiLine = isMultiline;
 	}
 
 	std::string GetText(){
@@ -259,6 +282,7 @@ public:
 		AddChild(innerText);
 		BindEvent("GotFocus", this);
 		BindEvent("LostFocus", this);
+		BindEvent("LeftMouseButtonUp", this);
 	}
 	~UITextBox(){
 		delete innerText;
