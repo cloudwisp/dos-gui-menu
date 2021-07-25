@@ -136,7 +136,7 @@ public:
 	}
 
 	UIButton (int width, int height) : UIDrawable(width,height) {
-		textArea = new UITextArea(width-_borderWidth, height-_borderWidth);
+		textArea = new UITextArea(width-(_borderWidth*2), height-(_borderWidth*2));
 		textArea->x = _borderWidth;
 		textArea->y = _borderWidth;
 		textArea->SetAlign(GR_ALIGN_CENTER,GR_ALIGN_CENTER);

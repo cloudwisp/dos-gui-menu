@@ -48,6 +48,7 @@
         "deque": "cpp",
         "algorithm": "cpp",
         "numeric": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "string": "cpp"
     }
 }

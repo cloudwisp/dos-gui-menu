@@ -99,6 +99,7 @@ public:
 
 	void SetText(std::string text){
 		innerText->SetText(text);
+        EmitEvent("Changed");
 		Unfreeze();
 	}
 

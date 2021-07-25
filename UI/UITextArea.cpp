@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "AppUI.h"
+#include "UIHelpers.cpp"
 #include "UIDrawable.cpp"
 
 class UITextArea : public UIDrawable {
@@ -208,7 +209,7 @@ public:
 	UITextArea(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
 		text = "";
 		backgroundColor = GrNOCOLOR;
-		textOptions.txo_font = &GrFont_PC6x8;
+        textOptions.txo_font = UIHelpers::ResolveFont(THEME_DEFAULT_FONT);
 		textOptions.txo_fgcolor.v = GrWhite();
 		textOptions.txo_bgcolor.v = GrNOCOLOR;
 		textOptions.txo_direct = GR_TEXT_RIGHT;

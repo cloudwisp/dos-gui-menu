@@ -33,25 +33,6 @@ private:
 		GrDrawString((void*)_title.c_str(), _title.size(), THEME_WINDOW_BORDER_WIDTH + centeredX, THEME_WINDOW_BORDER_WIDTH + centeredY, &titleTextOptions);
 	}
 
-	GrFont* resolveFont(char* fontName){
-		if (fontName == "GrFont_PC6x8"){
-			return &GrFont_PC6x8;
-		}
-		if (fontName == "GrFont_PC8x8"){
-			return &GrFont_PC8x8;
-		}
-		if (fontName == "GrFont_PC8x14"){
-			return &GrFont_PC8x14;
-		}
-		if (fontName == "GrFont_PC8x16"){
-			return &GrFont_PC8x16;
-		}
-		GrFont* resolved = GrLoadFont(fontName);
-		if (resolved == NULL){
-			return &GrDefaultFont;
-		}
-	}
-
 protected:
 
 public:
@@ -62,7 +43,7 @@ public:
 		innerContextY = THEME_WINDOW_TITLE_HEIGHT + THEME_WINDOW_BORDER_WIDTH;
 		innerContextX = THEME_WINDOW_BORDER_WIDTH;
 
-		titleFont = resolveFont(THEME_WINDOW_TITLE_FONT);
+		titleFont = UIHelpers::ResolveFont(THEME_WINDOW_TITLE_FONT);
 
 		titleTextOptions.txo_font = titleFont;
 		titleTextOptions.txo_fgcolor.v = UIHelpers::ColorFromRGB(THEME_WINDOW_TITLE_TEXT_COLOR);
