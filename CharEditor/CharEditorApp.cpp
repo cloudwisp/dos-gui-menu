@@ -6,6 +6,7 @@
 #include <string>
 #include <std.h>
 #include <memory.h>
+#include <time.h>
 #include "CharEditUI.cpp"
 
 class CharEditorApp : public CWApplication {
@@ -36,6 +37,7 @@ private:
     int lastAnimFrame = 0;
     const int MODAL_MODE_CHAR = 0;
     const int MODAL_MODE_SPRITESET = 1;
+    clock_t lastTick;
 
     void check_inputs(int *cancelInputPropagation){
         /*UINT16 ShiftState = Get_Shift_State();
@@ -88,19 +90,21 @@ private:
         if (loadedChar == NULL || loadedSpriteset == NULL){
             return;
         }
-        int nextAnimFrame;
-        if (lastAnimFrame == 19){
-            nextAnimFrame = 0;
-        } else {
-            nextAnimFrame = lastAnimFrame+1;
+
+        clock_t now = clock();
+        if (clockToMilliseconds(now-lastTick) < 250){
+            //frame per quarter second
+            return;
         }
-        lastAnimFrame = nextAnimFrame;
-        int spriteId = loadedChar->sprites[activeAnimDir][nextAnimFrame];
-        if (spriteId < 0){
-            spriteId = 0;
-            lastAnimFrame = 0;
-        }
-        anim->UpdateImage(loadedSpriteset, loadedChar->sprites[activeAnimDir][nextAnimFrame]);
+        
+		int spriteId = loadedChar->sprites[activeAnimDir][lastAnimFrame];
+        lastTick = clock();
+		if (lastAnimFrame == 19 || (lastAnimFrame+1 < 19 && loadedChar->sprites[activeAnimDir][lastAnimFrame+1]==-1)){
+			lastAnimFrame = 0;
+		} else {
+			lastAnimFrame++;
+		}
+        anim->UpdateImage(loadedSpriteset, loadedChar->sprites[activeAnimDir][lastAnimFrame]);
     };
 	void render(){
 

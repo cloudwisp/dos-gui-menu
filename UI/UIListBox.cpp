@@ -30,8 +30,8 @@ public:
             return;
         }
         selectedItem = index;
-        for (UITextArea* area : listItemText){
-            area->SetColor(GrWhite(), GrAllocColor(0,0,0));
+        for (int i = 0; i < listItemText.size() - 1; i++){
+            listItemText.at(i)->SetColor(GrAllocColor(255,255,255), GrAllocColor(0,0,0));
         }
         listItemText.at(index)->SetColor(GrBlack(), GrAllocColor(255,255,255));
         EmitEvent("SelectedItemChanged", index);
@@ -52,6 +52,9 @@ public:
         newArea->SetText(item);
         listItemText.push_back(newArea);
         panel->AddChild(newArea);
+        if (listItems.size() == 1){
+            SetSelectedItem(0);
+        }
     }
 
     UIListBox(int width, int height) : UIDrawable(width, height){
