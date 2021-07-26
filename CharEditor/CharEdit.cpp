@@ -14,8 +14,8 @@ CharEditorApp *app = NULL;
 int main()
 {
     int bitDepth = 8;
-    int screenWidth = 320;
-    int screenHeight = 200;
+    int screenWidth = 640;
+    int screenHeight = 480;
     GrSetMode(GR_width_height_bpp_graphics,screenWidth,screenHeight,bitDepth);
     app = new CharEditorApp(screenWidth, screenHeight);
 	app->EnableMouse();

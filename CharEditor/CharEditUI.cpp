@@ -3,6 +3,7 @@
 
 #include <string>
 #include <grx20.h>
+#include <math.h>
 #include "../AppUI.cpp"
 #include "../GameRes.cpp"
 #include "../keyboard.h"
@@ -99,6 +100,8 @@ private:
     float scaleFactor = 1;
     int feetW = 0;
     int feetH = 0;
+    int scaledWidth = 1;
+    int scaledHeight = 1;
 
     void draw_internal(){
         GrClearContextC(ctx, GrAllocColor(0,0,0));
@@ -112,15 +115,19 @@ private:
             Freeze();
             return;
         }
-        int plotAnchorX = (activeSpriteset->spriteWidth / 2) * scaleFactor;
-        int plotAnchorY = activeSpriteset->spriteHeight * scaleFactor;
-        int x1 = plotAnchorX - ((feetW * scaleFactor) / 2);
-        int x2 = plotAnchorX + ((feetW * scaleFactor) / 2);
-        int y1 = plotAnchorY - (feetH * scaleFactor);
+        //draw sprite boundary
+        GrBox(0,0, scaledWidth -1, scaledHeight - 1, GrAllocColor(255,255,255));
+        if (feetW == 0 || feetH == 0){
+            return;
+        }
+
+        int plotAnchorX = roundf(((activeSpriteset->spriteWidth / 2) + 1) * scaleFactor);
+        int plotAnchorY = roundf((activeSpriteset->spriteHeight + 2) * scaleFactor);
+        int x1 = plotAnchorX - roundf((feetW * scaleFactor) / 2);
+        int x2 = plotAnchorX + roundf((feetW * scaleFactor) / 2);
+        int y1 = plotAnchorY - roundf(feetH * scaleFactor);
         int y2 = plotAnchorY;
         GrBox(x1,y1,x2,y2,GrAllocColor(255,0,255));
-        //draw sprite boundary
-        GrBox(0,0, (activeSpriteset->spriteWidth * scaleFactor) - 1, (activeSpriteset->spriteHeight * scaleFactor) - 1, GrAllocColor(255,255,255));
         Freeze();
     }
 public:
@@ -141,6 +148,10 @@ public:
             GrImageDestroy(scaledImg);
         }
 
+        if (spriteId == -1){
+            return;
+        }
+
         spriteCtx = GrCreateContext(spriteset->spriteWidth, spriteset->spriteHeight, NULL, NULL);
         GrClearContextC(spriteCtx, GrAllocColor(0,0,0));
         SpriteBoundingBox box = SpriteUtils::BlitSource(spriteId, spriteset->spriteWidth, spriteset->spriteHeight, spriteset->tilesWide);
@@ -150,7 +161,6 @@ public:
         float ratioY = (float)spriteset->spriteHeight / spriteset->spriteWidth;
 
         spriteImg = GrImageFromContext(spriteCtx);
-        int scaledWidth, scaledHeight;
         if (spriteset->spriteHeight > spriteset->spriteWidth){
             //fit vertically
             scaledWidth = width * ratioX;
@@ -162,16 +172,72 @@ public:
             scaledHeight = height * ratioY;
             scaledImg = GrImageStretch(spriteImg, width, scaledHeight);
         }
+        
         scaleFactor = scaledWidth / spriteset->spriteWidth;
         Unfreeze();
     }
 
     UISpritePreview(int width, int height) : UIDrawable(width, height){
+    }
+
+    ~UISpritePreview(){
         if (scaledImg){
             GrImageDestroy(scaledImg);
         }
         if (spriteCtx){
             GrDestroyContext(spriteCtx);
+        }
+    }
+};
+
+class UISpriteAnimationFrameEditor : public UIDrawable {
+private:
+    int nRows = 0;
+    int nCols = 0;
+    UISpritePreview* spritePreviews[20] = {NULL};
+    SpriteSet* activeSpriteset = NULL;
+
+    void createPreviews(){
+        int curCol = 0;
+        int curRow = 0;
+        int cellSize = width / nCols;
+        for (int i = 0; i < 20; i++){
+            spritePreviews[i] = new UISpritePreview(cellSize, cellSize);
+            spritePreviews[i]->x = curCol * cellSize;
+            spritePreviews[i]->y = curRow * cellSize;
+            AddChild(spritePreviews[i]);
+            if (curCol + 1 > nCols - 1){
+                curCol = 0;
+                curRow++;
+            } else {
+                curCol++;
+            }
+        }
+    }
+
+    void draw_internal(){
+        GrClearContextC(ctx, GrAllocColor(0,0,0));
+    }
+
+public:
+
+    void LoadAnimation(int animation[20], SpriteSet* spriteset){
+        activeSpriteset = spriteset;
+        for (int i = 0; i < 20; i++){
+            spritePreviews[i]->UpdateImage(spriteset, animation[i]);
+        }
+    }
+
+    UISpriteAnimationFrameEditor(int drawWidth, int drawHeight, int cols, int rows) : UIDrawable(drawWidth, drawHeight){
+        nCols = cols;
+        nRows = rows;
+        createPreviews();
+    }
+
+    ~UISpriteAnimationFrameEditor(){
+        for (int i = 0; i < 20; i++){
+            delete spritePreviews[i];
+            spritePreviews[i] = NULL;
         }
     }
 };

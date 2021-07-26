@@ -22,6 +22,7 @@ private:
     UIStackedPanel* leftPanel = NULL;
     UIStackedPanel* midPanel = NULL;
     UIStackedPanel* rightPanel = NULL;
+    UIPanel* lowerPanel = NULL;
     UISpriteSheetNavigator* spriteNav = NULL;
     UISpritePreview* preview = NULL;
     UISpritePreview* anim = NULL;
@@ -30,6 +31,7 @@ private:
     SpriteSet* loadedSpriteset = NULL;
     GameCharModel* loadedChar = NULL;
     UIListBox* animList = NULL;
+    UISpriteAnimationFrameEditor* animEditor = NULL;
     int lastFeetWidth = 0;
     int lastFeetHeight = 0;
     int openModalMode = 0;
@@ -121,7 +123,7 @@ private:
         txt_feetWidth->SetText(std::string(strbuf));
         itoa(loadedChar->groundClipHeight,strbuf,10);
         txt_feetHeight->SetText(std::string(strbuf));
-        
+        animEditor->LoadAnimation(loadedChar->sprites[activeAnimDir], loadedSpriteset);
     }
 
     void loadSpriteset(std::string spritesetName){
@@ -186,6 +188,9 @@ public:
 
         if (source == animList && event == "SelectedItemChanged"){
             activeAnimDir = data.data1;
+            if (loadedChar != NULL){
+                animEditor->LoadAnimation(loadedChar->sprites[activeAnimDir], loadedSpriteset);
+            }
         }
 
         CWApplication::OnEvent(source, event, data);
@@ -198,18 +203,24 @@ public:
         
         UIWindowController::Get()->AddWindow(mainWindow, 1);
 
-        leftPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight);
+        int lowerPanelHeight = screenHeight * 0.3;
+
+        leftPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight - lowerPanelHeight);
         leftPanel->containertabstop = 1;
-        midPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight);
+        midPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight - lowerPanelHeight);
         midPanel->x = screenWidth/3;
         midPanel->containertabstop = 2;
-        rightPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight);
+        rightPanel = new UIStackedPanel(GrAllocColor(0,0,0), screenWidth / 3, screenHeight - lowerPanelHeight);
         rightPanel->x = 2* (screenWidth/3);
         rightPanel->containertabstop = 3;
+
+        lowerPanel = new UIPanel(GrAllocColor(30,30,30), screenWidth, lowerPanelHeight);
+        lowerPanel->y = screenHeight - lowerPanelHeight;
 
         mainWindow->AddChild(leftPanel);
         mainWindow->AddChild(midPanel);
         mainWindow->AddChild(rightPanel);
+        mainWindow->AddChild(lowerPanel);
 
         btn_char = new UIButton(100, 20);
         btn_char->SetText("Open Character");
@@ -262,10 +273,10 @@ public:
         
         midPanel->AddChild(spriteNav);
 
-        preview = new UISpritePreview(100, 100);
+        preview = new UISpritePreview(rightPanel->width / 2, rightPanel->width / 2);
         rightPanel->AddChild(preview);
 
-        anim = new UISpritePreview(20,20);
+        anim = new UISpritePreview(rightPanel->width / 2, rightPanel->width / 2);
         rightPanel->AddChild(anim);
         
         btn_spriteset = new UIButton(100, 20);
@@ -273,7 +284,10 @@ public:
         btn_spriteset->tabstop = 50;
         btn_spriteset->BindEvent("Click", this);
 
-        rightPanel->AddChild(btn_spriteset);        
+        rightPanel->AddChild(btn_spriteset);    
+
+        animEditor = new UISpriteAnimationFrameEditor(lowerPanel->width, lowerPanel->height, 10, 2);    
+        lowerPanel->AddChild(animEditor);
     }
 
     ~CharEditorApp(){
@@ -289,6 +303,7 @@ public:
         delete btn_spriteset;
         delete preview;
         delete anim;
+        delete animEditor;
     }
 };
 
