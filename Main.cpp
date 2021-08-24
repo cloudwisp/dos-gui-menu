@@ -5,30 +5,28 @@
 #include <allegro.h>
 #include <grx20.h>
 #include "keyboard.c"
-#include "GameApp.cpp"
-#include "GameChar.cpp"
-#include "GameWrld.h"
+#include "SelApp.cpp"
 
 unsigned _stklen = 1048576;  /* need a 1MB stack */
 
-GameApplication *app = NULL;
+SelectorApplication *app = NULL;
 
 int main()
 {
 
     allegro_init();
-    int bitDepth = 8;
-    int screenWidth = 320;
-    int screenHeight = 200;
+    int bitDepth = 16;
+    int screenWidth = 640;
+    int screenHeight = 480;
     GrSetMode(GR_width_height_bpp_graphics,screenWidth,screenHeight,bitDepth);
 
     install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, "");
-    app = new GameApplication(screenWidth, screenHeight, bitDepth, 320, 200, 0, 0, WORLD_LEVEL1);
+    app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse();
 	app->Start();
 	allegro_exit();
 
-    GameResources::Destroy();
+    AppResources::Destroy();
 
     delete app;
 	return 0;

@@ -1,0 +1,15 @@
+[Monkey Island 2: LeChuck's Revenge]
+image=monkey2.png
+genre=Adventure
+publisher=Lucasfilm
+year=1991
+path=c:\games\monkey2\monkey2.exe
+description=Yarrrr!
+
+[Laura Bow: The Dagger of Amon Ra]
+image=dagger.png
+genre=Adventure
+publisher=Sierra On-Line
+year=1900
+path=c:\games\dagger\dagger.exe
+description=do do do

@@ -1,6 +1,6 @@
-make all --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/roland/dos-source/pquest'
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/roland/dos-source/selector2'
 /usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin/g++ -w Main.cpp -lgrx20 -lpng -lz -lalleg -o bin/Release/main.exe
 make launch
-make: Leaving directory '/home/roland/dos-source/pquest'
+make: Leaving directory '/home/roland/dos-source/selector2'
  

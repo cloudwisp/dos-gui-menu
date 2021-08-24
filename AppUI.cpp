@@ -19,6 +19,7 @@
 #include "UI/UIButton.cpp"
 #include "UI/UITextBox.cpp"
 #include "UI/UIListBox.cpp"
+#include "UI/UIImagePanel.cpp"
 #include "UI/UIModalWindow.cpp"
 
 #endif

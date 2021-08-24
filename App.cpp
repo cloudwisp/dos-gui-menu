@@ -138,6 +138,9 @@ private:
 	void _check_mouse_event(){
 		if (!_mouse_enabled){ return; }
 		int button, x, y;
+		LOCK_VARIABLE(button);
+		LOCK_VARIABLE(x);
+		LOCK_VARIABLE(y);
 
 		getmousepos(&button, &x, &y);
 
@@ -276,6 +279,8 @@ public:
 
 	void EnableMouse(){
 		initmouse();
+		set_mouse_x_boundary(0, screen->width);
+		set_mouse_y_boundary(0,screen->height);
 		mousePointer = new UIPointer();
 		mousePointer->x = 50;
 		mousePointer->y = 50;

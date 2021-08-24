@@ -36,6 +36,11 @@ private:
 protected:
 
 public:
+
+	void SetTitle(std::string title){
+		_title = title;
+	}
+	
 	UITitledWindow(int drawWidth, int drawHeight, std::string title) : UIWindow(drawWidth, drawHeight, drawWidth - (THEME_WINDOW_BORDER_WIDTH * 2), drawHeight - THEME_WINDOW_TITLE_HEIGHT - (THEME_WINDOW_BORDER_WIDTH * 2), false){
 		_title = title;
 		innerWidth = drawWidth - (THEME_WINDOW_BORDER_WIDTH * 2);
