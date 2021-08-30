@@ -22,6 +22,14 @@ private:
     UIPanel *titleBar = NULL;
     UIPanel *gameList = NULL;
     UIPanel *gameDetail = NULL;
+    UIStackedPanel *detailRight = NULL;
+    UIStackedPanel *detailLeft = NULL;
+    UIListBox *gameListItems = NULL;
+    UITextArea *gameTitle = NULL;
+    UITextArea *gameGenre = NULL;
+    UIScrollingText *gameDescription = NULL;
+    UITextArea* gameDescriptionInner = NULL;
+    UIButton *launch = NULL;
 
     //fonts & dimensions
     GrFont* titleFont = NULL;
@@ -42,25 +50,22 @@ private:
 
     //items
     std::vector<DatabaseItem*> *dbItems;
-    std::vector<UIButton*> buttons;
-    int activeButton = 0;
+    int activeItem = 0;
 
     void _ActivateItem(int itemId){
-        activeButton = itemId;
-        buttons[itemId]->Focus();
-        screenshot->SetImage((*dbItems)[itemId]->image);
+        activeItem = itemId;
+        DatabaseItem* thisItem = (*dbItems)[itemId];
+        gameTitle->SetText(thisItem->name);
+        gameGenre->SetText(std::string("Genre: ").append(thisItem->genre));
+        gameDescriptionInner->SetText(thisItem->description);
+        screenshot->SetImage(thisItem->image, 1000);
     }
 
 public:
 
     void OnEvent(EventEmitter *source, std::string event, EventData data){
-        debugOut(event);
-        for (int i = 0; i < buttons.size(); i++){
-            if (source == buttons[i]){
-                //launch game here
-                _ActivateItem(i);
-            }
-            debugOut("couldn't find source");
+        if (event == "SelectedItemChanged"){
+            _ActivateItem(data.data1);
         }
         UIWindow::OnEvent(source, event, data);
     }
@@ -69,38 +74,10 @@ public:
         UIWindow::CheckInputs();
     }
 
-    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
-        if (ScanCode == KEY_UP_ARROW && activeButton > 0){
-            _ActivateItem(activeButton-1);
-        } else if (ScanCode == KEY_DOWN_ARROW && activeButton < buttons.size()-1){
-            _ActivateItem(activeButton+1);
-        }
-        UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
-    }
-
     void LoadItems(){
         dbItems = AppResources::GetDatabaseItems("games.db");
-        char* buf = (char*) malloc(sizeof(char) * 1000);
-        sprintf(buf, "dbItems count %d", dbItems->size());
-        debugOut(std::string(buf));
-        free(buf);
         for (int i = 0; i < dbItems->size(); i++){
-            UIButton* button = new UIButton(leftPaneWidth-defaultMargin-defaultMargin,textFontHeight+defaultMargin+defaultMargin);
-            button->SetFont(textFont);
-            button->SetColor(GrAllocColor(10,10,10),GrWhite());
-            button->SetText((char*) (*dbItems)[i]->name.c_str());
-            button->x = defaultMargin;
-            int margin = 0;
-            if (i > 0){
-                margin = defaultMargin*2;
-            } else {
-                margin = defaultMargin;
-            }
-            button->y = (i * button->height) + margin;
-            button->BindEvent("Click", this);
-            gameList->AddChild(button);
-            buttons.push_back(button);
-
+            gameListItems->AddItem((*dbItems)[i]->name);
         }
     }
 
@@ -151,36 +128,84 @@ public:
         }
 
         int titleHeight = titleFontHeight + defaultMargin + defaultMargin;
+        int rightPaneHeight = drawHeight - titleHeight;
+        int gameTitleHeight = titleHeight;
+        int rightPaneLowerHeight = rightPaneHeight - gameTitleHeight;
+        int detailLeftWidth = rightPaneWidth * 0.66;
+        int detailLeftWidthInner = detailLeftWidth - (defaultMargin * 2);
+        int detailRightWidth = rightPaneWidth - detailLeftWidth;
+        int detailRightWidthInner = detailRightWidth - (defaultMargin * 2);
 
-        gameDetail = new UIPanel(GrAllocColor(10,10,10),rightPaneWidth,drawHeight-titleHeight);
+        gameDetail = new UIPanel(THEME_PANEL_BACKGROUND_PRIMARY,rightPaneWidth,rightPaneHeight);
         gameDetail->x = leftPaneWidth;
         gameDetail->y = titleHeight;
         AddChild(gameDetail);
 
+        detailLeft = new UIStackedPanel(THEME_COLOR_TRANSPARENT, detailLeftWidth, rightPaneLowerHeight, defaultMargin);
+        detailLeft->y = gameTitleHeight;
+        gameDetail->AddChild(detailLeft);
 
-        screenshot = new UIImagePanel(rightPaneWidth/2,rightPaneWidth*0.666);
-        screenshot->x = defaultMargin;
-        screenshot->y = defaultMargin;
-        gameDetail->AddChild(screenshot);
+        detailRight = new UIStackedPanel(THEME_PANEL_BACKGROUND_SECONDARY, detailRightWidth, rightPaneLowerHeight, defaultMargin);
+        detailRight->y = gameTitleHeight;
+        detailRight->x = detailLeft->width;
+        gameDetail->AddChild(detailRight);
+
+        screenshot = new UIImagePanel(detailRightWidthInner,detailRightWidth*1.4);
+        detailRight->AddChild(screenshot);
         screenshot->SendToBack();
 
         //title bar
-        titleBar = new UIPanel(GrAllocColor(50,50,50),drawWidth,titleHeight);
+        titleBar = new UIPanel(THEME_WINDOW_TITLE_BACKGROUND_COLOR,drawWidth,titleHeight);
         UITextArea *title = new UITextArea(leftPaneWidth,titleHeight-defaultMargin-defaultMargin);
         title->SetFont(titleFontBold);
-        title->SetColor(GrWhite(), GrNOCOLOR);
-        title->SetText("Game Selector");
+        title->SetColor(THEME_WINDOW_TITLE_TEXT_COLOR, THEME_COLOR_TRANSPARENT);
+        title->SetText("Game Menu");
         title->x = defaultMargin;
         title->y = defaultMargin;
         titleBar->AddChild(title);
         AddChild(titleBar);
 
         //game list
-        gameList = new UIPanel(GrAllocColor(120,120,120),leftPaneWidth,drawHeight-titleHeight);
+        gameList = new UIPanel(THEME_PANEL_BACKGROUND_MENU,leftPaneWidth,drawHeight-titleHeight);
         gameList->x = 0;
         gameList->y = titleHeight;
+        gameList->containertabstop = 1;
         AddChild(gameList);
 
+        gameListItems = new UIListBox(leftPaneWidth-(defaultMargin*2), drawHeight-titleHeight-(defaultMargin*2));
+        gameListItems->BindEvent("SelectedItemChanged", this);
+        gameListItems->x = defaultMargin;
+        gameListItems->y = defaultMargin;
+        gameList->AddChild(gameListItems);
+        gameListItems->Focus();
+
+        gameTitle = new UITextArea(rightPaneWidth, gameTitleHeight);
+        gameTitle->SetFont(titleFontBold);
+        gameTitle->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
+        gameTitle->SetAlign(GR_ALIGN_LEFT, GR_ALIGN_CENTER);
+        gameTitle->x = 0;
+        gameTitle->y = 0;
+
+        gameDetail->AddChild(gameTitle);
+
+        gameGenre = new UITextArea(detailLeftWidthInner, 20);
+        gameGenre->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
+        gameGenre->SetAlign(GR_ALIGN_LEFT, GR_ALIGN_CENTER);
+        detailLeft->AddChild(gameGenre);
+
+        gameDescriptionInner = new UITextArea(detailLeftWidthInner, 2000);
+        gameDescriptionInner->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
+
+        int usedHeight = gameGenre->height;
+        gameDescription = new UIScrollingText(gameDescriptionInner, rightPaneLowerHeight - usedHeight);
+        gameDescription->x = 0;
+
+        detailLeft->AddChild(gameDescription);
+        
+        launch = new UIButton(detailRightWidthInner, 20);
+        launch->SetText("Launch!");
+        launch->x = 0;
+        detailRight->AddChild(launch);
     }
 
 };
@@ -221,7 +246,7 @@ public:
 		CWApplication::OnEvent(source,event,data);
 	}
 
-	SelectorApplication(int screenWidth, int screenHeight): CWApplication (screenWidth, screenHeight, 16, MS_PER_UPDATE) {
+	SelectorApplication(int screenWidth, int screenHeight): CWApplication (screenWidth, screenHeight, MS_PER_UPDATE) {
         mainWindow = new SelectorMainWindow(screenWidth, screenHeight, this);
 		AddWindow(mainWindow,1);
         mainWindow->BringToFront();

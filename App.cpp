@@ -22,6 +22,7 @@ private:
 	int _end = 0;
 	int _ms_per_update = 16;
 	int _mouse_enabled = 0;
+	bool mouseDebug = false;
 
 	void _loop(){
 
@@ -146,14 +147,16 @@ private:
 
 		screen->IdentifyVisibleElementsAtPosition(x, y, eventElements, &eventElementCount);
 		
-		screen->UnHighlightAllChildren();
-		for (int i = 0; i < eventElementCount; i++){
-			if (eventElements[i] == screen || eventElements[i]->window == eventElements[i]){
-				continue;
+		if (mouseDebug){
+			screen->UnHighlightAllChildren();
+			for (int i = 0; i < eventElementCount; i++){
+				if (eventElements[i] == screen || eventElements[i]->window == eventElements[i]){
+					continue;
+				}
+				eventElements[i]->Highlight();
 			}
-			eventElements[i]->Highlight();
 		}
-
+		
 		if (x != mousePointer->x || y != mousePointer->y){
 			//moved
 			EmitEvent("MouseMove", x, y);
@@ -289,6 +292,11 @@ public:
 		screen->SetMouseEnabled();
 	}
 
+	void EnableMouse(bool debug){
+		EnableMouse();
+		mouseDebug = debug;
+	}
+
 	void ToggleDiagnostics(int on){
 		if (on){
 			diagnostic->Show();
@@ -298,7 +306,7 @@ public:
 	}
 
 
-	CWApplication(int screenWidth, int screenHeight, int bitDepth, int msPerUpdate) : UIWindowController(screenWidth, screenHeight, bitDepth) {
+	CWApplication(int screenWidth, int screenHeight, int msPerUpdate) : UIWindowController(screenWidth, screenHeight) {
 		SetKb();
 
 

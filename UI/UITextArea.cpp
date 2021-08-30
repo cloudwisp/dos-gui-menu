@@ -68,10 +68,10 @@ private:
 
 	void draw_internal(){
 		GrContext *prevCtx = GrCurrentContext();
-		GrSetContext(ctx);
-		GrClearContextC(ctx, GrAllocColor(0,0,0));
-		GrClearContextC(ctx, backgroundColor);
 
+		GrClearContextC(ctx, backgroundColor);
+		GrSetContext(ctx);
+		
 		int numLines = lines.size();
 		int i, x, y, firstLine;
 		x = 0;
@@ -121,6 +121,7 @@ public:
 		cursorPosition = txt.size();
 		text = txt;
 		_parse_text();
+		needsRedraw = true;
 	}
 
 	std::string GetText(){
@@ -131,6 +132,7 @@ public:
 		text.insert(cursorPosition, 1, character);
 		cursorPosition++;
 		_parse_text();
+		needsRedraw = true;
 	}
 
 	void CharBackspace(){
@@ -140,6 +142,7 @@ public:
 		text.erase(cursorPosition - 1, 1);
 		cursorPosition--;
 		_parse_text();
+		needsRedraw = true;
 	}
 
 	void CharDelete(){
@@ -148,12 +151,14 @@ public:
 		}
 		text.erase(cursorPosition, 1);
 		_parse_text();
+		needsRedraw = true;
 	}
 
 	void CursorLeft(){
 		if (cursorPosition > 0){
 			cursorPosition--;
 			_parse_text();
+			needsRedraw = true;
 		}
 	}
 
@@ -161,6 +166,7 @@ public:
 		if (cursorPosition < text.size()){
 			cursorPosition++;
 			_parse_text();
+			needsRedraw = true;
 		}
 	}
 
@@ -170,6 +176,7 @@ public:
 			if (lines[cursorLine].size() -1 < cursorColumn){
 				cursorColumn = lines[cursorLine].size() - 1;
 			}
+			needsRedraw = true;
 		}
 	}
 
@@ -179,38 +186,43 @@ public:
 			if (lines[cursorLine].size() - 1 < cursorColumn){
 				cursorColumn = lines[cursorLine].size() - 1;
 			}
+			needsRedraw = true;
 		}
 	}
 
 	void SetFont(GrFont *font){
 		textOptions.txo_font = font;
 		_parse_text(); //change in font affects line breaks
+		needsRedraw = true;
 	}
 
 	void SetColor(GrColor foreColor, GrColor backColor){
 		textOptions.txo_fgcolor.v = foreColor;
-		textOptions.txo_bgcolor.v = backColor;
 		backgroundColor = backColor;
+		needsRedraw = true;
 	}
 
 	void SetAlign(char horizAlign, char vertAlign){
 		_horizAlign = horizAlign;
 		_vertAlign = vertAlign;
+		needsRedraw = true;
 	}
 
 	void ShowCursor(){
 		drawCursor = true;
+		needsRedraw = true;
 	}
 
 	void HideCursor(){
 		drawCursor = false;
+		needsRedraw = true;
 	}
 
 	UITextArea(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
 		text = "";
-		backgroundColor = GrNOCOLOR;
+		backgroundColor = THEME_COLOR_TRANSPARENT;
         textOptions.txo_font = UIHelpers::ResolveFont(THEME_DEFAULT_FONT);
-		textOptions.txo_fgcolor.v = GrWhite();
+		textOptions.txo_fgcolor.v = THEME_WINDOW_TEXT_COLOR;
 		textOptions.txo_bgcolor.v = GrNOCOLOR;
 		textOptions.txo_direct = GR_TEXT_RIGHT;
 		textOptions.txo_xalign = GR_ALIGN_LEFT;

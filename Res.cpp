@@ -23,6 +23,7 @@ struct DatabaseItem {
     string genre;
     string year;
     string publisher;
+    string description;
 };
 
 class AppResources {
@@ -31,8 +32,28 @@ private:
     static AppResources *self;
 
 	GrContext *_LoadImage(string filename){
+        if (filename.find(".png", 0) != std::string::npos){
+            return _LoadPng(filename);
+        }
+	    
+        return _LoadPnm(filename);
+	}
 
-	    int w, h;
+    GrContext *_LoadPnm(string filename){
+        int w, h, m;
+        GrQueryPnm((char*)filename.c_str(),&w,&h,&m);
+		GrContext *ctx = GrCreateContext(w,h,NULL,NULL);
+		if (ctx == NULL){
+            debugOut("Error creating context - out of memory?");
+		}
+		if (GrLoadContextFromPnm(ctx, (char*) filename.c_str()) == -1){
+            debugOut("Error loading pnm file");
+		}
+		return ctx;
+    }
+
+    GrContext *_LoadPng(string filename){
+        int w, h;
         GrQueryPng((char*)filename.c_str(),&w,&h);
 		GrContext *ctx = GrCreateContext(w,h,NULL,NULL);
 		if (ctx == NULL){
@@ -42,7 +63,7 @@ private:
             debugOut("Error loading png file");
 		}
 		return ctx;
-	}
+    }
 
     std::vector<DatabaseItem*> *_databaseItems = new std::vector<DatabaseItem*>();
     std::vector<DatabaseItem*> *_GetDatabaseItems(string filename){
@@ -84,6 +105,8 @@ private:
                                 currentItem->publisher = itemValue;
                             } else if (key == "year"){
                                 currentItem->year = itemValue;
+                            } else if (key == "description"){
+                                currentItem->description = itemValue;
                             }
                             break;
                         }

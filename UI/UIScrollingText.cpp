@@ -10,7 +10,7 @@ class UIScrollingText : public UIDrawable {
 private:
 	UITextArea* _innerText;
 	void draw_internal(){
-		GrClearContextC(ctx, GrAllocColor(0,0,0));
+		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
 		_innerText->y = 0-ScrollTop;
 	}
 	
@@ -23,6 +23,7 @@ public:
 			return false;
 		}
 		ScrollTop++;
+		needsRedraw = true;
 		return true;
 	}
 
@@ -32,6 +33,7 @@ public:
 			return false;
 		}
 		ScrollTop--;
+		needsRedraw = true;
 		return true;
 	}
 

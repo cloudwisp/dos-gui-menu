@@ -188,7 +188,7 @@ private:
 	}
 
 	void draw_internal(){
-		GrClearContextC(ctx,GrAllocColor(10,10,10));
+		GrClearContextC(ctx,THEME_WINDOW_BACKGROUND_COLOR);
 	}
 
 	void FocusNotify(UIDrawable* focusedDrawable){

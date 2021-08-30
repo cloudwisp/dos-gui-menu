@@ -20,7 +20,7 @@ private:
 
 	void draw_internal(){
 		//draw stuff
-		GrClearContextC(ctx, GrAllocColor(0,0,0));
+		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
 		boxColors.fbx_intcolor = _bg;
 		boxColors.fbx_topcolor = shadow;
 		boxColors.fbx_leftcolor = shadow;
@@ -28,7 +28,6 @@ private:
 		boxColors.fbx_rightcolor = highlight;
 		GrSetContext(ctx);
 		GrFramedBox(_borderWidth, _borderWidth, width-(_borderWidth*2), height-(_borderWidth*2), _borderWidth, &boxColors);
-		Freeze();
 	}
 
 	void OnKeyUp(int KeyCode, int ShiftState, int Ascii) override {
@@ -45,7 +44,6 @@ private:
 		if (KeyCode == KEY_BACKSPACE){
             innerText->CharBackspace();
 			EmitEvent("Changed");
-			Unfreeze();
             return;
         }
 
@@ -76,8 +74,6 @@ private:
             innerText->CharAdd((char) Ascii);
 			EmitEvent("Changed");
         }
-
-		Unfreeze();
 	}
 
 public:
@@ -88,11 +84,9 @@ public:
 		}
 		if (event == "GotFocus"){
 			innerText->ShowCursor();
-			Unfreeze();
 		}
 		if (event == "LostFocus"){
 			innerText->HideCursor();
-			Unfreeze();
 		}
 		UIDrawable::OnEvent(source, event, data);
 	}
@@ -100,7 +94,6 @@ public:
 	void SetText(std::string text){
 		innerText->SetText(text);
         EmitEvent("Changed");
-		Unfreeze();
 	}
 
 	void SetIntMode(bool limitToInt){
@@ -116,14 +109,14 @@ public:
 	}
 
 	UITextBox(int width, int height, int maxChars) : UIDrawable(width, height){
-		_fg = GrAllocColor(255,255,255);
-		_bg = GrAllocColor(10,10,10);
-		highlight = GrAllocColor(230,230,230);
-		shadow = GrAllocColor(100,100,100);
+		_fg = THEME_CONTROL_TEXT;
+		_bg = THEME_CONTROL_BACKGROUND;
+		highlight = THEME_3D_HIGHLIGHT;
+		shadow = THEME_3D_SHADOW;
 		innerText = new UITextArea(width - (_borderWidth * 4), height - (_borderWidth * 4));
 		innerText->y = _borderWidth * 2;
 		innerText->x = _borderWidth * 2;
-		innerText->SetColor(_fg, GrNOCOLOR);
+		innerText->SetColor(_fg, THEME_COLOR_TRANSPARENT);
 		AddChild(innerText);
 		BindEvent("GotFocus", this);
 		BindEvent("LostFocus", this);

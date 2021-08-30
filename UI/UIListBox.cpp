@@ -20,7 +20,7 @@ private:
     int selectedItem = 0;
 
     void draw_internal(){
-        GrClearContextC(ctx, GrAllocColor(0,0,0));
+        GrClearContextC(ctx, THEME_CONTROL_BACKGROUND);
     }
 
 public:
@@ -30,11 +30,12 @@ public:
             return;
         }
         selectedItem = index;
-        for (int i = 0; i < listItemText.size() - 1; i++){
-            listItemText.at(i)->SetColor(GrAllocColor(255,255,255), GrAllocColor(0,0,0));
+        for (int i = 0; i < listItemText.size(); i++){
+            listItemText.at(i)->SetColor(THEME_CONTROL_TEXT, THEME_COLOR_TRANSPARENT);
         }
-        listItemText.at(index)->SetColor(GrBlack(), GrAllocColor(255,255,255));
+        listItemText.at(index)->SetColor(THEME_HIGHLIGHT_TEXT, THEME_HIGHLIGHT_BACKGROUND);
         EmitEvent("SelectedItemChanged", index);
+        needsRedraw = true;
     }
 
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
@@ -55,10 +56,11 @@ public:
         if (listItems.size() == 1){
             SetSelectedItem(0);
         }
+        needsRedraw = true;
     }
 
     UIListBox(int width, int height) : UIDrawable(width, height){
-        panel = new UIStackedPanel(GrAllocColor(0,0,0), width - (borderWidth*2) - (padding*2), height - (borderWidth*2) - (padding*2));
+        panel = new UIStackedPanel(THEME_COLOR_TRANSPARENT, width - (borderWidth*2) - (padding*2), height - (borderWidth*2) - (padding*2));
         AddChild(panel);
     }
 

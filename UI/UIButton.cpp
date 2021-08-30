@@ -30,7 +30,7 @@ private:
 
 	void draw_internal(){
 		//draw stuff
-		GrClearContextC(ctx, GrAllocColor(0,0,0));
+		GrClearContextC(ctx, GrNOCOLOR);
 		boxColors.fbx_intcolor = _bg;
 
 		boxColors.fbx_topcolor = highlight;
@@ -52,7 +52,6 @@ private:
 		}
 		GrSetContext(ctx);
 		GrFramedBox(_borderWidth, _borderWidth, width-(_borderWidth*2), height-(_borderWidth*2), _borderWidth, &boxColors);
-		Freeze();
 	}
 
 
@@ -68,7 +67,7 @@ public:
 			if (clockToMilliseconds(now-lastClick) > 250){
 				SetState(BUTTONSTATE_NORMAL);
 				needsRedraw = true;
-			}	
+			}
 		}
 	}
 
@@ -76,13 +75,13 @@ public:
 		_bg = backColor;
 		_fg = textColor;
 		textArea->SetColor(textColor, GrNOCOLOR);
-		Unfreeze();
+		needsRedraw = true;
 	}
 
 	void SetText(char *text){
 		_text = text;
 		textArea->SetText(text);
-		Unfreeze();
+		needsRedraw = true;
 	}
 
 	void SetFont(GrFont *font){
@@ -91,7 +90,7 @@ public:
 
 	void SetState(int state){
 		_state = state;
-		Unfreeze();
+		needsRedraw = true;
 	}
 
 	void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
@@ -145,10 +144,10 @@ public:
 		BindEvent("MouseOut", (EventConsumer*) this);
 		BindEvent("LeftMouseButtonDown", (EventConsumer*) this);
 		BindEvent("LeftMouseButtonUp", (EventConsumer*) this);
-		_fg = GrAllocColor(255,255,255);
-		_bg = GrAllocColor(10,10,10);
-		highlight = GrAllocColor(230,230,230);
-		shadow = GrAllocColor(100,100,100);
+		_fg = THEME_BUTTON_TEXT_PRIMARY;
+		_bg = THEME_BUTTON_BACKGROUND_PRIMARY;
+		highlight = THEME_3D_HIGHLIGHT;
+		shadow = THEME_3D_SHADOW;
 		tabstop = 1;
 	}
 	~UIButton(){

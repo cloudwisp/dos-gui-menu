@@ -84,6 +84,7 @@ protected:
 				childDisplayOrder[i] = childDisplayOrder[i-1];
 			}
 		}
+		needsRedraw = true;
     }
 
     void BringChildToFront(UIDrawable* child){
@@ -104,6 +105,7 @@ protected:
 				childDisplayOrder[i] = childDisplayOrder[i+1];
 			}
 		}
+		needsRedraw = true;
     }
 
 	virtual void FocusNotify(UIDrawable* focusedDrawable){
@@ -173,6 +175,7 @@ public:
             //sets all children
             SetWindow(window);
 		}
+		needsRedraw = true;
 	}
 
 	virtual void RemoveChild(UIDrawable *subElement){
@@ -189,6 +192,7 @@ public:
             }
         }
         childCount-=removed;
+		needsRedraw = true;
 	}
 
 	void SetWindow(UIDrawable *theWindow){
@@ -201,10 +205,12 @@ public:
 
 	void Show(){
 		visible = 1;
+		needsRedraw = true;
 	}
 
 	void Hide(){
 		visible = 0;
+		needsRedraw = true;
 	}
 
 	void Focus(){
@@ -274,21 +280,13 @@ public:
 		parent->BringChildToFront(this);
 	}
 
-	//freeze rendering, will blit currently stored context without internal update
-	void Freeze(){
-		freeze = 1;
-	}
-
-	void Unfreeze(){
-		freeze = 0;
-	}
-
 	void SetDimensions(int drawWidth, int drawHeight){
         GrDestroyContext(ctx);
         width = drawWidth;
         height = drawHeight;
         ctx = GrCreateContext(drawWidth, drawHeight, NULL, NULL);
-        GrClearContextC(ctx,GrAllocColor(0,0,0));
+        GrClearContextC(ctx,THEME_COLOR_TRANSPARENT);
+		needsRedraw = true;
 	}
 
 	void SetInnerDimensions(int innerDrawWidth, int innerDrawHeight, int innerX, int innerY){
@@ -301,7 +299,8 @@ public:
 		innerContextX = innerX;
 		innerContextY = innerY;
 		innerContext = GrCreateContext(innerDrawWidth, innerDrawHeight, NULL, NULL);
-		GrClearContextC(innerContext, GrAllocColor(0,0,0));
+		GrClearContextC(innerContext, THEME_COLOR_TRANSPARENT);
+		needsRedraw = true;
 	}
 
 	UIDrawable(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight, drawWidth, drawHeight, true) {
@@ -322,11 +321,12 @@ public:
 		childCount = 0;
 		childDisplayOrderCount = 0;
 		ctx = GrCreateContext(width, height, NULL, NULL);
-		GrClearContextC(ctx,GrAllocColor(0,0,0));
+		GrClearContextC(ctx,THEME_COLOR_TRANSPARENT);
 		if (!asSingleContext){
 			innerContext = GrCreateContext(innerWidth, innerHeight, NULL, NULL);
-			GrClearContextC(innerContext, GrAllocColor(0,0,0));
+			GrClearContextC(innerContext, THEME_COLOR_TRANSPARENT);
 		}
+		needsRedraw = true;
 	}
 
 	~UIDrawable(){
@@ -361,7 +361,7 @@ public:
 			childCanvas = innerContext;
 		}
 
-		if (!freeze || NeedsRedraw()){
+		if (NeedsRedraw()){
 			draw_internal();
 			int i, o;
 			for (o = 0; o < childDisplayOrderCount; o++){
@@ -378,7 +378,7 @@ public:
 		}
 		if (highlight){
 			GrSetContext(ctx);
-			GrBox(0,0, width-1, height-1, GrAllocColor(255,255,0));
+			GrBox(0,0, width-1, height-1, THEME_HIGHLIGHT_BORDER);
 		}
 		if (!singleContext){
 			GrBitBlt(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);

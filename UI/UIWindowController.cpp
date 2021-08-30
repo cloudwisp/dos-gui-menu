@@ -88,7 +88,7 @@ public:
         focusedWindow->BringToFront();
 	}
 
-	UIWindowController(int screenWidth, int screenHeight, int bitDepth){
+	UIWindowController(int screenWidth, int screenHeight){
 
 		//screen
 		screen = new UIAppScreen(screenWidth, screenHeight);

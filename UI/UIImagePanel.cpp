@@ -12,12 +12,24 @@ private:
 	GrImage* sizedImg = NULL;
 	std::string imagePath;
 	bool hasImage = false;
+	GrContext* imctx = NULL;
+	int loadedWidth = 0;
+	int loadedHeight = 0;
+	clock_t loadImageStart;
+	int loadDelay = 0;
+	bool imageLoaded = false;
+	UITextArea *loadingText = NULL;
+
 	void draw_internal(){
-	    if (!sizedImg){ return; }
+	    
+		
 		GrSetContext(ctx);
-		GrClearContextC(ctx, GrNOCOLOR);
+		GrClearContextC(ctx, THEME_COLOR_BLACK);
+		if (!sizedImg){ return; }
+		//if (!imctx){ return; }
+		//GrBitBlt(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
+		
 		GrImageDisplay(0,0,sizedImg);
-		Freeze();
 	}
 
 	void _load_image(){
@@ -25,39 +37,65 @@ private:
         if (sizedImg){
             GrImageDestroy(sizedImg);
         }
-        GrContext* imctx = AppResources::LoadImage(imagePath);
-		img = GrImageFromContext(imctx);
-		//fit to width
-		int imWidth, imHeight;
+        ResetColors();
+        imctx = AppResources::LoadImage(imagePath);
 		GrContext *prevCtx = GrCurrentContext();
 		GrSetContext(imctx);
-		imWidth = GrSizeX();
-		imHeight = GrSizeY();
+		loadedWidth = GrSizeX();
+		loadedHeight = GrSizeY();
 		GrSetContext(prevCtx);
-		//GrDestroyContext(imctx);
-		double ratio = (double)imHeight/(double)imWidth;
+		img = GrImageFromContext(imctx);
+		//fit to width
+		double ratio = (double)loadedHeight/(double)loadedWidth;
 		int newHeight = width*ratio;
 		sizedImg = GrImageStretch(img, width, newHeight);
 	}
 
+protected:
+
+	void Update(){
+		if (hasImage && !imageLoaded && loadDelay > 0){
+			clock_t now = clock();
+			if (clockToMilliseconds(now-loadImageStart) > loadDelay){
+				imageLoaded = true;
+				loadingText->Hide();
+				_load_image();
+				needsRedraw = true;
+			}
+		}
+	}
+
 public:
 
-    void Show(){
-        if (!sizedImg && hasImage){
-            _load_image();
-        }
-        UIDrawable::Show();
-    }
-
-    void SetImage(std::string filename){
+    void SetImage(std::string filename, int delay = 0){
         imagePath = std::string(filename);
-        hasImage = true;
-        _load_image();
-		Unfreeze();
+		hasImage = true;
+		imageLoaded = false;
+		loadDelay = delay;
+
+		if (delay == 0){
+			loadingText->Hide();
+			_load_image();
+			needsRedraw = true;
+			return;
+		}
+
+		loadImageStart = clock();
+		loadingText->Show();
+		needsRedraw = true;
     }
 
 	UIImagePanel(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
+		loadingText = new UITextArea(drawWidth, drawHeight);
+		loadingText->SetAlign(GR_ALIGN_CENTER, GR_ALIGN_CENTER);
+		loadingText->SetColor(GrWhite(), THEME_COLOR_BLACK);
+		loadingText->SetText("Loading...");
+		AddChild(loadingText);
+		loadingText->Hide();
 
+	}
+	~UIImagePanel(){
+		delete loadingText;
 	}
 };
 

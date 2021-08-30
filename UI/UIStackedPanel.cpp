@@ -12,6 +12,9 @@ private:
 	int tailY = 0;
 	void draw_internal(){
 		GrClearContextC(ctx, backgroundColor);
+		if (innerContext){
+			GrClearContextC(innerContext, THEME_COLOR_TRANSPARENT);
+		}
 	}
 public:
 
@@ -20,6 +23,7 @@ public:
 		subElement->x = 0;
 		tailY += subElement->height;
 		UIDrawable::AddChild(subElement);
+		needsRedraw = true;
 	}
 
 	void RemoveChild(UIDrawable* subElement) override {
@@ -31,10 +35,16 @@ public:
 			}
 		}
 		UIDrawable::RemoveChild(subElement);
+		needsRedraw = true;
 	}
 
 	UIStackedPanel(GrColor bgColor, int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
 		backgroundColor = bgColor;
+	}
+	UIStackedPanel(GrColor bgColor, int drawWidth, int drawHeight, int margin) : UIDrawable(drawWidth, drawHeight, drawWidth - margin - margin, drawHeight - margin - margin, false){
+		backgroundColor = bgColor;
+		innerContextX = margin;
+		innerContextY = margin;
 	}
 };
 

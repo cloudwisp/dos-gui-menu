@@ -11,7 +11,7 @@ UIAppScreen* currentScreen;
 class UIAppScreen : public UIDrawable {
 private:
 	void draw_internal(){
-		GrClearContextC(ctx,GrAllocColor(10,10,10));
+		GrClearContextC(ctx,THEME_COLOR_BLACK);
 	}
 
 	static UIAppScreen* current;
