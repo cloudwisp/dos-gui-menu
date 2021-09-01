@@ -111,6 +111,20 @@ protected:
 	virtual void FocusNotify(UIDrawable* focusedDrawable){
 	}
 
+	//redraw boxes
+	std::vector<BoxCoords> redrawBoxes = std::vector<BoxCoords>();
+	void AddRedrawBox(int x1, int y1, int x2, int y2){
+		BoxCoords coords = {x1,y1,x2,y2};
+		redrawBoxes.push_back(coords);
+	}
+	void ClearRedrawBoxes(){
+		redrawBoxes.clear();
+		
+		for (int i = 0; i < childCount; i++){
+			children[i]->ClearRedrawBoxes();
+		}
+	}
+
 	//child drawable container
 	GrContext *innerContext = NULL;
 	int innerContextX = 0;
@@ -342,15 +356,90 @@ public:
 		if (needsRedraw){
 			return true;
 		}
-		bool anyNeed = false;
 		int i, o;
 		for (o = 0; o < childDisplayOrderCount; o++){
 			i = childDisplayOrder[o];
 			if (children[i]->NeedsRedraw()){
-				anyNeed = true;
+				return true;
 			}
 		}
-		return anyNeed;
+		return false;
+	}
+
+	void DrawNew(GrContext *ontoContext){
+		GrContext* childCanvas;
+		if (singleContext){
+			childCanvas = ctx;
+		} else {
+			childCanvas = innerContext;
+		}
+
+		bool fullContainerRedraw = false;
+		if (needsRedraw){
+			draw_internal();
+			if (parent){
+				parent->AddRedrawBox(x, y, x + width - 1, y + height - 1);
+			}
+			needsRedraw = false;
+			fullContainerRedraw = true; //indicate that the child boxes aren't relevant, since the full drawable was redrawn
+			if (focus){
+				GrSetContext(ctx);
+				GrBox(0, 0, width-1, height-1, GrWhite());
+			}
+			if (highlight){
+				GrSetContext(ctx);
+				GrBox(0,0, width-1, height-1, THEME_HIGHLIGHT_BORDER);
+			}
+		}
+		int i, o;
+		for (o = 0; o < childDisplayOrderCount; o++){
+			i = childDisplayOrder[o];
+			if (!children[i]->visible){ continue; }
+			children[i]->DrawNew(childCanvas);
+		}
+
+
+		if (!singleContext){
+			for (int i = 0; i < redrawBoxes.size(); i++){
+				BoxCoords redrawBox = redrawBoxes.at(i);
+			 	GrBitBlt(ctx, innerContextX + redrawBox.x1, innerContextY + redrawBox.y1, innerContext, redrawBox.x1, redrawBox.y1, redrawBox.x2, redrawBox.y2,GrIMAGE);
+			}
+		}
+
+		if (!fullContainerRedraw){
+			int offsetX = 0;
+			int offsetY = 0;
+			if (!singleContext){
+				offsetX = innerContextX;
+				offsetY = innerContextY;
+			}
+			//TODO: consolidate redraw boxes, if some are fully contained in another
+
+			//blit only redraw box sections onto parent.
+			for (int i = 0 ; i < redrawBoxes.size(); i++){
+				BoxCoords redrawBox = redrawBoxes.at(i);
+
+				// Propagate child redraw areas up to parent
+				if (parent){
+					parent->AddRedrawBox(x + redrawBox.x1 + offsetX, y + redrawBox.y1 + offsetY, x + redrawBox.x2 + offsetX, y + redrawBox.y2 + offsetY);
+				}
+				
+				//Temp, highlight the box.
+				GrSetContext(ctx);
+				GrBox(redrawBox.x1 + offsetX, redrawBox.y1 + offsetY, redrawBox.x2 + offsetX, redrawBox.y2 + offsetY, THEME_HIGHLIGHT_BORDER);
+				
+				//blit redraw box onto parent context
+				GrBitBlt(ontoContext, x + redrawBox.x1 + offsetX, y + redrawBox.y1 + offsetY, ctx, redrawBox.x1 + offsetX, redrawBox.y1 + offsetY, redrawBox.x2 + offsetX, redrawBox.y2 + offsetY, GrIMAGE);
+			}
+
+			return;
+		}
+		if (ontoContext == NULL){
+			return;
+		}
+		
+		//blit entire context onto parent
+		GrBitBltCount(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}
 
 	void Draw(GrContext *ontoContext){
@@ -381,9 +470,9 @@ public:
 			GrBox(0,0, width-1, height-1, THEME_HIGHLIGHT_BORDER);
 		}
 		if (!singleContext){
-			GrBitBlt(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);
+			GrBitBltCount(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);
 		}
-		GrBitBlt(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
+		GrBitBltCount(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}
 };
 

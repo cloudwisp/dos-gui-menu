@@ -19,17 +19,21 @@ private:
 	int loadDelay = 0;
 	bool imageLoaded = false;
 	UITextArea *loadingText = NULL;
+	bool scaling = true; //If false, render whatever dimensions are input, with clipping possible.
 
 	void draw_internal(){
-	    
-		
-		GrSetContext(ctx);
+	    GrSetContext(ctx);
 		GrClearContextC(ctx, THEME_COLOR_BLACK);
-		if (!sizedImg){ return; }
-		//if (!imctx){ return; }
-		//GrBitBlt(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
+		if (scaling){
+			if (!sizedImg){ return; }
+			GrImageDisplay(0,0,sizedImg);
+			return;
+		}
 		
-		GrImageDisplay(0,0,sizedImg);
+		if (!imctx){ return; }
+		GrBitBltCount(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
+		
+		
 	}
 
 	void _load_image(){
@@ -44,6 +48,9 @@ private:
 		loadedWidth = GrSizeX();
 		loadedHeight = GrSizeY();
 		GrSetContext(prevCtx);
+		if (!scaling){
+			return;
+		}
 		img = GrImageFromContext(imctx);
 		//fit to width
 		double ratio = (double)loadedHeight/(double)loadedWidth;

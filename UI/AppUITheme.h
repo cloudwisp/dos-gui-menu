@@ -2,7 +2,22 @@
 #define AppUITheme_h
 
 #include <grx20.h>
+#include <string>
 #include "AppUI.h"
+#include "../Common.cpp"
+
+int blitCount = 0;
+void GrBitBltCount(GrContext* dst, int x, int y, GrContext* src, int x1, int y1, int x2, int y2, GrColor op){
+    GrBitBlt(dst, x, y, src, x1, y1, x2, y2, op);
+    blitCount++;
+}
+
+void LogBlitCount(){
+    char* buffer = (char*) malloc(sizeof(char) * 1000);
+    sprintf(buffer, "Blit Count: %d", blitCount);
+    debugOut(std::string(buffer));
+    free(buffer);
+}
 
 const int THEME_WINDOW_TITLE_HEIGHT = 20;
 const int THEME_WINDOW_BORDER_WIDTH = 2;

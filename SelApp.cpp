@@ -58,7 +58,7 @@ private:
         gameTitle->SetText(thisItem->name);
         gameGenre->SetText(std::string("Genre: ").append(thisItem->genre));
         gameDescriptionInner->SetText(thisItem->description);
-        screenshot->SetImage(thisItem->image, 1000);
+        screenshot->SetImage(thisItem->image, 250);
     }
 
 public:

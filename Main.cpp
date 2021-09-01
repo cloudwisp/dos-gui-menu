@@ -20,7 +20,6 @@ int main()
     app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse(false);
 	app->Start();
-
     AppResources::Destroy();
 
     delete app;

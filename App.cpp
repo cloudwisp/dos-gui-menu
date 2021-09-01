@@ -23,6 +23,7 @@ private:
 	int _ms_per_update = 16;
 	int _mouse_enabled = 0;
 	bool mouseDebug = false;
+	int lastRedrawCount = 0;
 
 	void _loop(){
 
@@ -68,7 +69,7 @@ private:
 				deltaTime -= CLOCKS_PER_SEC;
 				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
 
-				sprintf(fpsDisplay,"FPS: %.2f \n lag: %.2f", frameRate, clockToMilliseconds(lag));
+				sprintf(fpsDisplay,"FPS: %.2f \n lag: %.2f \n redraw: %d", frameRate, clockToMilliseconds(lag), lastRedrawCount);
 			}
 
 		}
@@ -157,11 +158,10 @@ private:
 			}
 		}
 		
-		if (x != mousePointer->x || y != mousePointer->y){
+		if (mousePointer && (x != mousePointer->x || y != mousePointer->y)){
 			//moved
 			EmitEvent("MouseMove", x, y);
-			mousePointer->x = x;
-			mousePointer->y = y;
+			mousePointer->SetPosition(x, y);
 			_mousein_mouseout();
 			screen->PropagateMouseEvent(x, y, "MouseMove");
 		}
@@ -248,8 +248,8 @@ private:
 	void _render(){
 		render();
 		EmitEvent("Render");
-		diagnostic->BringToFront(); //ensure diagnostics are at top
-		mousePointer->BringToFront();
+		if (diagnostic->visible){ diagnostic->BringToFront(); } //ensure diagnostics are at top
+		if (mousePointer) { mousePointer->BringToFront(); }
 		screen->render();
 	}
 
@@ -285,8 +285,7 @@ public:
 		set_mouse_x_boundary(0, screen->width);
 		set_mouse_y_boundary(0,screen->height);
 		mousePointer = new UIPointer();
-		mousePointer->x = 50;
-		mousePointer->y = 50;
+		mousePointer->SetPosition(50, 50);
 		screen->AddChild(mousePointer);
 		_mouse_enabled = 1;
 		screen->SetMouseEnabled();
@@ -321,6 +320,7 @@ public:
 		_app = this;
 	}
 	~CWApplication(){
+		LogBlitCount();
 		if (_mouse_enabled){
 			GrMouseUnInit();
 			delete mousePointer;

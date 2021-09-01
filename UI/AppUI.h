@@ -28,4 +28,11 @@ struct CWRGB {
     UINT8 b;
 };
 
+struct BoxCoords {
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+};
+
 #endif

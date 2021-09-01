@@ -48,6 +48,12 @@ private:
 
 public:
 
+	void SetPosition(int posX, int posY){
+		x = posX;
+		y = posY;
+		needsRedraw = true;
+	}
+
 	UIPointer() : UIDrawable(12,16){
 	}
 
