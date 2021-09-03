@@ -48,7 +48,8 @@ public:
 	//top of the render tree
 	void render(){
 		ClearRedrawBoxes();
-		DrawNew(NULL);
+		DrawNew(false);
+		BlitBoxes(ctx);
 		Vsync();
 		GrBitBlt(GrScreenContext(),x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}

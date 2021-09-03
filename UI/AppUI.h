@@ -35,4 +35,9 @@ struct BoxCoords {
     int y2;
 };
 
+struct Coord {
+    int x;
+    int y;
+};
+
 #endif

@@ -68,7 +68,6 @@ private:
 
 	void draw_internal(){
 		GrContext *prevCtx = GrCurrentContext();
-
 		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
 		GrClearContextC(ctx, backgroundColor);
 		GrSetContext(ctx);
