@@ -115,8 +115,8 @@ protected:
 		Coord absPos = {x, y};
 		if (parent){
 			Coord parentAbs = parent->AbsolutePosition();
-			absPos.x = parentAbs.x + x;
-			absPos.y = parentAbs.y + y;
+			absPos.x = parentAbs.x + x + parent->innerContextX;
+			absPos.y = parentAbs.y + y + parent->innerContextY;
 		}
 		return absPos;
 	}
@@ -144,6 +144,7 @@ protected:
 	bool singleContext = false;
 
 	Coord oldPosition = {-1,-1}; //kept for only 1 draw cycle to register a draw box for old pos.
+	bool positionChangedSinceDraw = false;
 
 public:
 	GrContext *ctx = NULL;
@@ -330,7 +331,7 @@ public:
 	}
 
 	void SetPosition(int posX, int posY){
-		oldPosition = {x, y};
+		positionChangedSinceDraw = true;
 		x = posX;
 		y = posY;
 		needsRedraw = true;
@@ -390,10 +391,9 @@ public:
 		//consolidate boxes?
 		for (int i = 0; i < redrawBoxes.size(); i++){
 			BoxCoords coords = redrawBoxes.at(i);
+			GrSetContext(ontoContext);
 			GrFilledBox(coords.x1,coords.y1,coords.x2,coords.y2,THEME_COLOR_BLACK);
 			BlitBox(coords.x1, coords.y1, coords, ontoContext);
-			GrSetContext(ontoContext);
-			//GrBox(0,0, width-1, height-1, THEME_HIGHLIGHT_BORDER);
 		}
 	}
 
@@ -409,17 +409,15 @@ public:
 	}
 
 	void BlitBox(int screenX, int screenY, BoxCoords coords, GrContext *ontoContext){
-		
 		BoxCoords myCoords = ScreenCoordsToLocalContext(coords);
 
 		int mx1 = myCoords.x1 < 0 ? 0 : myCoords.x1;
 		int my1 = myCoords.y1 < 0 ? 0 : myCoords.y1;
 		int mx2 = myCoords.x2 > width - 1 ? width - 1 : myCoords.x2;
 		int my2 = myCoords.y2 > height - 1 ? height - 1 : myCoords.y2;
-		if (mx2-mx1 <= 0 || my2-my1 <= 0){
+		if (mx2-mx1 < 0 || my2-my1 < 0){
 			return;
 		}
-
 		int screenOffsetX = myCoords.x1 < 0 ? 0-myCoords.x1 : 0;
 		int screenOffsetY = myCoords.y1 < 0 ? 0-myCoords.y1 : 0;
 		GrBitBlt(ontoContext, screenX + screenOffsetX, screenY + screenOffsetY, ctx, mx1, my1, mx2, my2, GrIMAGE);
@@ -428,10 +426,10 @@ public:
 		for (o = 0; o < childDisplayOrderCount; o++){
 			i = childDisplayOrder[o];
 			if (!children[i]->visible){ continue; }
-			// if (myCoords.x2 < children[i]->x + innerContextX
-			// 	|| myCoords.x1 > children[i]->x + children[i]->width + innerContextX
-			// 	|| myCoords.y1 < children[i]->y + innerContextY
-			// 	|| myCoords.y2 > children[i]->y + children[i]->height + innerContextY){
+			// if (mx2 < children[i]->x + innerContextX
+			// 	|| mx1 >= children[i]->x + children[i]->width + innerContextX
+			// 	|| my2 < children[i]->y + innerContextY
+			// 	|| my1 >= children[i]->y + children[i]->height + innerContextY){
 			// 		//box is outside of child context area
 			// 		continue;
 			// 	}
@@ -441,17 +439,21 @@ public:
 	}
 
 	void DrawNew(bool boxFlaggedForRedraw){
-		if (oldPosition.x > -1){
-			//TODO: handle if parent has moved at same time.
-			Coord parentPos = {0,0};
-			if (parent){
-				parentPos = parent->AbsolutePosition();
-			}
-			GetTopElement()->AddRedrawBox(parentPos.x+oldPosition.x, parentPos.y+oldPosition.y, parentPos.x + oldPosition.x + width - 1, parentPos.y + oldPosition.y + height - 1);
-			oldPosition = {-1,-1};
-		}
+		
 		bool fullContainerRedraw = false;
 		if (needsRedraw){
+
+			//if the container has moved, flag the previous location for redraw.
+			if (positionChangedSinceDraw){
+				//TODO: handle if parent has moved at same time.
+				Coord parentPos = {0,0};
+				if (parent){
+					parentPos = parent->AbsolutePosition();
+				}
+				GetTopElement()->AddRedrawBox(parentPos.x+oldPosition.x, parentPos.y+oldPosition.y, parentPos.x + oldPosition.x + width - 1, parentPos.y + oldPosition.y + height - 1);
+				positionChangedSinceDraw = false;
+			}
+
 			draw_internal();
 			if (!boxFlaggedForRedraw){
 				Coord myPos = AbsolutePosition();
@@ -469,6 +471,7 @@ public:
 				GrBox(0,0, width-1, height-1, THEME_HIGHLIGHT_BORDER);
 			}
 		}
+		oldPosition = {x, y};
 		int i, o;
 		for (o = 0; o < childDisplayOrderCount; o++){
 			i = childDisplayOrder[o];

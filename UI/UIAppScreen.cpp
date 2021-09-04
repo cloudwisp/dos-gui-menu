@@ -50,6 +50,12 @@ public:
 		ClearRedrawBoxes();
 		DrawNew(false);
 		BlitBoxes(ctx);
+		//temporarily highlight blit boxes
+		// for (int i = 0; i < redrawBoxes.size(); i++){
+		// 	BoxCoords coords = redrawBoxes.at(i);
+		// 	GrSetContext(GrScreenContext());
+		// 	GrBox(coords.x1, coords.y1, coords.x2, coords.y2, THEME_HIGHLIGHT_BORDER);
+		// }
 		Vsync();
 		GrBitBlt(GrScreenContext(),x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}
