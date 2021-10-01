@@ -121,7 +121,8 @@ protected:
 		return absPos;
 	}
 
-	//redraw boxes
+	//redraw boxes - these are only relevant to the screen, but drawables don't have a hook on the screen, so it's on this class
+	// accessed through GetTopElement()->AddRedrawBox
 	std::vector<BoxCoords> redrawBoxes = std::vector<BoxCoords>();
 	void AddRedrawBox(int x1, int y1, int x2, int y2){
 		BoxCoords coords = {x1,y1,x2,y2};
@@ -129,18 +130,9 @@ protected:
 	}
 	void ClearRedrawBoxes(){
 		redrawBoxes.clear();
-		
-		for (int i = 0; i < childCount; i++){
-			children[i]->ClearRedrawBoxes();
-		}
 	}
 
-	//child drawable container
-	GrContext *innerContext = NULL;
-	int innerContextX = 0;
-	int innerContextY = 0;
-	int innerWidth;
-	int innerHeight;
+	
 	bool singleContext = false;
 
 	Coord oldPosition = {-1,-1}; //kept for only 1 draw cycle to register a draw box for old pos.
@@ -154,6 +146,13 @@ public:
 	int height;
 	int visible;
 	int freeze;
+	
+	//child drawable container
+	GrContext *innerContext = NULL;
+	int innerContextX = 0;
+	int innerContextY = 0;
+	int innerWidth;
+	int innerHeight;
 
 	int focus;
 	int tabstop; // when set to a value over zero, will tell the window to focus the element during key tabbing in the order defined by this value.
@@ -337,10 +336,13 @@ public:
 		needsRedraw = true;
 	}
 
-	UIDrawable(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight, drawWidth, drawHeight, true) {
+	UIDrawable(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight, drawWidth, drawHeight, 0, 0, true) {
 	}
 
-	UIDrawable(int drawWidth, int drawHeight, int innerDrawWidth, int innerDrawHeight, bool asSingleContext){
+	UIDrawable(int drawWidth, int drawHeight, int padding) : UIDrawable(drawWidth, drawHeight, drawWidth - (padding*2), drawHeight - (padding*2), padding, padding, padding == 0){
+	}
+
+	UIDrawable(int drawWidth, int drawHeight, int innerDrawWidth, int innerDrawHeight, int innerX, int innerY, bool asSingleContext){
 		x = 0;
 		y = 0;
 		width = drawWidth;
@@ -357,6 +359,8 @@ public:
 		ctx = GrCreateContext(width, height, NULL, NULL);
 		GrClearContextC(ctx,THEME_COLOR_TRANSPARENT);
 		if (!asSingleContext){
+			innerContextX = innerX;
+			innerContextY = innerY;
 			innerContext = GrCreateContext(innerWidth, innerHeight, NULL, NULL);
 			GrClearContextC(innerContext, THEME_COLOR_TRANSPARENT);
 		}
@@ -408,6 +412,51 @@ public:
 		return adjusted;
 	}
 
+	BoxCoords VisibleAbsoluteBox(){
+		if (!parent){
+			return BoxCoords {0, 0, width -1, height - 1};
+		}
+		if (!visible){
+			return BoxCoords {0,0,0,0};
+		}
+		
+		Coord myAbsolutePos = AbsolutePosition();
+		BoxCoords parentClip = parent->VisibleAbsoluteBox();
+		parentClip.x1 += parent->innerContextX;
+		parentClip.y1 += parent->innerContextY;
+		parentClip.x2 -= (parent->width - parent->innerWidth);
+		parentClip.y2 -= (parent->height - parent->innerHeight);
+
+		int minX = myAbsolutePos.x;
+		int maxX = myAbsolutePos.x + width - 1;
+		int minY = myAbsolutePos.y;
+		int maxY = myAbsolutePos.y + height - 1;
+
+		if (maxX < parentClip.x1
+			|| minX > parentClip.x2
+			|| maxY < parentClip.y1
+			|| minY > parentClip.y2){
+				//outside of parent's visible clip area
+				return BoxCoords {0,0,0,0};
+			}
+		
+		if (minX < parentClip.x1){
+			minX = parentClip.x1;
+		}
+		if (maxX > parentClip.x2){
+			maxX = parentClip.x2;
+		}
+		if (minY < parentClip.y1){
+			minY = parentClip.y1;
+		}
+		if (maxY > parentClip.y2){
+			maxY = parentClip.y2;
+		}
+		return BoxCoords {minX, minY, maxX, maxY};
+	}
+
+	clock_t lastUpdate = clock();
+
 	void BlitBox(int screenX, int screenY, BoxCoords coords, GrContext *ontoContext){
 		BoxCoords myCoords = ScreenCoordsToLocalContext(coords);
 
@@ -438,11 +487,10 @@ public:
 		}
 	}
 
-	void DrawNew(bool boxFlaggedForRedraw){
+	void Draw(bool boxFlaggedForRedraw){
 		
 		bool fullContainerRedraw = false;
 		if (needsRedraw){
-
 			//if the container has moved, flag the previous location for redraw.
 			if (positionChangedSinceDraw){
 				//TODO: handle if parent has moved at same time.
@@ -455,9 +503,15 @@ public:
 			}
 
 			draw_internal();
+
+			if (!singleContext){
+				GrBitBlt(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);
+			}
+			
 			if (!boxFlaggedForRedraw){
-				Coord myPos = AbsolutePosition();
-				GetTopElement()->AddRedrawBox(myPos.x, myPos.y, myPos.x + width - 1, myPos.y + height - 1);
+				//Coord myPos = AbsolutePosition();
+				BoxCoords myPos = VisibleAbsoluteBox();
+				GetTopElement()->AddRedrawBox(myPos.x1, myPos.y1, myPos.x2, myPos.y2);
 				boxFlaggedForRedraw = true;
 			}
 			needsRedraw = false;
@@ -476,41 +530,8 @@ public:
 		for (o = 0; o < childDisplayOrderCount; o++){
 			i = childDisplayOrder[o];
 			if (!children[i]->visible){ continue; }
-			children[i]->DrawNew(boxFlaggedForRedraw);
+			children[i]->Draw(boxFlaggedForRedraw);
 		}
-	}
-
-	void Draw(GrContext *ontoContext){
-		GrContext* childCanvas;
-		if (singleContext){
-			childCanvas = ctx;
-		} else {
-			childCanvas = innerContext;
-		}
-
-		if (NeedsRedraw()){
-			draw_internal();
-			int i, o;
-			for (o = 0; o < childDisplayOrderCount; o++){
-                i = childDisplayOrder[o];
-				if (!children[i]->visible){ continue; }
-				children[i]->Draw(childCanvas);
-			}
-			needsRedraw = false;
-		}
-		if (ontoContext == NULL){ return; }
-		if (focus){
-			GrSetContext(ctx);
-			GrBox(0, 0, width-1, height-1, GrWhite());
-		}
-		if (highlight){
-			GrSetContext(ctx);
-			GrBox(0,0, width-1, height-1, THEME_HIGHLIGHT_BORDER);
-		}
-		if (!singleContext){
-			GrBitBltCount(ctx, innerContextX, innerContextY, innerContext, 0, 0, innerWidth-1, innerHeight-1,GrIMAGE);
-		}
-		GrBitBltCount(ontoContext,x,y,ctx,0,0,width-1,height-1,GrIMAGE);
 	}
 };
 

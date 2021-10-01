@@ -19,6 +19,7 @@ int main()
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse(false);
+    app->ToggleDiagnostics(false);
 	app->Start();
     AppResources::Destroy();
 

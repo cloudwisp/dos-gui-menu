@@ -31,7 +31,7 @@ private:
 		}
 		
 		if (!imctx){ return; }
-		GrBitBltCount(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
+		GrBitBlt(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
 		
 		
 	}

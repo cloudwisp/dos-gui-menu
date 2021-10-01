@@ -108,7 +108,10 @@ public:
 		return innerText->GetText();
 	}
 
-	UITextBox(int width, int height, int maxChars) : UIDrawable(width, height){
+	UITextBox(int width, int height, int maxChars): UITextBox(width, height, maxChars, 0) {
+	}
+
+	UITextBox(int width, int height, int maxChars, int padding) : UIDrawable(width, height, padding){
 		_fg = THEME_CONTROL_TEXT;
 		_bg = THEME_CONTROL_BACKGROUND;
 		highlight = THEME_3D_HIGHLIGHT;

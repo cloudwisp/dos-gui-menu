@@ -14,7 +14,8 @@ class UIListBox : public UIDrawable
 private:
     std::vector<std::string> listItems;
     std::vector<UITextArea*> listItemText;
-    UIStackedPanel* panel;
+    UIScrollingPanel* panel;
+    //UIDrawable *panel;
     int borderWidth = 2;
     int padding = 2;
     int selectedItem = 0;
@@ -24,6 +25,14 @@ private:
     }
 
 public:
+
+    void OnEvent(EventEmitter *source, std::string event, EventData data){
+        for (int i = 0; i < listItemText.size(); i++){
+            if (selectedItem != i && source == listItemText.at(i) && event == "LeftMouseButtonUp"){
+                SetSelectedItem(i);
+            }
+        }
+    }
 
     void SetSelectedItem(int index){
         if (index < 0 || index > listItems.size() - 1){
@@ -35,6 +44,7 @@ public:
         }
         listItemText.at(index)->SetColor(THEME_HIGHLIGHT_TEXT, THEME_HIGHLIGHT_BACKGROUND);
         EmitEvent("SelectedItemChanged", index);
+        panel->ScrollToChildFull(listItemText.at(index));
         needsRedraw = true;
     }
 
@@ -49,8 +59,9 @@ public:
 
     void AddItem(std::string item){
         listItems.push_back(item);
-        UITextArea* newArea = new UITextArea(panel->width, UIHelpers::CharHeight(THEME_DEFAULT_FONT) + (padding * 2));
+        UITextArea* newArea = new UITextArea(panel->innerWidth, UIHelpers::CharHeight(THEME_DEFAULT_FONT) + (padding * 2));
         newArea->SetText(item);
+        newArea->BindEvent("LeftMouseButtonUp", this);
         listItemText.push_back(newArea);
         panel->AddChild(newArea);
         if (listItems.size() == 1){
@@ -60,11 +71,13 @@ public:
     }
 
     UIListBox(int width, int height) : UIDrawable(width, height){
-        panel = new UIStackedPanel(THEME_COLOR_TRANSPARENT, width - (borderWidth*2) - (padding*2), height - (borderWidth*2) - (padding*2));
+        //panel = new UIStackedPanel(THEME_COLOR_TRANSPARENT, width - (borderWidth*2) - (padding*2), height - (borderWidth*2) - (padding*2));
+        panel = new UIScrollingPanel(true, THEME_COLOR_TRANSPARENT, width, height, 4, true, true);
         AddChild(panel);
     }
 
     ~UIListBox(){
+        delete panel;
         for (UITextArea* txt : listItemText){
             delete txt;
             listItems.clear();

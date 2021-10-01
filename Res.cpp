@@ -19,11 +19,14 @@ struct CachedImage {
 struct DatabaseItem {
     string name;
     string path;
+    string readme;
     string image;
     string genre;
     string year;
-    string publisher;
-    string description;
+    string developer;
+    string notes;
+    bool favorite;
+    bool cd;
 };
 
 class AppResources {
@@ -65,6 +68,20 @@ private:
 		return ctx;
     }
 
+    std::string _GetReadme(std::string path){
+        fstream rmfile;
+        std::string file_contents;
+        rmfile.open(path.c_str(),ios::in);
+        if (rmfile.is_open()){
+            string tp;
+            while(getline(rmfile, tp)){
+                file_contents += tp;
+                file_contents.push_back('\n');
+            }
+        }
+        return file_contents;
+    }
+
     std::vector<DatabaseItem*> *_databaseItems = new std::vector<DatabaseItem*>();
     std::vector<DatabaseItem*> *_GetDatabaseItems(string filename){
         if (_databaseItems->size() > 0){
@@ -101,12 +118,18 @@ private:
                                 currentItem->path = itemValue;
                             } else if (key == "image"){
                                 currentItem->image = itemValue;
-                            } else if (key == "publisher"){
-                                currentItem->publisher = itemValue;
+                            } else if (key == "developer"){
+                                currentItem->developer = itemValue;
                             } else if (key == "year"){
                                 currentItem->year = itemValue;
-                            } else if (key == "description"){
-                                currentItem->description = itemValue;
+                            } else if (key == "notes"){
+                                currentItem->notes = itemValue;
+                            } else if (key == "readme"){
+                                currentItem->readme = itemValue;
+                            } else if (key == "favorite"){
+                                currentItem->favorite = itemValue == "T";
+                            } else if (key == "cd"){
+                                currentItem->cd = itemValue == "T";
                             }
                             break;
                         }
@@ -139,6 +162,10 @@ public:
 	static std::vector<DatabaseItem*>* GetDatabaseItems(string filename){
         return Current()->_GetDatabaseItems(filename);
 	}
+
+    static std::string GetReadme(string filename){
+        return Current()->_GetReadme(filename);
+    }
 
     static void Destroy(){
         delete self;

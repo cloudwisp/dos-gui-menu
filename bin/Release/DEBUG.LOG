@@ -1,81 +1,363 @@
 
-Blit Count: 250
-Blit Count: 528
-Blit Count: 1981
-Blit Count: 1395
-Blit Count: 5396
-Blit Count: 1653
-Blit Count: 1673
-Blit Count: 3353
-Blit Count: 11801
-Blit Count: 1653
-Blit Count: 627
-Blit Count: 1646
-Blit Count: 1302
-Blit Count: 3167
-Blit Count: 2078
-Blit Count: 2918
-Blit Count: 518
-Blit Count: 834
-Blit Count: 16085
-Blit Count: 3009
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
-Blit Count: 0
+x: 0, y: -7
+Draw myCoords
+----
+w: 176
+h: 433
+x1: -4
+y1: 3
+x2: 172
+y2: 436
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 7
+x2: 156
+y2: 420
+x: 0, y: -22
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 79
+x2: 320
+y2: 95
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -22
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 79
+x2: 320
+y2: 95
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -22
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 79
+x2: 320
+y2: 95
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -22
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 79
+x2: 320
+y2: 95
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -22
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 79
+x2: 320
+y2: 95
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -22
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 79
+x2: 320
+y2: 95
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -22
+Draw myCoords
+----
+w: 176
+h: 433
+x1: -4
+y1: 18
+x2: 172
+y2: 451
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 22
+x2: 156
+y2: 435
+x: 0, y: -7
+Draw myCoords
+----
+w: 176
+h: 433
+x1: -4
+y1: 3
+x2: 172
+y2: 436
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 7
+x2: 156
+y2: 420
+x: 0, y: -142
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 308
+y1: 199
+x2: 320
+y2: 215
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 142
+x2: 156
+y2: 555
+x: 0, y: -142
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 173
+y1: 573
+x2: 185
+y2: 589
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 142
+x2: 156
+y2: 555
+x: 0, y: -142
+Draw myCoords
+----
+w: 176
+h: 433
+x1: -4
+y1: 138
+x2: 172
+y2: 571
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 142
+x2: 156
+y2: 555
+x: 0, y: -90
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 5
+y1: 517
+x2: 17
+y2: 533
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 90
+x2: 156
+y2: 503
+x: 0, y: -90
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 14
+y1: 511
+x2: 26
+y2: 527
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 90
+x2: 156
+y2: 503
+x: 0, y: -30
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 3
+y1: 452
+x2: 15
+y2: 468
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 30
+x2: 156
+y2: 443
+x: 0, y: -7
+Draw myCoords
+----
+w: 176
+h: 433
+x1: -4
+y1: 3
+x2: 172
+y2: 436
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 7
+x2: 156
+y2: 420
+x: 0, y: -112
+Draw myCoords
+----
+w: 12
+h: 16
+x1: 264
+y1: 351
+x2: 276
+y2: 367
+
+Clip
+----
+w: 156
+h: 413
+x1: 0
+y1: 112
+x2: 156
+y2: 525
+x: 0, y: -7
+Draw myCoords
+----
+w: 175
+h: 432
+x1: -4
+y1: 3
+x2: 171
+y2: 435
+
+Clip
+----
+w: 151
+h: 408
+x1: 0
+y1: 7
+x2: 151
+y2: 415
+x: 0, y: -142
+Draw myCoords
+----
+w: 11
+h: 15
+x1: 308
+y1: 199
+x2: 319
+y2: 214
+
+Clip
+----
+w: 151
+h: 408
+x1: 0
+y1: 142
+x2: 151
+y2: 550
+x: 0, y: -15
+Draw myCoords
+----
+w: 270
+h: 373
+x1: 188
+y1: 62
+x2: 458
+y2: 435
+
+Clip
+----
+w: 151
+h: 408
+x1: 0
+y1: 15
+x2: 151
+y2: 423
+Error creating context - out of memory?
+Error loading pnm file

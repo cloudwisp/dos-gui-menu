@@ -16,6 +16,12 @@ public:
 	UIPanel(GrColor bgColor, int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
 		backgroundColor = bgColor;
 	}
+
+	UIPanel(GrColor bgColor, int drawWidth, int drawHeight, int padding) : UIDrawable(drawWidth, drawHeight, padding){
+		innerContextX = padding;
+		innerContextY = padding;
+		backgroundColor = bgColor;
+	}
 };
 
 #endif

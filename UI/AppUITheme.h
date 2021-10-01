@@ -6,21 +6,9 @@
 #include "AppUI.h"
 #include "../Common.cpp"
 
-int blitCount = 0;
-void GrBitBltCount(GrContext* dst, int x, int y, GrContext* src, int x1, int y1, int x2, int y2, GrColor op){
-    GrBitBlt(dst, x, y, src, x1, y1, x2, y2, op);
-    blitCount++;
-}
-
-void LogBlitCount(){
-    char* buffer = (char*) malloc(sizeof(char) * 1000);
-    sprintf(buffer, "Blit Count: %d", blitCount);
-    debugOut(std::string(buffer));
-    free(buffer);
-}
-
 const int THEME_WINDOW_TITLE_HEIGHT = 20;
 const int THEME_WINDOW_BORDER_WIDTH = 2;
+const int THEME_SCROLLBAR_WIDTH = 12;
 char* THEME_WINDOW_TITLE_FONT = "helv11"; // "GrFont_PC6x8";
 char* THEME_DEFAULT_FONT = "helv11";
 
@@ -28,7 +16,7 @@ char* THEME_DEFAULT_FONT = "helv11";
     Theme colors
 */
 //defines for reference names
-static GrColor themecolors[24];
+static GrColor themecolors[27];
 #define THEME_WINDOW_BORDER_COLOR           themecolors[0]
 #define THEME_WINDOW_BACKGROUND_COLOR       themecolors[1]
 #define THEME_WINDOW_TEXT_COLOR             themecolors[2]
@@ -53,9 +41,12 @@ static GrColor themecolors[24];
 #define THEME_CONTROL_TEXT                  themecolors[21]
 #define THEME_COLOR_BLACK                   themecolors[22]
 #define THEME_COLOR_TRANSPARENT             themecolors[23]
+#define THEME_COLOR_SCROLLBAR_BACKGROUND    themecolors[24]
+#define THEME_COLOR_SCROLLBAR_BUTTON_BG     themecolors[25]
+#define THEME_COLOR_SCROLLBAR_BUTTON_FG     themecolors[26]
 
 //actual colors - index must align with above list
-CWRGB sourcecolors[24] = {
+CWRGB sourcecolors[27] = {
     //THEME_WINDOW_BORDER_COLOR
     {0xFF,0xFF,0xFF},
     //THEME_WINDOW_BACKGROUND_COLOR
@@ -103,13 +94,19 @@ CWRGB sourcecolors[24] = {
     //THEME_COLOR_BLACK
     {0x10,0x10,0x10}, //cannot be true black, since that's the transparency color
     //THEME_COLOR_TRANSPARENT
-    {0x0,0x0,0x0}
+    {0x0,0x0,0x0},
+    //THEME_COLOR_SCROLLBAR_BACKGROUND
+    {0xAA,0xAA,0xAA},
+    //THEME_COLOR_SCROLLBAR_BUTTON_BG
+    {0xC0,0xC0,0xC0},
+    //THEME_COLOR_SCROLLBAR_BUTTON_FG
+    {0xFF,0xFF,0xFF}
 };
 
 //Actual GrColor values only be called after the graphics mode is set.
 void SetupThemeColors(){
     int i;
-    for (i=0; i < 24; ++i)
+    for (i=0; i < 27; ++i)
         themecolors[i] = GrAllocColor(sourcecolors[i].r,sourcecolors[i].g,sourcecolors[i].b);
 }
 

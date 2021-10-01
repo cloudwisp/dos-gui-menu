@@ -11,7 +11,7 @@ UIAppScreen* currentScreen;
 class UIAppScreen : public UIDrawable {
 private:
 	void draw_internal(){
-		//GrClearContextC(ctx,THEME_COLOR_BLACK);
+		//Not applicable
 	}
 
 	static UIAppScreen* current;
@@ -45,19 +45,26 @@ public:
     void Update(){
         updateTree((UIDrawable*) this);
     }
+
 	//top of the render tree
 	void render(){
 		ClearRedrawBoxes();
-		DrawNew(false);
+		Draw(false);
 		BlitBoxes(ctx);
-		//temporarily highlight blit boxes
-		// for (int i = 0; i < redrawBoxes.size(); i++){
-		// 	BoxCoords coords = redrawBoxes.at(i);
-		// 	GrSetContext(GrScreenContext());
-		// 	GrBox(coords.x1, coords.y1, coords.x2, coords.y2, THEME_HIGHLIGHT_BORDER);
-		// }
+
+		// //Uncomment if you want temporarily highlight blit boxes for diagnosis
+		for (int i = 0; i < redrawBoxes.size(); i++){
+			BoxCoords coords = redrawBoxes.at(i);
+			GrSetContext(GrScreenContext());
+			GrBox(coords.x1, coords.y1, coords.x2, coords.y2, THEME_HIGHLIGHT_BORDER);
+		}
+
 		Vsync();
-		GrBitBlt(GrScreenContext(),x,y,ctx,0,0,width-1,height-1,GrIMAGE);
+		//GrBitBlt(GrScreenContext(),x,y,ctx,0,0,width-1,height-1,GrIMAGE);
+		for (int i = 0; i < redrawBoxes.size(); i++){
+			BoxCoords coords = redrawBoxes.at(i);
+			GrBitBlt(GrScreenContext(), coords.x1, coords.y1, ctx, coords.x1, coords.y1, coords.x2, coords.y2, GrIMAGE);
+		}
 	}
 
 	void SetMouseEnabled(){

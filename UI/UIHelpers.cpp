@@ -39,4 +39,44 @@ int UIHelpers::CharHeight(char* fontName){
     return GrFontCharHeight(ResolveFont(fontName), "A");
 }
 
+void Draw3dButton(GrContext *ontoContext, BoxCoords coords, GrColor bgColor, bool invert){
+    GrContext *prevCtx = GrCurrentContext();
+    GrSetContext(ontoContext);
+    int highlight[3][2] = {
+        {coords.x1, coords.y2},
+        {coords.x1, coords.y1},
+        {coords.x2, coords.y1}
+    };
+    int shadow[3][2] = {
+        {coords.x2, coords.y1},
+        {coords.x2, coords.y2},
+        {coords.x1, coords.y2}
+    };
+
+    GrPolyLine(3, invert ? shadow : highlight, THEME_3D_HIGHLIGHT);
+    GrPolyLine(3, invert? highlight : shadow, THEME_3D_SHADOW);
+    GrSetContext(prevCtx);
+}
+
+bool BoxesIntersect(BoxCoords coord1, BoxCoords coord2){
+    return !(coord1.x2 < coord2.x1
+    || coord1.y2 < coord2.y1
+    || coord1.x1 > coord2.x2
+    || coord1.y1 > coord2.y2);
+}
+
+BoxCoords BoxIntersection(BoxCoords coord1, BoxCoords coord2){
+    if (!BoxesIntersect(coord1,coord2)){
+        return BoxCoords {0,0,0,0};
+    }
+
+    return BoxCoords {
+        coord1.x1 < coord2.x1 ? coord2.x1 : coord1.x1,
+        coord1.y1 < coord2.y1 ? coord2.y1 : coord1.y1,
+        coord1.x2 < coord2.x2 ? coord1.x2 : coord2.x2,
+        coord1.y2 < coord2.y2 ? coord1.y2 : coord2.y2
+    };
+}
+
+
 #endif

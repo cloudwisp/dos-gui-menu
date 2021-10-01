@@ -11,6 +11,7 @@
 #include "keyboard.h"
 #include "App.cpp"
 #include "SelApp.h"
+#include "SelUI.cpp"
 
 class SelectorMainWindow : public UIWindow {
 private:
@@ -24,12 +25,15 @@ private:
     UIPanel *gameDetail = NULL;
     UIStackedPanel *detailRight = NULL;
     UIStackedPanel *detailLeft = NULL;
-    UIListBox *gameListItems = NULL;
+    UIScrollingListBox *gameListItems = NULL;
     UITextArea *gameTitle = NULL;
-    UITextArea *gameGenre = NULL;
     UIScrollingText *gameDescription = NULL;
     UITextArea* gameDescriptionInner = NULL;
     UIButton *launch = NULL;
+    UILabelAndText *gameGenre = NULL;
+    UILabelAndText *gameNotes = NULL;
+    UILabelAndText *publishedYear = NULL;
+    UILabelAndText *developer = NULL;
 
     //fonts & dimensions
     GrFont* titleFont = NULL;
@@ -56,8 +60,18 @@ private:
         activeItem = itemId;
         DatabaseItem* thisItem = (*dbItems)[itemId];
         gameTitle->SetText(thisItem->name);
-        gameGenre->SetText(std::string("Genre: ").append(thisItem->genre));
-        gameDescriptionInner->SetText(thisItem->description);
+        gameGenre->SetText(thisItem->genre);
+        gameNotes->SetText(thisItem->notes);
+        publishedYear->SetText(thisItem->year);
+        if (thisItem->readme != ""){
+            gameDescriptionInner->SetText(AppResources::GetReadme(thisItem->readme));
+        } else {
+            gameDescriptionInner->SetText("");
+        }
+        //gameDescriptionInner->SetText("TODO: Load Readme");
+        if (thisItem->image == ""){
+            thisItem->image = "noimage.ppm";
+        }
         screenshot->SetImage(thisItem->image, 250);
     }
 
@@ -65,6 +79,9 @@ public:
 
     void OnEvent(EventEmitter *source, std::string event, EventData data){
         if (event == "SelectedItemChanged"){
+            if (data.data1 > dbItems->size() - 1){
+                return;
+            }
             _ActivateItem(data.data1);
         }
         UIWindow::OnEvent(source, event, data);
@@ -135,6 +152,7 @@ public:
         int detailLeftWidthInner = detailLeftWidth - (defaultMargin * 2);
         int detailRightWidth = rightPaneWidth - detailLeftWidth;
         int detailRightWidthInner = detailRightWidth - (defaultMargin * 2);
+        double labelPercent = 30;
 
         gameDetail = new UIPanel(THEME_PANEL_BACKGROUND_PRIMARY,rightPaneWidth,rightPaneHeight);
         gameDetail->x = leftPaneWidth;
@@ -172,14 +190,14 @@ public:
         gameList->containertabstop = 1;
         AddChild(gameList);
 
-        gameListItems = new UIListBox(leftPaneWidth-(defaultMargin*2), drawHeight-titleHeight-(defaultMargin*2));
+        gameListItems = new UIScrollingListBox(leftPaneWidth-(defaultMargin*2), drawHeight-titleHeight-(defaultMargin*2));
         gameListItems->BindEvent("SelectedItemChanged", this);
         gameListItems->x = defaultMargin;
         gameListItems->y = defaultMargin;
         gameList->AddChild(gameListItems);
         gameListItems->Focus();
 
-        gameTitle = new UITextArea(rightPaneWidth, gameTitleHeight);
+        gameTitle = new UITextArea(rightPaneWidth, gameTitleHeight, defaultMargin);
         gameTitle->SetFont(titleFontBold);
         gameTitle->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
         gameTitle->SetAlign(GR_ALIGN_LEFT, GR_ALIGN_CENTER);
@@ -188,10 +206,29 @@ public:
 
         gameDetail->AddChild(gameTitle);
 
-        gameGenre = new UITextArea(detailLeftWidthInner, 20);
-        gameGenre->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
-        gameGenre->SetAlign(GR_ALIGN_LEFT, GR_ALIGN_CENTER);
+        gameGenre = new UILabelAndText(detailLeftWidthInner, 20, 20, labelPercent);
+        gameGenre->SetLabelFont(smallFontBold);
+        gameGenre->SetTextFont(smallFont);
+        gameGenre->SetLabel("Genre");
         detailLeft->AddChild(gameGenre);
+
+        gameNotes = new UILabelAndText(detailLeftWidthInner, 20, 40, labelPercent);
+        gameNotes->SetLabelFont(smallFontBold);
+        gameNotes->SetTextFont(smallFont);
+        gameNotes->SetLabel("Notes");
+        detailLeft->AddChild(gameNotes);
+
+        developer = new UILabelAndText(detailLeftWidthInner, 20, 20, labelPercent);
+        developer->SetLabelFont(smallFontBold);
+        developer->SetTextFont(smallFont);
+        developer->SetLabel("Developer");
+        detailLeft->AddChild(developer);
+
+        publishedYear = new UILabelAndText(detailLeftWidthInner, 20, 20, labelPercent);
+        publishedYear->SetLabelFont(smallFontBold);
+        publishedYear->SetTextFont(smallFont);
+        publishedYear->SetLabel("Year Published");
+        detailLeft->AddChild(publishedYear);
 
         gameDescriptionInner = new UITextArea(detailLeftWidthInner, 2000);
         gameDescriptionInner->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);

@@ -12,6 +12,7 @@
 #include "UI/UIWindowController.cpp"
 #include "UI/UIPanel.cpp"
 #include "UI/UIStackedPanel.cpp"
+#include "UI/UIScrollingPanel.cpp"
 #include "UI/UIScrollingText.cpp"
 #include "UI/UITitledWindow.cpp"
 #include "UI/UITextWindow.cpp"
@@ -19,6 +20,7 @@
 #include "UI/UIButton.cpp"
 #include "UI/UITextBox.cpp"
 #include "UI/UIListBox.cpp"
+#include "UI/UIScrollingListBox.cpp"
 #include "UI/UIImagePanel.cpp"
 #include "UI/UIModalWindow.cpp"
 

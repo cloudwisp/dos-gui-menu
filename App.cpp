@@ -24,6 +24,7 @@ private:
 	int _mouse_enabled = 0;
 	bool mouseDebug = false;
 	int lastRedrawCount = 0;
+	clock_t lastDiag = clock();
 
 	void _loop(){
 
@@ -55,7 +56,11 @@ private:
 				_update();
 				lag -= _ms_per_update;
 			}
-            diagnostic->SetText(fpsDisplay);
+
+			if (clockToMilliseconds(current-lastDiag) > 2000){
+				diagnostic->SetText(fpsDisplay);
+				lastDiag = clock();
+			}            
 
 			_render();
 
@@ -320,7 +325,6 @@ public:
 		_app = this;
 	}
 	~CWApplication(){
-		LogBlitCount();
 		if (_mouse_enabled){
 			GrMouseUnInit();
 			delete mousePointer;

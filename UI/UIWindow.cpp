@@ -239,7 +239,7 @@ public:
     UIWindow(int drawWidth,int drawHeight) : UIWindow(drawWidth, drawHeight, drawWidth, drawHeight, true) {
     }
 
-	UIWindow(int drawWidth, int drawHeight, int innerWidth, int innerHeight, bool asSingleContext) : UIDrawable(drawWidth, drawHeight, innerWidth, innerHeight, asSingleContext){
+	UIWindow(int drawWidth, int drawHeight, int innerWidth, int innerHeight, bool asSingleContext) : UIDrawable(drawWidth, drawHeight, innerWidth, innerHeight, 0, 0, asSingleContext){
 		window = this;
 	}
 };
