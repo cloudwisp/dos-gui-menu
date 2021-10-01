@@ -70,6 +70,18 @@ private:
         scrollTopIndex = index;
     }
 
+    int dbIndexOfChar(char c){
+        for (int i = 0; i < listItems.size(); i++){
+            if (listItems[i] == ""){
+                continue;
+            }
+            if (tolower(listItems[i][0]) == tolower(c)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
 public:
 
     void OnEvent(EventEmitter *source, std::string event, EventData data){
@@ -103,15 +115,23 @@ public:
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_UP_ARROW){
             SetSelectedItem(selectedItem-1);
+            return;
         }
         if (ScanCode == KEY_DOWN_ARROW){
             SetSelectedItem(selectedItem+1);
+            return;
         }
         if (ScanCode == KEY_PAGE_UP){
             SetSelectedItem(selectedItem-maxVisibleItems);
+            return;
         }
         if (ScanCode == KEY_PAGE_DOWN){
             SetSelectedItem(selectedItem+maxVisibleItems);
+            return;
+        }
+        int dbIndexLetter = dbIndexOfChar(char(Ascii));
+        if (dbIndexLetter > -1){
+            SetSelectedItem(dbIndexLetter);
         }
     }
 

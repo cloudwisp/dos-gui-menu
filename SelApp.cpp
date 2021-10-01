@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <pc.h>
+#include <algorithm>
 
 #include "Common.h"
 #include "AppUI.cpp"
@@ -12,6 +13,10 @@
 #include "App.cpp"
 #include "SelApp.h"
 #include "SelUI.cpp"
+
+bool dbsort(DatabaseItem *item1, DatabaseItem *item2){
+    return item1->name < item2->name;
+}
 
 class SelectorMainWindow : public UIWindow {
 private:
@@ -93,6 +98,7 @@ public:
 
     void LoadItems(){
         dbItems = AppResources::GetDatabaseItems("games.db");
+        sort(dbItems->begin(), dbItems->end(), dbsort);
         for (int i = 0; i < dbItems->size(); i++){
             gameListItems->AddItem((*dbItems)[i]->name);
         }

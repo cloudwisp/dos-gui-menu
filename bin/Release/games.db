@@ -1,6 +1,6 @@
 [Aladdin]
 path=C:\Games\Aladdin\Aladdin.exe
-image=aladdin.ppm
+image=C:\Games\bmenace\aladdin.ppm
 genre=Platform
 notes=
 favorite=F
@@ -9,6 +9,7 @@ cd=
 
 [Monkey Island]
 path=C:\GAMES\MONKEY1\MONKEY.EXE
+image=C:\Games\crystal\monkey2.ppm
 genre=Adventure
 notes=
 favorite=T
