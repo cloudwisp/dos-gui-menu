@@ -29,6 +29,12 @@ struct DatabaseItem {
     bool cd;
 };
 
+struct PathInfo {
+    string drive;
+    string folder;
+    string file;
+};
+
 class AppResources {
 private:
 
@@ -44,10 +50,15 @@ private:
 
     GrContext *_LoadPnm(string filename){
         int w, h, m;
+        w = 1;
         GrQueryPnm((char*)filename.c_str(),&w,&h,&m);
-		GrContext *ctx = GrCreateContext(w,h,NULL,NULL);
+        if (w == 1){
+            return NULL;
+        }
+        GrContext *ctx = GrCreateContext(w,h,NULL,NULL);
 		if (ctx == NULL){
             debugOut("Error creating context - out of memory?");
+            return ctx;
 		}
 		if (GrLoadContextFromPnm(ctx, (char*) filename.c_str()) == -1){
             debugOut("Error loading pnm file");
@@ -80,6 +91,61 @@ private:
             }
         }
         return file_contents;
+    }
+
+    std::string _GetDefaultItem(){
+        fstream dfile;
+        dfile.open("DEFAULT.DAT", ios::in);
+        if (dfile.is_open()){
+            string tp;
+            getline(dfile, tp);
+            return tp;
+        }
+        return string("");
+    }
+
+    PathInfo* GetPathInfo(std::string path){
+        size_t firstSlash = path.find('\\');
+        string drive = path.substr(0, firstSlash);
+        size_t lastSlash = path.find_last_of('\\');
+        string folder = path.substr(firstSlash, lastSlash-firstSlash);
+        string fileName = path.substr(lastSlash + 1);
+        return new PathInfo {drive, folder, fileName};
+    }
+
+    void _WriteLaunchBat(std::string path, std::string returnTitle){
+        fstream batch;
+        PathInfo* pathInfo = GetPathInfo(path);
+        char* curDir = currentDir();
+        batch.open("menuitem.bat", ios::app);
+        if (batch.is_open()){
+            batch.write("\n",1);
+            batch.write(pathInfo->drive.c_str(), pathInfo->drive.size());
+            batch.write("\n",1);
+            batch.write("cd ", 3);
+            batch.write(pathInfo->folder.c_str(), pathInfo->folder.size());
+            batch.write("\n", 1);
+            batch.write(pathInfo->file.c_str(), pathInfo->file.size());
+            batch.write("\n", 1);
+            delete pathInfo;
+            pathInfo = GetPathInfo(curDir);
+            batch.write(pathInfo->drive.c_str(), pathInfo->drive.size());
+            batch.write("\n",1);
+            batch.write("cd ", 3);
+            batch.write(pathInfo->folder.c_str(), pathInfo->folder.size());
+            batch.write("\n", 1);
+            batch.write(pathInfo->file.c_str(), pathInfo->file.size());
+            batch.write("\n", 1);
+            delete pathInfo;
+            batch.close();
+        }
+
+        fstream returnMeta;
+        returnMeta.open("default.dat", ios::out);
+        if (returnMeta.is_open()){
+            returnMeta.write(returnTitle.c_str(), returnTitle.size());
+            returnMeta.close();
+        }
     }
 
     std::vector<DatabaseItem*> *_databaseItems = new std::vector<DatabaseItem*>();
@@ -165,6 +231,14 @@ public:
 
     static std::string GetReadme(string filename){
         return Current()->_GetReadme(filename);
+    }
+
+    static void WriteLaunchBat(string path, string returnTitle){
+        return Current()->_WriteLaunchBat(path, returnTitle);
+    }
+
+    static std::string GetDefaultItem(){
+        return Current()->_GetDefaultItem();
     }
 
     static void Destroy(){

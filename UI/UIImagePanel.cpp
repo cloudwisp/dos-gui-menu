@@ -43,6 +43,9 @@ private:
         }
         ResetColors();
         imctx = AppResources::LoadImage(imagePath);
+		if (!imctx){
+			return;
+		}
 		GrContext *prevCtx = GrCurrentContext();
 		GrSetContext(imctx);
 		loadedWidth = GrSizeX();

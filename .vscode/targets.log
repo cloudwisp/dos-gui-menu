@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Aug 28 15:45:41 2021
+# Make data base, printed on Thu Dec 30 16:35:06 2021
 
 # Variables
 
@@ -63,7 +63,7 @@ PATH = /usr/local/dos-djgpp/i586-pc-msdosdjgpp/bin:/usr/local/dos-djgpp/bin:/sbi
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/ubuntu-dev-vm2:@/tmp/.ICE-unix/6316,unix/ubuntu-dev-vm2:/tmp/.ICE-unix/6316
+SESSION_MANAGER = local/ubuntu-dev-vm2:@/tmp/.ICE-unix/6536,unix/ubuntu-dev-vm2:/tmp/.ICE-unix/6536
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -81,7 +81,7 @@ LS_COLORS =
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 8140
+GIO_LAUNCHED_DESKTOP_FILE_PID = 7284
 # automatic
 %F = $(notdir $%)
 # environment
@@ -93,7 +93,7 @@ VSCODE_PIPE_LOGGING = true
 # environment
 PWD = /home/roland/dos-source/selector2
 # environment
-SSH_AGENT_PID = 6410
+SSH_AGENT_PID = 6634
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -133,9 +133,9 @@ SHLVL = 1
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-649926a9-f485-47c9-9afb-6be30a3f6b83.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-68b8e667-2d18-4caf-a7e3-dff06dce5ee6.sock
 # environment
-XDG_SESSION_ID = c3
+XDG_SESSION_ID = c4
 # environment
 USER = roland
 # makefile
@@ -207,7 +207,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 8140
+VSCODE_PID = 7284
 # variable set hash-table stats:
 # Load=99/1024=10%, Rehash=0, Collisions=10/127=8%
 
@@ -217,9 +217,9 @@ VSCODE_PID = 8140
 
 # Directories
 
-# . (device 2049, inode 1233507): 22 files, no impossibilities.
+# . (device 2049, inode 1233507): 24 files, no impossibilities.
 
-# 22 files, no impossibilities in 1 directories.
+# 24 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -265,7 +265,7 @@ all:
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2021-08-28 15:45:38.232973118
+#  Last modified 2021-10-01 21:01:09.790184551
 #  File has been updated.
 #  Successfully updated.
 
@@ -279,9 +279,9 @@ launch:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'makefile', line 5):
-	dosbox -c "mount p: $(CURDIR)/bin/Release" -c "p:" -c main
  
+#  recipe to execute (from 'makefile', line 5):
+	dosbox -c "mount p: $(CURDIR)/bin/Release" -c "p:" -c menu.bat
 
 # files hash-table stats:
 # Load=5/1024=0%, Rehash=0, Collisions=0/17=0%
@@ -291,12 +291,12 @@ launch:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 28 / storage = 239 B / avg = 8 B
-# current buf: size = 8162 B / used = 239 B / count = 28 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 30 / storage = 255 B / avg = 8 B
+# current buf: size = 8162 B / used = 255 B / count = 30 / avg = 8 B
 
-# strcache performance: lookups = 36 / hit rate = 22%
+# strcache performance: lookups = 38 / hit rate = 21%
 # hash-table stats:
-# Load=28/8192=0%, Rehash=0, Collisions=1/36=3%
-# Finished Make data base on Sat Aug 28 15:45:41 2021
+# Load=30/8192=0%, Rehash=0, Collisions=1/38=3%
+# Finished Make data base on Thu Dec 30 16:35:07 2021
 
  

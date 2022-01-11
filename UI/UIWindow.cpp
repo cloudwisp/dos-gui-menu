@@ -38,18 +38,13 @@ private:
 		return findTabContainer(child->parent); //traverse one level up and try again.
 	}
 
-	UIDrawable* findNextTabElementWithinTabContainer(UIDrawable *parent, int prevTabStop, UIDrawable* lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
+	UIDrawable* findNextTabElementWithinTabContainer(UIDrawable *parent, int prevTabStop, UIDrawable** lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
 		for (int i = 0; i < parent->childDisplayOrderCount; i++){
 			UIDrawable* thisElem = parent->children[parent->childDisplayOrder[i]];
 			if (thisElem->tabstop > prevTabStop){
 				//candidate for next tab element
-				if (lowestNextTabStopSoFarElem && thisElem->tabstop < *lowestNextTabStopSoFar){
-					// found a lower tab stop than the previous found tab stop
-					lowestNextTabStopSoFarElem = thisElem;
-					*lowestNextTabStopSoFar = thisElem->tabstop;
-				} else if (!lowestNextTabStopSoFarElem){
-					//no lowest stored, store this one as the first.
-					lowestNextTabStopSoFarElem = thisElem;
+				if (!*lowestNextTabStopSoFarElem || thisElem->tabstop < *lowestNextTabStopSoFar){
+					*lowestNextTabStopSoFarElem = thisElem;
 					*lowestNextTabStopSoFar = thisElem->tabstop;
 				}
 			}
@@ -58,30 +53,22 @@ private:
 				UIDrawable* foundNextElement = findNextTabElementWithinTabContainer(thisElem, prevTabStop, lowestNextTabStopSoFarElem, lowestNextTabStopSoFar);
 				if (foundNextElement && foundNextElement->tabstop < *lowestNextTabStopSoFar){
 					//the one found within the tree is lower than the lowest discovered from previous elements in this tree, record it
-					lowestNextTabStopSoFarElem = foundNextElement;
+					*lowestNextTabStopSoFarElem = foundNextElement;
 					*lowestNextTabStopSoFar = foundNextElement->tabstop;
 				}
 			}
 		}
-		if (lowestNextTabStopSoFarElem){
-			return lowestNextTabStopSoFarElem;
-		}
-
-		return NULL;
+		
+		return *lowestNextTabStopSoFarElem;
 	}
 
-	UIDrawable* findNextTabContainer(UIDrawable *parent, int prevContainerTabStop, UIDrawable* lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
+	UIDrawable* findNextTabContainer(UIDrawable *parent, int prevContainerTabStop, UIDrawable** lowestNextTabStopSoFarElem, int* lowestNextTabStopSoFar){
 		for (int i = 0; i < parent->childDisplayOrderCount; i++){
 			UIDrawable* thisElem = parent->children[parent->childDisplayOrder[i]];
 			if (thisElem->containertabstop > prevContainerTabStop){
 				//candidate for next tab element
-				if (lowestNextTabStopSoFarElem && thisElem->containertabstop < *lowestNextTabStopSoFar){
-					// found a lower tab stop than the previous found tab stop
-					lowestNextTabStopSoFarElem = thisElem;
-					*lowestNextTabStopSoFar = thisElem->containertabstop;
-				} else if (!lowestNextTabStopSoFarElem){
-					//no lowest stored, store this one as the first.
-					lowestNextTabStopSoFarElem = thisElem;
+				if (!lowestNextTabStopSoFarElem || thisElem->containertabstop < *lowestNextTabStopSoFar){
+					*lowestNextTabStopSoFarElem = thisElem;
 					*lowestNextTabStopSoFar = thisElem->containertabstop;
 				}
 			}
@@ -90,16 +77,13 @@ private:
 				UIDrawable* foundNextElement = findNextTabContainer(thisElem, prevContainerTabStop, lowestNextTabStopSoFarElem, lowestNextTabStopSoFar);
 				if (foundNextElement && foundNextElement->containertabstop < *lowestNextTabStopSoFar){
 					//the one found within the tree is lower than the lowest discovered from previous elements in this tree, record it
-					lowestNextTabStopSoFarElem = foundNextElement;
+					*lowestNextTabStopSoFarElem = foundNextElement;
 					*lowestNextTabStopSoFar = foundNextElement->containertabstop;
 				}
 			}
 		}
-		if (lowestNextTabStopSoFarElem){
-			return lowestNextTabStopSoFarElem;
-		}
 
-		return NULL;
+		return *lowestNextTabStopSoFarElem;
 	}
 
 	void FocusNextTabStop(){
@@ -115,7 +99,8 @@ private:
 		}
 		int parentStop = tabContainer->containertabstop;
 		int lowestTabStop = 255;
-		UIDrawable* nextTabWithinParent = findNextTabElementWithinTabContainer(tabContainer, lastStop, NULL, &lowestTabStop);
+		UIDrawable* lowestTabStopElm = NULL;
+		UIDrawable* nextTabWithinParent = findNextTabElementWithinTabContainer(tabContainer, lastStop, &lowestTabStopElm, &lowestTabStop);
 		if (nextTabWithinParent){
 			//found one, focus it
 			nextTabWithinParent->Focus();
@@ -123,64 +108,67 @@ private:
 			//didn't find one within the container, need to find the next container, or wrap around to the beginning.
 			UIDrawable* nextTabContainer = NULL;
 			int lowestSoFar = 255;
-			nextTabContainer = findNextTabContainer(this, parentStop, NULL, &lowestSoFar);
+			lowestTabStopElm = NULL;
+			nextTabContainer = findNextTabContainer(this, parentStop, &lowestTabStopElm, &lowestSoFar);
 			UIDrawable* focusFirst;
 			lowestSoFar = 255;
 			UIDrawable* searchContainer;
 			if (nextTabContainer){
 				//found one, focus first element in this container
+				debugOut("find first elem in next tab container");
 				searchContainer = nextTabContainer;
 			} else {
-				searchContainer = GetFirstContainerStop(this, NULL, &lowestSoFar);
+				lowestTabStopElm = NULL;
+				debugOut("find first elem in first container stop");
+				searchContainer = GetFirstContainerStop(this, &lowestTabStopElm, &lowestSoFar);
 				if (!searchContainer){
+					debugOut("couldn't find first container stop,fallback to window");
 					searchContainer = this; //fallback to window, if there is no tab stop container.
 				}
 			}
-			focusFirst = GetFirstStopInParent(searchContainer, NULL, &lowestSoFar);
+			lowestTabStopElm = NULL;
+			lowestSoFar = 255;
+			focusFirst = GetFirstStopInParent(searchContainer, &lowestTabStopElm, &lowestSoFar);
 			if (focusFirst){
+				debugOut("found, focus");
 				focusFirst->Focus();
 			}
 		}
 	}
 
-	UIDrawable* GetFirstContainerStop(UIDrawable *parent, UIDrawable* lowestTabStopSoFarElem, int* lowestTabStopSoFar){
+	UIDrawable* GetFirstContainerStop(UIDrawable *parent, UIDrawable** lowestTabStopSoFarElem, int* lowestTabStopSoFar){
 		for (int i = 0; i < parent->childCount; i++){
-			UIDrawable* thisItem = parent->children[parent->childDisplayOrder[i]];
-			if (thisItem->containertabstop > 0){
-				if (lowestTabStopSoFarElem == NULL || thisItem->containertabstop < *lowestTabStopSoFar){
-					lowestTabStopSoFarElem = thisItem;
-					*lowestTabStopSoFar = thisItem->containertabstop;
-				}
+			UIDrawable* thisItem = parent->children[i];
+			if (thisItem->containertabstop > 0 && thisItem->containertabstop < *lowestTabStopSoFar){
+				*lowestTabStopSoFarElem = thisItem;
+				*lowestTabStopSoFar = thisItem->containertabstop;
 			};
 			if (thisItem->childCount > 0){
-				GetFirstStopInParent(thisItem, lowestTabStopSoFarElem, lowestTabStopSoFar);
+				UIDrawable* foundChild = GetFirstContainerStop(thisItem, lowestTabStopSoFarElem, lowestTabStopSoFar);
+				if (foundChild){
+					*lowestTabStopSoFarElem = foundChild;
+				}
 			}
 		}
-		if (lowestTabStopSoFarElem == NULL){
-			return NULL;
-		} else {
-			return lowestTabStopSoFarElem;
-		}
+
+		return *lowestTabStopSoFarElem;
 	}
 
-	UIDrawable* GetFirstStopInParent(UIDrawable* parent, UIDrawable* lowestTabStopSoFarElem, int* lowestTabStopSoFar){
+	UIDrawable* GetFirstStopInParent(UIDrawable* parent, UIDrawable** lowestTabStopSoFarElem, int* lowestTabStopSoFar){
 		for (int i = 0; i < parent->childCount; i++){
-			UIDrawable* thisItem = parent->children[parent->childDisplayOrder[i]];
-			if (thisItem->tabstop > 0){
-				if (lowestTabStopSoFarElem == NULL || thisItem->tabstop < *lowestTabStopSoFar){
-					lowestTabStopSoFarElem = thisItem;
-					*lowestTabStopSoFar = thisItem->tabstop;
-				}
+			UIDrawable* thisItem = parent->children[i];
+			if (thisItem->tabstop > 0 && thisItem->tabstop < *lowestTabStopSoFar){
+				*lowestTabStopSoFarElem = thisItem;
+				*lowestTabStopSoFar = thisItem->tabstop;
 			};
 			if (thisItem->childCount > 0){
-				GetFirstStopInParent(thisItem, lowestTabStopSoFarElem, lowestTabStopSoFar);
+				UIDrawable* foundChild = GetFirstStopInParent(thisItem, lowestTabStopSoFarElem, lowestTabStopSoFar);
+				if (foundChild){
+					*lowestTabStopSoFarElem = foundChild;
+				}
 			}
 		}
-		if (lowestTabStopSoFarElem == NULL){
-			return NULL;
-		} else {
-			return lowestTabStopSoFarElem;
-		}
+		return *lowestTabStopSoFarElem;
 	}
 
 	void _set_next_focused(){

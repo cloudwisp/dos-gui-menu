@@ -56,6 +56,9 @@ private:
     int leftPaneWidth = 0;
     int rightPaneWidth = 0;
 
+    DatabaseItem* GetItem(int itemId){
+        return (*dbItems)[itemId];
+    }
 
     //items
     std::vector<DatabaseItem*> *dbItems;
@@ -73,11 +76,17 @@ private:
         } else {
             gameDescriptionInner->SetText("");
         }
-        //gameDescriptionInner->SetText("TODO: Load Readme");
+
         if (thisItem->image == ""){
             thisItem->image = "noimage.ppm";
         }
         screenshot->SetImage(thisItem->image, 250);
+    }
+
+    void _LaunchItem(int itemId){
+        DatabaseItem* thisItem = GetItem(itemId);
+        AppResources::WriteLaunchBat(thisItem->path, thisItem->name);
+        app->End();
     }
 
 public:
@@ -89,6 +98,10 @@ public:
             }
             _ActivateItem(data.data1);
         }
+        if (event == "Click" && source == launch){
+            _LaunchItem(activeItem);
+            return;
+        }
         UIWindow::OnEvent(source, event, data);
     }
 
@@ -98,9 +111,19 @@ public:
 
     void LoadItems(){
         dbItems = AppResources::GetDatabaseItems("games.db");
+        string defaultItem = AppResources::GetDefaultItem();
         sort(dbItems->begin(), dbItems->end(), dbsort);
         for (int i = 0; i < dbItems->size(); i++){
             gameListItems->AddItem((*dbItems)[i]->name);
+        }
+
+        if (defaultItem != ""){
+            for (int i = 0; i < dbItems->size(); i++){
+                if (defaultItem == (*dbItems)[i]->name){
+                    gameListItems->SetSelectedItem(i);
+                    break;
+                }
+            }
         }
     }
 
@@ -172,6 +195,7 @@ public:
         detailRight = new UIStackedPanel(THEME_PANEL_BACKGROUND_SECONDARY, detailRightWidth, rightPaneLowerHeight, defaultMargin);
         detailRight->y = gameTitleHeight;
         detailRight->x = detailLeft->width;
+        detailRight->containertabstop = 2;
         gameDetail->AddChild(detailRight);
 
         screenshot = new UIImagePanel(detailRightWidthInner,detailRightWidth*1.4);
@@ -248,6 +272,8 @@ public:
         launch = new UIButton(detailRightWidthInner, 20);
         launch->SetText("Launch!");
         launch->x = 0;
+        launch->BindEvent("Click", this);
+        launch->tabstop = 1;
         detailRight->AddChild(launch);
     }
 
