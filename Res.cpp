@@ -226,6 +226,7 @@ private:
                                 currentItem->genre = itemValue;
                             } else if (key == "path"){
                                 currentItem->path = folderPath + itemValue;
+                                debugOut(currentItem->path);
                             } else if (key == "image"){
                                 currentItem->image = folderPath + itemValue;
                             } else if (key == "developer"){
