@@ -1,19 +1,19 @@
 [Aladdin]
-path=C:\Games\bmenace\bmenace1.exe
-image=C:\Games\bmenace\aladdin.ppm
+path=C:\Games\Aladdin\aladdin.exe
+image=C:\Games\Aladdin\aladdin.ppm
 genre=Platform
 notes=
 favorite=F
 readme=c:\test\readme
 cd=
 
-[Monkey Island]
-path=C:\GAMES\MONKEY1\MONKEY.EXE
-image=C:\Games\crystal\monkey2.ppm
+[Monkey Island 2: LeChuck's Revenge]
+path=C:\GAMES\MONKEY2\MONKEY2.EXE
+image=C:\Games\MONKEY2\monkey2.png
 genre=Adventure
 notes=
 favorite=T
-readme=
+readme=C:\GAMES\MONKEY2\INFO.TXT
 cd=F
 
 [Commander Keen IV: Goodbye Galaxy]

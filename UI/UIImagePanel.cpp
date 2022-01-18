@@ -40,10 +40,16 @@ private:
         if (!hasImage){ return; }
         if (sizedImg){
             GrImageDestroy(sizedImg);
+			sizedImg = NULL;
         }
+		if (img){
+			GrImageDestroy(img);
+			img = NULL;
+		}
         ResetColors();
         imctx = AppResources::LoadImage(imagePath);
 		if (!imctx){
+			hasImage = false;
 			return;
 		}
 		GrContext *prevCtx = GrCurrentContext();

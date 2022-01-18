@@ -50,6 +50,7 @@
         "numeric": "cpp",
         "cstring": "cpp",
         "string": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "filesystem": "cpp"
     }
 }

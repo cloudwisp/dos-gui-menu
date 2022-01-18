@@ -22,7 +22,7 @@ private:
     int panelHeight = 0;
     int panelWidth = 0;
     int maxVisibleItems = 1;
-    
+    GrFont *font = NULL;
     
     void draw_internal(){
         GrClearContextC(ctx, THEME_CONTROL_BACKGROUND);
@@ -113,11 +113,11 @@ public:
     }
 
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
-        if (ScanCode == KEY_UP_ARROW){
+        if (ScanCode == KEY_UP_ARROW || ScanCode == KEY_KP_8){
             SetSelectedItem(selectedItem-1);
             return;
         }
-        if (ScanCode == KEY_DOWN_ARROW){
+        if (ScanCode == KEY_DOWN_ARROW || ScanCode == KEY_KP_2){
             SetSelectedItem(selectedItem+1);
             return;
         }
@@ -140,6 +140,9 @@ public:
         UITextArea* newArea = new UITextArea(panel->innerWidth, itemHeight);
         newArea->Hide();
         newArea->SetText(item);
+        if (font){
+            newArea->SetFont(font);
+        }
         newArea->BindEvent("LeftMouseButtonUp", this);
         listItemText.push_back(newArea);
         panel->AddChild(newArea);
@@ -148,6 +151,15 @@ public:
         }
         ScrollToItem(0);
         needsRedraw = true;
+    }
+
+    void SetFont(GrFont *listItemFont){
+        font = listItemFont;
+        if (listItemText.size() > 0){
+            for (UITextArea *txt : listItemText){
+                txt->SetFont(listItemFont);
+            }
+        }
     }
 
     UIScrollingListBox(int width, int height) : UIDrawable(width, height){

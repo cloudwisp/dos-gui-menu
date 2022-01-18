@@ -110,7 +110,10 @@ public:
     }
 
     void LoadItems(){
-        dbItems = AppResources::GetDatabaseItems("games.db");
+        vector<string> scanFolders;
+        scanFolders.push_back("C:\\GAMES\\");
+        dbItems = AppResources::ScanMenuItemFiles(scanFolders);
+        //dbItems = AppResources::GetDatabaseItems("games.db");
         string defaultItem = AppResources::GetDefaultItem();
         sort(dbItems->begin(), dbItems->end(), dbsort);
         for (int i = 0; i < dbItems->size(); i++){
@@ -224,6 +227,7 @@ public:
         gameListItems->BindEvent("SelectedItemChanged", this);
         gameListItems->x = defaultMargin;
         gameListItems->y = defaultMargin;
+        gameListItems->SetFont(smallFont);
         gameList->AddChild(gameListItems);
         gameListItems->Focus();
 
@@ -261,6 +265,7 @@ public:
         detailLeft->AddChild(publishedYear);
 
         gameDescriptionInner = new UITextArea(detailLeftWidthInner, 2000);
+        gameDescriptionInner->SetFont(smallFont);
         gameDescriptionInner->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
 
         int usedHeight = gameGenre->height;
