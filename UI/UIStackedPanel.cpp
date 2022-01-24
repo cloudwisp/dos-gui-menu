@@ -11,6 +11,7 @@ class UIStackedPanel : public UIDrawable {
 private:
 	GrColor backgroundColor;
 	int tailY = 0;
+	int innerPadding = 0;
 	void draw_internal(){
 		GrClearContextC(ctx, backgroundColor);
 		if (innerContext){
@@ -39,7 +40,7 @@ public:
 				continue;
 			}
 			thisChild->SetPosition(0, thisY);
-			thisY+=thisChild->height;
+			thisY+=thisChild->height + innerPadding;
 		}
 		needsRedraw = true;
 	}
@@ -49,6 +50,10 @@ public:
 	}
 	UIStackedPanel(GrColor bgColor, int drawWidth, int drawHeight, int padding) : UIDrawable(drawWidth, drawHeight, padding){
 		backgroundColor = bgColor;
+	}
+	UIStackedPanel(GrColor bgColor, int drawWidth, int drawHeight, int padding, int inlinePadding): UIDrawable(drawWidth, drawHeight, padding){
+		backgroundColor = bgColor;
+		innerPadding = inlinePadding;
 	}
 };
 

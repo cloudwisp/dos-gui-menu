@@ -22,10 +22,12 @@ private:
     int panelHeight = 0;
     int panelWidth = 0;
     int maxVisibleItems = 1;
+    GrColor background;
+    GrColor foreground;
     GrFont *font = NULL;
     
     void draw_internal(){
-        GrClearContextC(ctx, THEME_CONTROL_BACKGROUND);
+        GrClearContextC(ctx, background);
     }
 
     void ScrollToItem(int index){
@@ -162,11 +164,22 @@ public:
         }
     }
 
+    void SetColor(GrColor fg, GrColor bg){
+        foreground = fg;
+        background = bg;
+        for (UITextArea *txt : listItemText){
+            txt->SetColor(fg, THEME_COLOR_TRANSPARENT);
+        }
+        needsRedraw = true;
+    }
+
     UIScrollingListBox(int width, int height) : UIDrawable(width, height){
         itemHeight = UIHelpers::CharHeight(THEME_DEFAULT_FONT) + (padding * 2);
         panelHeight = height - (borderWidth*2) - (padding*2);
         panelWidth = width - (borderWidth*2) - (padding*2);
         maxVisibleItems = panelHeight / itemHeight;
+        background = THEME_CONTROL_BACKGROUND;
+        foreground = THEME_CONTROL_TEXT;
         panel = new UIStackedPanel(THEME_COLOR_TRANSPARENT, panelWidth, panelHeight);
         AddChild(panel);
     }

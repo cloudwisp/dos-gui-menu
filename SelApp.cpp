@@ -25,9 +25,9 @@ private:
 
     //main panels
     UIImagePanel* screenshot = NULL;
-    UIPanel *titleBar = NULL;
-    UIPanel *gameList = NULL;
-    UIPanel *gameDetail = NULL;
+    UIImagePanel *titleBar = NULL;
+    UIImagePanel *gameList = NULL;
+    UIImagePanel *gameDetail = NULL;
     UIStackedPanel *detailRight = NULL;
     UIStackedPanel *detailLeft = NULL;
     UIScrollingListBox *gameListItems = NULL;
@@ -176,55 +176,60 @@ public:
             defaultButtonBorderWidth = 1;
         }
 
+        int titleBarHeight = 22;
+        int gameListHeight = drawHeight - titleBarHeight;
         int titleHeight = titleFontHeight + defaultMargin + defaultMargin;
-        int rightPaneHeight = drawHeight - titleHeight;
+        int rightPaneHeight = drawHeight - titleBarHeight;
         int gameTitleHeight = titleHeight;
         int rightPaneLowerHeight = rightPaneHeight - gameTitleHeight;
         int detailLeftWidth = rightPaneWidth * 0.66;
         int detailLeftWidthInner = detailLeftWidth - (defaultMargin * 2);
         int detailRightWidth = rightPaneWidth - detailLeftWidth;
         int detailRightWidthInner = detailRightWidth - (defaultMargin * 2);
+        //int detailRightWidthInner = detailRightWidth - (defaultMargin * 2);
         double labelPercent = 30;
 
-        gameDetail = new UIPanel(THEME_PANEL_BACKGROUND_PRIMARY,rightPaneWidth,rightPaneHeight);
+        gameDetail = new UIImagePanel(rightPaneWidth,rightPaneHeight);
+        gameDetail->scaleToWidth = true;
+        gameDetail->scaleToHeight = true;
+        gameDetail->SetImage("darkbg2.png");
         gameDetail->x = leftPaneWidth;
-        gameDetail->y = titleHeight;
+        gameDetail->y = titleBarHeight;
         AddChild(gameDetail);
 
         detailLeft = new UIStackedPanel(THEME_COLOR_TRANSPARENT, detailLeftWidth, rightPaneLowerHeight, defaultMargin);
         detailLeft->y = gameTitleHeight;
         gameDetail->AddChild(detailLeft);
 
-        detailRight = new UIStackedPanel(THEME_PANEL_BACKGROUND_SECONDARY, detailRightWidth, rightPaneLowerHeight, defaultMargin);
+        detailRight = new UIStackedPanel(THEME_COLOR_TRANSPARENT, detailRightWidth, rightPaneLowerHeight, defaultMargin, defaultMargin);
         detailRight->y = gameTitleHeight;
         detailRight->x = detailLeft->width;
         detailRight->containertabstop = 2;
         gameDetail->AddChild(detailRight);
 
-        screenshot = new UIImagePanel(detailRightWidthInner,detailRightWidth*1.4);
+        screenshot = new UIImagePanel(detailRightWidthInner,detailRightWidthInner*1.4);
         detailRight->AddChild(screenshot);
         screenshot->SendToBack();
 
         //title bar
-        titleBar = new UIPanel(THEME_WINDOW_TITLE_BACKGROUND_COLOR,drawWidth,titleHeight);
-        UITextArea *title = new UITextArea(leftPaneWidth,titleHeight-defaultMargin-defaultMargin);
-        title->SetFont(titleFontBold);
-        title->SetColor(THEME_WINDOW_TITLE_TEXT_COLOR, THEME_COLOR_TRANSPARENT);
-        title->SetText("Game Menu");
-        title->x = defaultMargin;
-        title->y = defaultMargin;
-        titleBar->AddChild(title);
+        //titleBar = new UIPanel(THEME_WINDOW_TITLE_BACKGROUND_COLOR,drawWidth,titleHeight);
+        titleBar = new UIImagePanel(drawWidth, titleBarHeight);
+        titleBar->SetImage("header.png");
         AddChild(titleBar);
 
         //game list
-        gameList = new UIPanel(THEME_PANEL_BACKGROUND_MENU,leftPaneWidth,drawHeight-titleHeight);
+        gameList = new UIImagePanel(leftPaneWidth,gameListHeight);
+        gameList->scaleToHeight = true;
+        gameList->scaleToWidth = true;
+        gameList->SetImage("lightbg.png");
         gameList->x = 0;
-        gameList->y = titleHeight;
+        gameList->y = titleBarHeight;
         gameList->containertabstop = 1;
         AddChild(gameList);
 
-        gameListItems = new UIScrollingListBox(leftPaneWidth-(defaultMargin*2), drawHeight-titleHeight-(defaultMargin*2));
+        gameListItems = new UIScrollingListBox(leftPaneWidth-(defaultMargin*2), gameListHeight-(defaultMargin*2));
         gameListItems->BindEvent("SelectedItemChanged", this);
+        gameListItems->SetColor(THEME_CONTROL_TEXT, THEME_COLOR_TRANSPARENT);
         gameListItems->x = defaultMargin;
         gameListItems->y = defaultMargin;
         gameListItems->SetFont(smallFont);

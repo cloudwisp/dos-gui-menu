@@ -2,6 +2,7 @@
 #define Res_CPP
 
 
+#include <vector>
 #include <grx20.h>
 #include <stdlib.h>
 #include "Common.cpp"
@@ -188,8 +189,13 @@ private:
                     }
                     continue;
                 }
-                if (filename == std::string("menu.cfg")){
-                    files.push_back(_ReadMenuFile(folder + filename, folder));
+                if (filename == std::string("_menu.cfg")){
+                    vector<DatabaseItem*> subFiles = _ReadMenuFile(folder + filename, folder);
+                    if (subFiles.size() > 0){
+                        for (DatabaseItem* subFile : subFiles){
+                            files.push_back(subFile);
+                        }
+                    }
                 }
             }
             closedir(dir);
@@ -197,13 +203,13 @@ private:
         return files;
     }
 
-    DatabaseItem* _ReadMenuFile(string filePath, string folderPath){
+    vector<DatabaseItem*> _ReadMenuFile(string filePath, string folderPath){
         //PathInfo *pathInfo = GetPathInfo(filePath);
-        DatabaseItem* currentItem = new DatabaseItem;
-        currentItem->folder = folderPath;
         //currentItem->drive = pathInfo->drive;
         //currentItem->folder = pathInfo->folder;
+        vector<DatabaseItem*> items;
         fstream dbfile;
+        DatabaseItem *currentItem = NULL;
         dbfile.open(filePath.c_str(),ios::in);
         if (dbfile.is_open()){
             string tp;
@@ -213,6 +219,11 @@ private:
                 }
                 if (tp.at(0) == 0x5B){
                     //TITLE
+                    if (currentItem){
+                        items.push_back(currentItem);
+                    }
+                    currentItem = new DatabaseItem;
+                    currentItem->folder = folderPath;
                     string itemName = tp.substr(1,tp.length()-2);
                     currentItem->name = itemName;
                 } else {
@@ -226,7 +237,6 @@ private:
                                 currentItem->genre = itemValue;
                             } else if (key == "path"){
                                 currentItem->path = folderPath + itemValue;
-                                debugOut(currentItem->path);
                             } else if (key == "image"){
                                 currentItem->image = folderPath + itemValue;
                             } else if (key == "developer"){
@@ -250,7 +260,10 @@ private:
             }
             dbfile.close();
         }
-        return currentItem;
+        if (currentItem){
+            items.push_back(currentItem);
+        }
+        return items;
     }
 
     std::vector<DatabaseItem*> *_databaseItems = new std::vector<DatabaseItem*>();

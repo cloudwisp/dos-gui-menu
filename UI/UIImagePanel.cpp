@@ -8,6 +8,7 @@
 
 class UIImagePanel : public UIDrawable {
 private:
+	static std::vector<UIImagePanel*> loadedPanels;
 	GrImage* img = NULL;
 	GrImage* sizedImg = NULL;
 	std::string imagePath;
@@ -19,12 +20,11 @@ private:
 	int loadDelay = 0;
 	bool imageLoaded = false;
 	UITextArea *loadingText = NULL;
-	bool scaling = true; //If false, render whatever dimensions are input, with clipping possible.
 
 	void draw_internal(){
 	    GrSetContext(ctx);
-		GrClearContextC(ctx, THEME_COLOR_BLACK);
-		if (scaling){
+		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
+		if (scaleToWidth || scaleToHeight){
 			if (!sizedImg){ return; }
 			GrImageDisplay(0,0,sizedImg);
 			return;
@@ -32,11 +32,9 @@ private:
 		
 		if (!imctx){ return; }
 		GrBitBlt(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
-		
-		
 	}
 
-	void _load_image(){
+	void _load_image(bool refresh){
         if (!hasImage){ return; }
         if (sizedImg){
             GrImageDestroy(sizedImg);
@@ -46,7 +44,10 @@ private:
 			GrImageDestroy(img);
 			img = NULL;
 		}
-        ResetColors();
+		if (!refresh){
+			ResetColors();
+			RefreshOtherImages(); //load other images, so they are allocated colors.
+		}
         imctx = AppResources::LoadImage(imagePath);
 		if (!imctx){
 			hasImage = false;
@@ -57,17 +58,39 @@ private:
 		loadedWidth = GrSizeX();
 		loadedHeight = GrSizeY();
 		GrSetContext(prevCtx);
-		if (!scaling){
+		if (!scaleToWidth && !scaleToHeight){
 			return;
 		}
 		img = GrImageFromContext(imctx);
-		//fit to width
-		double ratio = (double)loadedHeight/(double)loadedWidth;
-		int newHeight = width*ratio;
-		sizedImg = GrImageStretch(img, width, newHeight);
+		int newHeight = height;
+		int newWidth = width;
+		if (!scaleToHeight){
+			//fit to width proportionally
+			double hwratio = (double)loadedHeight/(double)loadedWidth;
+			newHeight = width*hwratio;
+		} else if (!scaleToWidth) {
+			//fit to height proportionally
+			double whratio = (double)loadedWidth/(double)loadedHeight;
+			newWidth = height*whratio;
+		}
+		
+		sizedImg = GrImageStretch(img, newWidth, newHeight);
+	}
+
+	void RefreshOtherImages(){
+		for (UIImagePanel* img : loadedPanels){
+			if (img == this){
+				continue;
+			}
+			img->ReloadImageExt();
+		}
 	}
 
 protected:
+
+	void ReloadImageExt(){
+		_load_image(true);
+	}
 
 	void Update(){
 		if (hasImage && !imageLoaded && loadDelay > 0){
@@ -75,7 +98,7 @@ protected:
 			if (clockToMilliseconds(now-loadImageStart) > loadDelay){
 				imageLoaded = true;
 				loadingText->Hide();
-				_load_image();
+				_load_image(false);
 				needsRedraw = true;
 			}
 		}
@@ -83,15 +106,22 @@ protected:
 
 public:
 
+	bool scaleToWidth = true;
+	bool scaleToHeight = false;
+
     void SetImage(std::string filename, int delay = 0){
         imagePath = std::string(filename);
 		hasImage = true;
 		imageLoaded = false;
 		loadDelay = delay;
+		if (sizedImg){
+			GrImageDestroy(sizedImg);
+			sizedImg = NULL;
+		}
 
 		if (delay == 0){
 			loadingText->Hide();
-			_load_image();
+			_load_image(false);
 			needsRedraw = true;
 			return;
 		}
@@ -104,15 +134,24 @@ public:
 	UIImagePanel(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight) {
 		loadingText = new UITextArea(drawWidth, drawHeight);
 		loadingText->SetAlign(GR_ALIGN_CENTER, GR_ALIGN_CENTER);
-		loadingText->SetColor(GrWhite(), THEME_COLOR_BLACK);
+		loadingText->SetColor(GrWhite(), THEME_COLOR_TRANSPARENT);
 		loadingText->SetText("Loading...");
 		AddChild(loadingText);
 		loadingText->Hide();
-
+		loadedPanels.push_back(this);
 	}
 	~UIImagePanel(){
+		int myIndex = -1;
+		for (int i = 0; i < loadedPanels.size(); i++){
+			if (loadedPanels.at(i) == this){
+				myIndex = i;
+			}
+		}
+		loadedPanels.erase(loadedPanels.begin()+myIndex);
 		delete loadingText;
 	}
 };
+
+std::vector<UIImagePanel*> UIImagePanel::loadedPanels = std::vector<UIImagePanel*>();
 
 #endif

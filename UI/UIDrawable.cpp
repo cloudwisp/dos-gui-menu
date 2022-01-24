@@ -510,8 +510,18 @@ public:
 			
 			if (!boxFlaggedForRedraw){
 				//Coord myPos = AbsolutePosition();
-				BoxCoords myPos = VisibleAbsoluteBox();
-				GetTopElement()->AddRedrawBox(myPos.x1, myPos.y1, myPos.x2, myPos.y2);
+				//BoxCoords myPos = VisibleAbsoluteBox();
+				//GetTopElement()->AddRedrawBox(myPos.x1, myPos.y1, myPos.x2, myPos.y2);
+				Coord parentPos = {0,0};
+				int offsetX = 0;
+				int offsetY = 0;
+				if (parent){
+					parentPos = parent->AbsolutePosition();
+					offsetX = parent->innerContextX;
+					offsetY = parent->innerContextY;
+				}
+				GetTopElement()->AddRedrawBox(parentPos.x + offsetX + x, parentPos.y + offsetY + y, parentPos.x + offsetX + x + width - 1, parentPos.y + offsetY + y + height - 1);
+
 				boxFlaggedForRedraw = true;
 			}
 			needsRedraw = false;
