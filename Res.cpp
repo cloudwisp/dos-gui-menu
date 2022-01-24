@@ -28,6 +28,7 @@ struct DatabaseItem {
     string year;
     string developer;
     string notes;
+    bool inlineDescription;
     bool favorite;
     bool cd;
 };
@@ -251,6 +252,8 @@ private:
                                 currentItem->favorite = itemValue == "T";
                             } else if (key == "cd"){
                                 currentItem->cd = itemValue == "T";
+                            } else if (key == "description"){
+                                currentItem->inlineDescription = true;
                             }
                             break;
                         }
@@ -330,6 +333,66 @@ private:
 
     }
 
+    string _GetInlineDescription(string menuFile, string menuItem){
+        fstream dbfile;
+        string description;
+        string currentItemName;
+        bool inMatchingItem = false;
+        bool capturingDescription = false;
+        bool anyDelimInLine = false;
+        dbfile.open(menuFile.c_str(),ios::in);
+        if (dbfile.is_open()){
+            string tp;
+            while(getline(dbfile, tp)){
+                if (tp.length() == 0 && !capturingDescription){
+                    continue;
+                } else if (tp.length() == 0 && capturingDescription){
+                    description += "\r\n";
+                    continue;
+                }
+                if (tp.at(0) == 0x5B){
+                    if (inMatchingItem){
+                        //new item in multi-item config file - bail out.
+                        break;
+                    }
+                    //new item
+                    string itemName = tp.substr(1,tp.length()-2);
+                    if (itemName == menuItem){
+                        inMatchingItem = true;
+                    } else {
+                        inMatchingItem = false;
+                    }
+                } else if (inMatchingItem) {
+                    //scan string until = separator
+                    string key;
+                    anyDelimInLine = false;
+                    bool firstOfDescription = false;
+                    for (int i = 0; i < tp.length(); i++){
+                        if (tp.at(i) == 0x3D){
+                            anyDelimInLine = true;
+                            if (key == "description"){
+                                capturingDescription = true;
+                                firstOfDescription = true;
+                                if (tp.length() > i + 1){
+                                    string itemValue = tp.substr(i+1);
+                                    description += itemValue + "\r\n";
+                                }
+                            }
+                        }
+                        key += tp.at(i);
+                    }
+                    if (!anyDelimInLine && capturingDescription){
+                        description += tp + "\r\n";
+                    } else if (anyDelimInLine && !firstOfDescription){
+                        capturingDescription = false;
+                    }
+                }
+            }
+            dbfile.close();
+            return description;
+        }
+    }
+
 public:
 
     static AppResources* Current(){
@@ -353,6 +416,10 @@ public:
 
     static std::string GetReadme(string filename){
         return Current()->_GetReadme(filename);
+    }
+
+    static std::string GetInlineDescription(string menuFile, string itemName){
+        return Current()->_GetInlineDescription(menuFile, itemName);
     }
 
     static void WriteLaunchBat(string path, string returnTitle){

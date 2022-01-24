@@ -70,9 +70,12 @@ private:
         gameTitle->SetText(thisItem->name);
         gameGenre->SetText(thisItem->genre);
         gameNotes->SetText(thisItem->notes);
+        developer->SetText(thisItem->developer);
         publishedYear->SetText(thisItem->year);
         if (thisItem->readme != ""){
             gameDescriptionInner->SetText(AppResources::GetReadme(thisItem->readme));
+        } else if (thisItem->inlineDescription) {
+            gameDescriptionInner->SetText(AppResources::GetInlineDescription(thisItem->folder + "\\_menu.cfg", thisItem->name));
         } else {
             gameDescriptionInner->SetText("");
         }
