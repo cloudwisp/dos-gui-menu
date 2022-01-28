@@ -30,14 +30,14 @@ private:
 
 	void draw_internal(){
 		//draw stuff
-		GrClearContextC(ctx, GrNOCOLOR);
+		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
 		boxColors.fbx_intcolor = _bg;
 
 		boxColors.fbx_topcolor = highlight;
 		boxColors.fbx_leftcolor = highlight;
 		boxColors.fbx_bottomcolor = shadow;
 		boxColors.fbx_rightcolor = shadow;
-		textArea->SetColor(_fg, GrNOCOLOR);
+		textArea->SetColor(_fg, THEME_COLOR_TRANSPARENT);
 
 		if (_state == BUTTONSTATE_PRESSED){
 			//flip highlight border direction

@@ -258,6 +258,7 @@ public:
         gameListItems->SetColor(THEME_CONTROL_TEXT, THEME_COLOR_TRANSPARENT);
         gameListItems->x = defaultMargin;
         gameListItems->y = defaultMargin;
+        gameListItems->tabstop = 1;
         gameList->AddChild(gameListItems);
         gameListItems->Focus();
 

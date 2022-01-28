@@ -108,29 +108,25 @@ private:
 			//didn't find one within the container, need to find the next container, or wrap around to the beginning.
 			UIDrawable* nextTabContainer = NULL;
 			int lowestSoFar = 255;
-			lowestTabStopElm = NULL;
-			nextTabContainer = findNextTabContainer(this, parentStop, &lowestTabStopElm, &lowestSoFar);
+			UIDrawable *lowestTabStopElm2 = NULL;
+			nextTabContainer = findNextTabContainer(this, parentStop, &lowestTabStopElm2, &lowestSoFar);
 			UIDrawable* focusFirst;
 			lowestSoFar = 255;
 			UIDrawable* searchContainer;
 			if (nextTabContainer){
 				//found one, focus first element in this container
-				debugOut("find first elem in next tab container");
 				searchContainer = nextTabContainer;
 			} else {
-				lowestTabStopElm = NULL;
-				debugOut("find first elem in first container stop");
-				searchContainer = GetFirstContainerStop(this, &lowestTabStopElm, &lowestSoFar);
+				UIDrawable *lowestTabStopElm3 = NULL;
+				searchContainer = GetFirstContainerStop(this, &lowestTabStopElm3, &lowestSoFar);
 				if (!searchContainer){
-					debugOut("couldn't find first container stop,fallback to window");
 					searchContainer = this; //fallback to window, if there is no tab stop container.
 				}
 			}
-			lowestTabStopElm = NULL;
+			UIDrawable *lowestTabStopElm4;
 			lowestSoFar = 255;
-			focusFirst = GetFirstStopInParent(searchContainer, &lowestTabStopElm, &lowestSoFar);
+			focusFirst = GetFirstStopInParent(searchContainer, &lowestTabStopElm4, &lowestSoFar);
 			if (focusFirst){
-				debugOut("found, focus");
 				focusFirst->Focus();
 			}
 		}
