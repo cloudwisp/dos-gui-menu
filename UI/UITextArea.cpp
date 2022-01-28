@@ -24,6 +24,7 @@ private:
 	int cursorPosition = 0;
 	int cursorLine = 0;
 	int cursorColumn = 0;
+	int textHeight = 0;
 	
 	void _parse_text(){
 		lineWidths.clear();
@@ -269,6 +270,26 @@ public:
 	void HideCursor(){
 		drawCursor = false;
 		needsRedraw = true;
+	}
+
+	void SizeHeightToContent(){
+		int numLines = lines.size();
+		int blockHeight = numLines * _charHeight;
+		if (blockHeight <= 0){
+			blockHeight = 20;
+		}
+		if (!singleContext){
+			int diff = height - innerHeight;
+			int newOuterHeight = blockHeight + diff;
+			if (newOuterHeight < 0){
+				newOuterHeight = blockHeight;
+			}
+
+			SetInnerDimensions(innerWidth, blockHeight, innerContextX, innerContextY);
+			SetDimensions(width, newOuterHeight);
+		} else {
+			SetDimensions(width, blockHeight);
+		}
 	}
 
 	UITextArea(int drawWidth, int drawHeight) : UITextArea(drawWidth, drawHeight, 0){

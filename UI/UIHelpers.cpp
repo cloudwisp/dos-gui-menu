@@ -8,6 +8,7 @@ class UIHelpers {
 public:
 	static GrColor ColorFromRGB(CWRGB rgb);
     static GrFont* ResolveFont(char* fontName);
+    static int CharHeight(GrFont* font);
     static int CharHeight(char* fontName);
 };
 
@@ -39,9 +40,14 @@ int UIHelpers::CharHeight(char* fontName){
     return GrFontCharHeight(ResolveFont(fontName), "A");
 }
 
+int UIHelpers::CharHeight(GrFont *font){
+    return GrFontCharHeight(font, "A");
+}
+
 void Draw3dButton(GrContext *ontoContext, BoxCoords coords, GrColor bgColor, bool invert){
     GrContext *prevCtx = GrCurrentContext();
     GrSetContext(ontoContext);
+    GrFilledBox(coords.x1, coords.y1, coords.x2, coords.y2, bgColor);
     int highlight[3][2] = {
         {coords.x1, coords.y2},
         {coords.x1, coords.y1},
@@ -52,7 +58,6 @@ void Draw3dButton(GrContext *ontoContext, BoxCoords coords, GrColor bgColor, boo
         {coords.x2, coords.y2},
         {coords.x1, coords.y2}
     };
-
     GrPolyLine(3, invert ? shadow : highlight, THEME_3D_HIGHLIGHT);
     GrPolyLine(3, invert? highlight : shadow, THEME_3D_SHADOW);
     GrSetContext(prevCtx);
@@ -76,6 +81,16 @@ BoxCoords BoxIntersection(BoxCoords coord1, BoxCoords coord2){
         coord1.x2 < coord2.x2 ? coord1.x2 : coord2.x2,
         coord1.y2 < coord2.y2 ? coord1.y2 : coord2.y2
     };
+}
+
+bool CoordsIntersectBox(BoxCoords box, int x, int y){
+    if (x < box.x1 || x > box.x2){
+        return false;
+    }
+    if (y < box.y1 || y > box.y2){
+        return false;
+    }
+    return true;
 }
 
 

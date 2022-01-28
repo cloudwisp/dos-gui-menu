@@ -1,12 +1,14 @@
 #ifndef UIScrollingListBox_CPP
 #define UIScrollingListBox_CPP
 
+#include <tgmath.h>
 #include <grx20.h>
 #include <vector>
 #include "../keyboard.h"
 #include "UIDrawable.cpp"
 #include "UITextArea.cpp"
 #include "UIStackedPanel.cpp"
+
 
 class UIScrollingListBox : public UIDrawable {
 private:
@@ -139,7 +141,12 @@ public:
 
     void AddItem(std::string item){
         listItems.push_back(item);
-        UITextArea* newArea = new UITextArea(panel->innerWidth, itemHeight);
+        int itemTextWidth = GrFontStringWidth(font, item.c_str(), item.size(), 0);
+        int lines = 1;
+        if (itemTextWidth > panel->innerWidth){
+            lines = ceil(itemTextWidth / (double)panel->innerWidth);
+        }
+        UITextArea* newArea = new UITextArea(panel->innerWidth, itemHeight * lines, padding);
         newArea->Hide();
         newArea->SetText(item);
         if (font){
@@ -155,15 +162,6 @@ public:
         needsRedraw = true;
     }
 
-    void SetFont(GrFont *listItemFont){
-        font = listItemFont;
-        if (listItemText.size() > 0){
-            for (UITextArea *txt : listItemText){
-                txt->SetFont(listItemFont);
-            }
-        }
-    }
-
     void SetColor(GrColor fg, GrColor bg){
         foreground = fg;
         background = bg;
@@ -173,8 +171,9 @@ public:
         needsRedraw = true;
     }
 
-    UIScrollingListBox(int width, int height) : UIDrawable(width, height){
-        itemHeight = UIHelpers::CharHeight(THEME_DEFAULT_FONT) + (padding * 2);
+    UIScrollingListBox(int width, int height, GrFont *itemFont) : UIDrawable(width, height){
+        font = itemFont;
+        itemHeight = UIHelpers::CharHeight(itemFont) + (padding * 2);
         panelHeight = height - (borderWidth*2) - (padding*2);
         panelWidth = width - (borderWidth*2) - (padding*2);
         maxVisibleItems = panelHeight / itemHeight;
@@ -182,6 +181,9 @@ public:
         foreground = THEME_CONTROL_TEXT;
         panel = new UIStackedPanel(THEME_COLOR_TRANSPARENT, panelWidth, panelHeight);
         AddChild(panel);
+    }
+
+    UIScrollingListBox(int width, int height) : UIScrollingListBox(width, height, UIHelpers::ResolveFont(THEME_DEFAULT_FONT)){
     }
 
     ~UIScrollingListBox(){

@@ -20,6 +20,10 @@ private:
 	}
 public:
 
+	int GetTailY(){
+		return tailY;
+	}
+
 	void AddChild(UIDrawable* subElement) override {
 		UIDrawable::AddChild(subElement);
 		ReFlow();
@@ -42,6 +46,7 @@ public:
 			thisChild->SetPosition(0, thisY);
 			thisY+=thisChild->height + innerPadding;
 		}
+		tailY = thisY;
 		needsRedraw = true;
 	}
 

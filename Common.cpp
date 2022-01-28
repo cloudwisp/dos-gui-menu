@@ -3,9 +3,13 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <fstream>
+#include <memory>
+#include <string>
+#include <stdexcept>
 #include <time.h>
 #include "Const.h"
 #include "Common.h"
+
 
 double clockToMilliseconds(clock_t ticks){
 	// units/(units/time) => time (seconds) * 1000 = milliseconds
@@ -28,6 +32,14 @@ void debugOut(std::string txt){
     std::ofstream file;
     file.open("DEBUG.LOG", std::ios_base::app);
     file << "\r\n" << txt;
+    file.close();
+}
+
+template<typename T>
+void debugOut(std::string label, T item){
+	std::ofstream file;
+    file.open("DEBUG.LOG", std::ios_base::app);
+    file << "\r\n" << label << item;
     file.close();
 }
 
