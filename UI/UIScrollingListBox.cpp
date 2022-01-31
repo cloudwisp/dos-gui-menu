@@ -16,7 +16,7 @@ private:
     std::vector<UITextArea*> listItemText;
     UIStackedPanel *panel;
     int borderWidth = 2;
-    int padding = 2;
+    int padding = 0;
     int selectedItem = 0;
 
     int scrollTopIndex = 0;

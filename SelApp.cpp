@@ -54,6 +54,7 @@ private:
     int defaultButtonBorderWidth = 0;
     int titleBarHeight = 0;
     int detailLabelHeight = 0;
+    int detailLabelPadding = 0;
 
     int leftPaneWidth = 0;
     int rightPaneWidth = 0;
@@ -89,7 +90,7 @@ private:
         if (thisItem->image == ""){
             thisItem->image = "noimage.ppm";
         }
-        screenshot->SetImage(thisItem->image, 250);
+        screenshot->SetImage(thisItem->image, 500);
     }
 
     void _LaunchItem(int itemId){
@@ -124,10 +125,11 @@ public:
     }
 
     void LoadItems(){
-        vector<string> scanFolders;
-        scanFolders.push_back("C:\\GAMES\\");
-        dbItems = AppResources::ScanMenuItemFiles(scanFolders);
-        //dbItems = AppResources::GetDatabaseItems("games.db");
+        dbItems = AppResources::GetCachedMenuItems();
+        if (dbItems->size() == 0){
+            dbItems = AppResources::ScanMenuItemFiles();
+        }
+        
         string defaultItem = AppResources::GetDefaultItem();
         sort(dbItems->begin(), dbItems->end(), dbsort);
         for (int i = 0; i < dbItems->size(); i++){
@@ -155,7 +157,8 @@ public:
         rightPaneWidth = drawWidth-leftPaneWidth;
 
         GrFont* titleFont;
-
+        bool scaleHeaderHeight = false;
+        bool shortLabels = false;
         if (drawHeight == 600){
             titleFont = GrLoadFont("fonts/helv22.fnt");
             titleFontBold = GrLoadFont("fonts/helv22b.fnt");
@@ -170,6 +173,7 @@ public:
             defaultMargin = 10;
             detailLabelHeight = 20;
             defaultButtonBorderWidth = 4;
+            detailLabelPadding = 2;
         } else if (drawHeight == 480) {
             titleFont = GrLoadFont("fonts/helv15.fnt");
             titleFontBold = GrLoadFont("fonts/helv15b.fnt");
@@ -184,7 +188,9 @@ public:
             defaultMargin = 8;
             detailLabelHeight = 20;
             defaultButtonBorderWidth = 2;
+            detailLabelPadding = 2;
         } else {
+            scaleHeaderHeight = true;
             titleFont = GrLoadFont("fonts/helv13.fnt");
             titleFontBold = GrLoadFont("fonts/helv13b.fnt");
             titleFontHeight = 13;
@@ -192,13 +198,13 @@ public:
             textFont = GrLoadFont("fonts/helv11.fnt");
             textFontBold = GrLoadFont("fonts/helv11b.fnt");
             textFontHeight = 11;
-            //smallFont = GrLoadFont("fonts/helv11.fnt");
-            //smallFontBold = GrLoadFont("fonts/helv11b.fnt");
-            smallFont = GrLoadFont("fonts/xm5x6.fnt");
-            smallFontBold = GrLoadFont("fonts/xm5x6.fnt");
-            smallFontHeight = 5;
+            shortLabels = true;
+            smallFont = GrLoadFont("fonts/helv11.fnt");
+            smallFontBold = GrLoadFont("fonts/helv11b.fnt");
+            smallFontHeight = GrFontCharHeight(smallFont,"Y");
+            detailLabelPadding = 0;
             defaultMargin = 2;
-            detailLabelHeight = 14;
+            detailLabelHeight = smallFontHeight;
             defaultButtonBorderWidth = 1;
         }
 
@@ -211,35 +217,40 @@ public:
         int detailLeftWidthInner = detailLeftWidth - (defaultMargin * 2);
         int detailRightWidth = rightPaneWidth - detailLeftWidth;
         int detailRightWidthInner = detailRightWidth - (defaultMargin * 2);
-        int detailLeftFooterHeight = titleHeight;
+        
         
         //int detailRightWidthInner = detailRightWidth - (defaultMargin * 2);
         double labelPercent = 30;
         gameDetail = new UIImagePanel(rightPaneWidth,rightPaneHeight);
         gameDetail->scaleToWidth = true;
         gameDetail->scaleToHeight = true;
-        gameDetail->SetImage("darkbg2.png");
+        gameDetail->SetImage("darkbg3.png");
         gameDetail->x = leftPaneWidth;
         gameDetail->y = titleBarHeight;
         AddChild(gameDetail);
 
         detailLeft = new UIStackedPanel(THEME_COLOR_TRANSPARENT, detailLeftWidth, rightPaneLowerHeight, defaultMargin);
         detailLeft->y = gameTitleHeight;
+        detailLeft->containertabstop = 2;
         gameDetail->AddChild(detailLeft);
 
         detailRight = new UIStackedPanel(THEME_COLOR_TRANSPARENT, detailRightWidth, rightPaneLowerHeight, defaultMargin, defaultMargin);
         detailRight->y = gameTitleHeight;
         detailRight->x = detailLeft->width;
-        detailRight->containertabstop = 2;
+        detailRight->containertabstop = 3;
         gameDetail->AddChild(detailRight);
 
         screenshot = new UIImagePanel(detailRightWidthInner,detailRightWidthInner*1.4);
+        screenshot->preserveColors = false;
+        screenshot->SetLoadingFont(textFont);
         detailRight->AddChild(screenshot);
         screenshot->SendToBack();
 
         //title bar
         //titleBar = new UIPanel(THEME_WINDOW_TITLE_BACKGROUND_COLOR,drawWidth,titleHeight);
         titleBar = new UIImagePanel(drawWidth, titleBarHeight);
+        titleBar->scaleToHeight = scaleHeaderHeight;
+        titleBar->scaleToWidth = !scaleHeaderHeight;
         titleBar->SetImage("header.png");
         AddChild(titleBar);
 
@@ -247,7 +258,7 @@ public:
         gameList = new UIImagePanel(leftPaneWidth,gameListHeight);
         gameList->scaleToHeight = true;
         gameList->scaleToWidth = true;
-        gameList->SetImage("lightbg.png");
+        gameList->SetImage("lightbg2.png");
         gameList->x = 0;
         gameList->y = titleBarHeight;
         gameList->containertabstop = 1;
@@ -271,34 +282,40 @@ public:
 
         gameDetail->AddChild(gameTitle);
 
-        gameGenre = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight, labelPercent);
+        gameGenre = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight, labelPercent, detailLabelPadding);
         gameGenre->SetLabelFont(smallFontBold);
         gameGenre->SetTextFont(smallFont);
         gameGenre->SetLabel("Genre");
         detailLeft->AddChild(gameGenre);
 
-        gameNotes = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight * 2, labelPercent);
+        gameNotes = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight * 2, labelPercent, detailLabelPadding);
         gameNotes->SetLabelFont(smallFontBold);
         gameNotes->SetTextFont(smallFont);
         gameNotes->SetLabel("Notes");
         detailLeft->AddChild(gameNotes);
 
-        developer = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight, labelPercent);
+        developer = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight, labelPercent, detailLabelPadding);
         developer->SetLabelFont(smallFontBold);
         developer->SetTextFont(smallFont);
-        developer->SetLabel("Developer");
+        if (shortLabels){
+            developer->SetLabel("Dev.");
+        } else {
+            developer->SetLabel("Developer");
+        }
+        
         detailLeft->AddChild(developer);
 
-        publishedYear = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight, labelPercent);
+        publishedYear = new UILabelAndText(detailLeftWidthInner, detailLabelHeight, detailLabelHeight, labelPercent, detailLabelPadding);
         publishedYear->SetLabelFont(smallFontBold);
         publishedYear->SetTextFont(smallFont);
-        publishedYear->SetLabel("Published");
+        publishedYear->SetLabel("Year");
         detailLeft->AddChild(publishedYear);
 
         
 
         int usedHeight = detailLeft->GetTailY();
-        gameDescription = new UIScrollingText(detailLeftWidthInner, rightPaneLowerHeight - usedHeight - defaultMargin - detailLeftFooterHeight);
+        gameDescription = new UIScrollingText(detailLeftWidthInner, rightPaneLowerHeight - usedHeight - (2*defaultMargin));
+        gameDescription->tabstop = 1;
         gameDescription->x = 0;
 
         gameDescriptionInner = gameDescription->GetText();
@@ -312,6 +329,7 @@ public:
         launch->x = 0;
         launch->BindEvent("Click", this);
         launch->tabstop = 1;
+        launch->SetFont(smallFont);
         detailRight->AddChild(launch);
     }
 

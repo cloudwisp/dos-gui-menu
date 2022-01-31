@@ -34,13 +34,13 @@ public:
         needsRedraw = true;
     }
 
-    UILabelAndText(int width, int labelHeight, int textHeight, double labelPercentOfWidth) : UIDrawable(width, textHeight){
+    UILabelAndText(int width, int labelHeight, int textHeight, double labelPercentOfWidth, int textAreaPadding) : UIDrawable(width, textHeight){
         int labelWidth = (double)innerWidth * (labelPercentOfWidth/100);
         int textWidth = innerWidth - labelWidth;
         
-        label = new UITextArea(labelWidth, labelHeight, 2);
+        label = new UITextArea(labelWidth, labelHeight, textAreaPadding);
         label->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
-        text = new UITextArea(textWidth, textHeight, 2);
+        text = new UITextArea(textWidth, textHeight, textAreaPadding);
         text->SetColor(THEME_PANEL_TEXT_PRIMARY, THEME_COLOR_TRANSPARENT);
         text->x = labelWidth;
         AddChild(label);

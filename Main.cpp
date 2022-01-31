@@ -12,9 +12,14 @@ SelectorApplication *app = NULL;
 
 int main()
 {
+    MenuConfig* config = AppResources::GetMenuConfig();
+    int screenWidth = 320;
+    int screenHeight = 200;
+    if (config->resolution == "high"){
+        screenWidth = 640;
+        screenHeight = 480;
+    }
     int bitDepth = 8;
-    int screenWidth = 640;
-    int screenHeight = 480;
     GrSetMode(GR_width_height_bpp_graphics,screenWidth,screenHeight,bitDepth);
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);

@@ -148,6 +148,18 @@ private:
 		}
 	}
 
+	void OnKeyUp(int KeyCode, int ShiftState, int Ascii) {
+		if (KeyCode == KEY_UP_ARROW){
+			ScrollTo(ScrollTop-10);
+		} else if (KeyCode == KEY_DOWN_ARROW){
+			ScrollTo(ScrollTop + 10);
+		} else if (KeyCode == KEY_PAGE_DOWN){
+			ScrollPageDown();
+		} else if (KeyCode == KEY_PAGE_UP){
+			ScrollPageUp();
+		}
+	}
+
 public:
 
 	UITextArea* GetText(){
