@@ -182,6 +182,14 @@ private:
 public:
     int closed = 0;
     int destroy = 0;
+
+	//classes inheriting from UIWindow should make sure to call this method as well if they override
+	void CheckInputs(){
+		if (focusedElement){
+			focusedElement->CheckInputs();
+		}
+	}
+
     //classes inheriting from UIWindow should make sure to call this method as well if they override
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_TAB){

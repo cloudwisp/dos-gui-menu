@@ -7,7 +7,7 @@ GOTO LOADMENU
         del menuitem.bat
 
 :LOADMENU
-MAIN
+MAIN %1
 if exist menuitem.bat GOTO LOADGAME
 GOTO END
 

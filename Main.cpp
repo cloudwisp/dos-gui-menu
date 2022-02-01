@@ -10,12 +10,17 @@ unsigned _stklen = 1048576;  /* need a 1MB stack */
 
 SelectorApplication *app = NULL;
 
-int main()
-{
+int main(int argc, char *argv[])
+{   
     MenuConfig* config = AppResources::GetMenuConfig();
+    string resolution = config->resolution;
+
+    if (argc > 1){
+        resolution = std::string(argv[1]);
+    }
     int screenWidth = 320;
     int screenHeight = 200;
-    if (config->resolution == "high"){
+    if (resolution == "high"){
         screenWidth = 640;
         screenHeight = 480;
     }

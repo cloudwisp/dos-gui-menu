@@ -96,11 +96,10 @@ private:
 
 	void Update(){
 		if (inButtonHold && buttonHoldDir == -1){
-			ScrollUp();
+			ScrollTo(ScrollTop-6);
 		} else if (inButtonHold){
-			ScrollDown();
-		} 
-		_innerText->y = 0-ScrollTop;
+			ScrollTo(ScrollTop+6);
+		}
 		SetBoxCoords();
 		UIDrawable::Update();
 	}
@@ -108,8 +107,7 @@ private:
 	bool inButtonHold = false;
 	int buttonHoldDir = 0;
 	bool inScrollDrag = false;
-	int lastScrollDragY = 0;
-	int lastScrollPosY = 0;
+	int scrollDragOffset = 0;
 	void OnEvent(EventEmitter *source, std::string event, EventData data){
 		if (scrollBarVisible && event == "LeftMouseButtonDown"){
 			int localX = data.data1;
@@ -122,8 +120,7 @@ private:
 				buttonHoldDir = 1;
 			} else if (CoordsIntersectBox(yBarScrollPos, localX, localY)){
 				inScrollDrag = true;
-				lastScrollDragY = localY;
-				lastScrollPosY = yBarScrollPos.y1;
+				scrollDragOffset = yBarScrollPos.y1 - localY;
 			}
 		} else if (scrollBarVisible && event == "LeftMouseButtonUp"){
 			if (!inButtonHold && !inScrollDrag){
@@ -139,11 +136,8 @@ private:
 			buttonHoldDir = 0;
 		} else if (scrollBarVisible && event == "MouseMove"){
 			if (inScrollDrag){
-				int diff = data.data2 - lastScrollDragY;
-				int newScrollTop = ScrollBarPosToScrollTop(lastScrollPosY + diff);
+				int newScrollTop = ScrollBarPosToScrollTop(data.data2 + scrollDragOffset);
 				ScrollTo(newScrollTop);
-				lastScrollDragY = data.data2;
-				lastScrollPosY = yBarScrollPos.y1;
 			}
 		}
 	}
@@ -160,6 +154,18 @@ private:
 		}
 	}
 
+	void CheckInputs(){
+		if (KeyState(KEY_UP_ARROW)){
+			ScrollTo(ScrollTop-1);
+		} else if (KeyState(KEY_DOWN_ARROW)){
+			ScrollTo(ScrollTop+1);
+		} else if (KeyState(KEY_PAGE_UP)){
+			ScrollPageUp();
+		} else if (KeyState(KEY_PAGE_DOWN)){
+			ScrollPageDown();
+		}
+	}
+
 public:
 
 	UITextArea* GetText(){
@@ -173,30 +179,8 @@ public:
 		return true;
 	}
 
-	bool ScrollDown(){
-		int newScroll = ScrollTop+1;
-		if (newScroll > _innerText->height - height){
-		 	return false;
-		}
-		ScrollTop++;
-		SetBoxCoords();
-		needsRedraw = true;
-		return true;
-	}
-
 	void ScrollPageDown(){
 		ScrollTo(ScrollTop + innerHeight);
-	}
-
-	bool ScrollUp(){
-		int newScroll = ScrollTop - 1;
-		if (newScroll < 0){
-			return false;
-		}
-		ScrollTop--;
-		SetBoxCoords();
-		needsRedraw = true;
-		return true;
 	}
 
 	void ScrollPageUp(){
@@ -211,6 +195,7 @@ public:
 			top = _innerText->height - height;
 		}
 		ScrollTop = top;
+		_innerText->y = 0-ScrollTop;
 		SetBoxCoords();
 		needsRedraw = true;
 	}

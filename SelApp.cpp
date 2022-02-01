@@ -116,11 +116,7 @@ public:
     }
 
     void CheckInputs(){
-        if (KeyState(KEY_KP_PLUS)){
-            gameDescription->ScrollDown();
-        } else if (KeyState(KEY_KP_MINUS)){
-            gameDescription->ScrollUp();
-        }
+        
         UIWindow::CheckInputs();
     }
 

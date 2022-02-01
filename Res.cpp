@@ -116,6 +116,7 @@ struct DatabaseItem {
     string year;
     string developer;
     string notes;
+    string setup;
     bool inlineDescription;
     bool favorite;
     bool cd;
@@ -291,6 +292,9 @@ private:
                 menu.write("readme=", 7);
                 menu.write(item->readme.c_str(), item->readme.size());
                 menu.write("\n", 1);
+                menu.write("setup=", 6);
+                menu.write(item->setup.c_str(), item->setup.size());
+                menu.write("\n", 1);
                 menu.write("favorite=", 9);
                 menu.write(item->favorite ? "T" : "F", 1);
                 menu.write("\n", 1);
@@ -311,7 +315,6 @@ private:
     vector<DatabaseItem*>* _ScanMenuItemFiles(vector<string> scanFolders){
         vector<DatabaseItem*>* files = new vector<DatabaseItem*>();
         for (string folder : scanFolders){
-            debugOut("scanning folder ", folder);
             vector<DatabaseItem*> subfolderItems = _RecursivelyScanFolderForMenuFiles(folder);
             if (subfolderItems.size() == 0){
                 continue;
@@ -485,6 +488,12 @@ private:
                             } else if (key == "folder"){
                                 folderPath = itemValue;
                                 currentItem->folder = itemValue;
+                            } else if (key == "setup"){
+                                if (!isCachedWithFullPaths){
+                                    currentItem->setup = folderPath + itemValue;
+                                } else {
+                                    currentItem->setup = itemValue;
+                                }
                             }
                             break;
                         }
@@ -498,70 +507,6 @@ private:
             items.push_back(currentItem);
         }
         return items;
-    }
-
-    std::vector<DatabaseItem*> *_databaseItems = new std::vector<DatabaseItem*>();
-    std::vector<DatabaseItem*> *_GetDatabaseItems(string filename){
-        if (_databaseItems->size() > 0){
-            return _databaseItems;
-        }
-        fstream dbfile;
-        DatabaseItem* currentItem = NULL;
-        dbfile.open(filename.c_str(),ios::in);
-        if (dbfile.is_open()){
-            string tp;
-            while(getline(dbfile, tp)){
-                if (tp.length() == 0){
-                    continue;
-                }
-                if (tp.at(0) == 0x5B){
-                    if (currentItem){
-                        //add previous to collection
-                        _databaseItems->push_back(currentItem);
-                    }
-                    //new item
-                    currentItem = new DatabaseItem;
-                    string itemName = tp.substr(1,tp.length()-2);
-                    currentItem->name = itemName;
-                } else {
-                    //scan string until = separator
-                    string key;
-                    for (int i = 0; i < tp.length(); i++){
-                        if (tp.at(i) == 0x3D && tp.length() > i+1){
-                            //check for supported keys and store value from equals onwards and then break;
-                            string itemValue = tp.substr(i+1);
-                            if (key == "genre"){
-                                currentItem->genre = itemValue;
-                            } else if (key == "path"){
-                                currentItem->path = itemValue;
-                            } else if (key == "image"){
-                                currentItem->image = itemValue;
-                            } else if (key == "developer"){
-                                currentItem->developer = itemValue;
-                            } else if (key == "year"){
-                                currentItem->year = itemValue;
-                            } else if (key == "notes"){
-                                currentItem->notes = itemValue;
-                            } else if (key == "readme"){
-                                currentItem->readme = itemValue;
-                            } else if (key == "favorite"){
-                                currentItem->favorite = itemValue == "T";
-                            } else if (key == "cd"){
-                                currentItem->cd = itemValue == "T";
-                            }
-                            break;
-                        }
-                        key += tp.at(i);
-                    }
-                }
-            }
-            if (currentItem){
-                _databaseItems->push_back(currentItem);
-            }
-            dbfile.close();
-            return _databaseItems;
-        }
-
     }
 
     string _GetInlineDescription(string menuFile, string menuItem){
@@ -655,10 +600,6 @@ public:
         return Current()->_ScanMenuItemFiles();
     }
 
-	static std::vector<DatabaseItem*>* GetDatabaseItems(string filename){
-        return Current()->_GetDatabaseItems(filename);
-	}
-
     static std::vector<DatabaseItem*>* GetCachedMenuItems(){
         return Current()->_GetCachedMenuItems();
     }
@@ -684,12 +625,6 @@ public:
 	}
 
     ~AppResources(){
-        for (int i = 0; i < _databaseItems->size(); i++){
-            delete (*_databaseItems)[i];
-        }
-
-        _databaseItems->clear();
-        delete _databaseItems;
         if (configLoaded){
             config->scanFolders->clear();
             delete config->scanFolders;
