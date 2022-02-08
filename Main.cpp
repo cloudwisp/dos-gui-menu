@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse(false);
-    app->ToggleDiagnostics(false);
+    app->ToggleDiagnostics(true);
 	app->Start();
     AppResources::Destroy();
 

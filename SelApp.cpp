@@ -13,6 +13,7 @@
 #include "App.cpp"
 #include "SelApp.h"
 #include "SelUI.cpp"
+#include "AppOptions.cpp"
 
 bool dbsort(DatabaseItem *item1, DatabaseItem *item2){
     return item1->name < item2->name;
@@ -143,6 +144,9 @@ public:
     }
 
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+        if (ScanCode == KEY_ESC){
+            app->End();
+        }
         UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
 
@@ -336,7 +340,7 @@ class SelectorApplication : public CWApplication {
 private:
 
     UIWindow* mainWindow = NULL;
-
+    UITitledWindow *options = NULL;
 	void on_start(){
         ((SelectorMainWindow*) mainWindow)->LoadItems();
 	}
@@ -351,13 +355,15 @@ private:
 	}
 
 	void check_inputs(int *cancelInputPropagation){
-
+        if ((KeyState(KEY_LEFT_CONTROL) || KeyState(KEY_RIGHT_CONTROL)) && KeyState(KEY_O)){
+            options->Open();
+        }
 	}
 
 	void on_keyup(int ScanCode, int ShiftState, int Ascii, int *cancelInputPropagation){
-        if (ScanCode == KEY_ESC){
-            End();
-        }
+        // if (ScanCode == KEY_ESC){
+        //     End();
+        // }
 	}
 
 
@@ -368,14 +374,18 @@ public:
 	}
 
 	SelectorApplication(int screenWidth, int screenHeight): CWApplication (screenWidth, screenHeight, MS_PER_UPDATE) {
+        int optWidth = screenWidth / 2;
+        int optHeight = screenHeight / 2;
+        options = new AppOptionsWindow(optWidth, optHeight);
+        options->SetPosition(optWidth / 2, optHeight / 2);
+        AddWindow(options, 0);
         mainWindow = new SelectorMainWindow(screenWidth, screenHeight, this);
 		AddWindow(mainWindow,1);
-        mainWindow->BringToFront();
-
 	}
 	~SelectorApplication(){
 
 	    if (mainWindow){ delete mainWindow; }
+        if (options){ delete options; }
 	}
 
 };

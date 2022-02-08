@@ -29,11 +29,17 @@ private:
 		int titleTextSize = GrFontStringWidth(titleFont, _title.c_str(), _title.size(), GR_BYTE_TEXT);
 		int fontHeight = GrFontCharHeight(titleFont, "A");
 		int centeredX = (innerWidth / 2);// - (titleTextSize / 2);
-		int centeredY = (THEME_WINDOW_TITLE_HEIGHT / 2) - (fontHeight / 2);
+		int centeredY = (THEME_WINDOW_TITLE_HEIGHT / 2);
 		GrDrawString((void*)_title.c_str(), _title.size(), THEME_WINDOW_BORDER_WIDTH + centeredX, THEME_WINDOW_BORDER_WIDTH + centeredY, &titleTextOptions);
 	}
 
 protected:
+
+	void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+		if (ScanCode == KEY_ESC){
+			Close();
+		}
+	}
 
 public:
 

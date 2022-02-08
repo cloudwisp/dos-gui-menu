@@ -272,6 +272,10 @@ public:
 		needsRedraw = true;
 	}
 
+	int GetLineHeight(){
+		return _charHeight;
+	}
+
 	void SizeHeightToContent(){
 		int numLines = lines.size();
 		int blockHeight = numLines * _charHeight;

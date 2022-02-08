@@ -2,6 +2,7 @@
 #define UIHelpers_cpp
 
 #include <grx20.h>
+#include "math.h"
 #include "AppUI.h"
 
 class UIHelpers {
@@ -71,16 +72,17 @@ bool BoxesIntersect(BoxCoords coord1, BoxCoords coord2){
 }
 
 BoxCoords BoxIntersection(BoxCoords coord1, BoxCoords coord2){
-    if (!BoxesIntersect(coord1,coord2)){
-        return BoxCoords {0,0,0,0};
-    }
-
-    return BoxCoords {
-        coord1.x1 < coord2.x1 ? coord2.x1 : coord1.x1,
-        coord1.y1 < coord2.y1 ? coord2.y1 : coord1.y1,
-        coord1.x2 < coord2.x2 ? coord1.x2 : coord2.x2,
-        coord1.y2 < coord2.y2 ? coord1.y2 : coord2.y2
+    BoxCoords coord = {
+        std::max(coord1.x1,coord2.x1),
+        std::max(coord1.y1,coord2.y1),
+        std::min(coord1.x2,coord2.x2),
+        std::min(coord1.y2,coord2.y2)
     };
+    if (coord.y1 < coord.y2 && coord.x1 < coord.x2){
+        return coord;
+    } else {
+        return {0,0,0,0};
+    }
 }
 
 bool CoordsIntersectBox(BoxCoords box, int x, int y){

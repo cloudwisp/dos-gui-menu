@@ -16,9 +16,15 @@ protected:
 	UIWindow *windows[255] = {NULL};
     int windowCount = 0;
 	UIWindow *focusedWindow = NULL;
-
+    UIWindow *lastFocusedWindow = NULL;
 public:
-
+    virtual void OnEvent(EventEmitter *source, std::string event, EventData data) {
+        if (event == "RequestOpen"){
+            UIWindow* srcWindow = (UIWindow*)source;
+            srcWindow->Show();
+            SetFocusedWindow(srcWindow);
+        }
+    };
     static UIWindowController *Get();
 
     UIAppScreen *screen = NULL;
@@ -37,10 +43,11 @@ public:
                     focusedWindow = NULL;
                 }
                 //focus on the first window (main)
-                SetFocusedWindow(windows[0]);
-            } else if (!(windows[i]->closed) && focusedWindow != windows[i]){
-                //window was just opened
-                focusedWindow->Show();
+                if (lastFocusedWindow){
+                    SetFocusedWindow(lastFocusedWindow);
+                } else {
+                    SetFocusedWindow(windows[0]);
+                }
             }
         }
         //call update on the UIDrawable tree
@@ -58,6 +65,7 @@ public:
         if (!focusedWindow){
             focusedWindow = window;
         }
+        window->BindEvent("RequestOpen", (EventConsumer*)this);
 	}
 	void AddWindow(UIWindow *window, int focused){
         AddWindow(window);
@@ -84,6 +92,9 @@ public:
 	}
 
 	void SetFocusedWindow(UIWindow *window){
+        if (focusedWindow && window != focusedWindow){
+            lastFocusedWindow = focusedWindow;
+        }
         focusedWindow = window;
         focusedWindow->BringToFront();
 	}

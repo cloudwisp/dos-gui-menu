@@ -218,6 +218,7 @@ public:
     void Open(){
         closed = 0;
         destroy = 0;
+		EmitEvent("RequestOpen");
     }
 
 	void DescendentAdded(UIDrawable* descendent){

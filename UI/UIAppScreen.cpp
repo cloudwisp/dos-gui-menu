@@ -10,6 +10,10 @@
 UIAppScreen* currentScreen;
 class UIAppScreen : public UIDrawable {
 private:
+
+	bool enableGrid = false;
+	int gridIncrement = 40;
+
 	void draw_internal(){
 		//Not applicable
 	}
@@ -59,11 +63,25 @@ public:
 		// 	GrBox(coords.x1, coords.y1, coords.x2, coords.y2, THEME_HIGHLIGHT_BORDER);
 		// }
 
+
+
 		Vsync();
 		//GrBitBlt(GrScreenContext(),x,y,ctx,0,0,width-1,height-1,GrIMAGE);
+		
+		
 		for (int i = 0; i < redrawBoxes.size(); i++){
 			BoxCoords coords = redrawBoxes.at(i);
 			GrBitBlt(GrScreenContext(), coords.x1, coords.y1, ctx, coords.x1, coords.y1, coords.x2, coords.y2, GrIMAGE);
+		}
+
+		if (enableGrid){
+			GrSetContext(GrScreenContext());
+			for (int i = 0; i < height; i += gridIncrement){
+				GrLine(0, i, width - 1, i, GrWhite());
+			}
+			for (int i = 0; i < width; i+= gridIncrement){
+				GrLine(i, 0, i, height - 1, GrWhite());
+			}
 		}
 	}
 

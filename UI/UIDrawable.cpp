@@ -7,12 +7,14 @@
 #include "AppUI.h"
 #include "../AppEvent.cpp"
 #include "AppUITheme.h"
+#include "UIHelpers.cpp"
 
 
 typedef UIDrawable *UIDrawableCollection[255];
 
 class UIDrawable : public EventEmitter, public EventConsumer {
 private:
+
 	virtual void draw_internal() = 0;
 
 	int indexOfChild(UIDrawable* child){
@@ -121,6 +123,16 @@ protected:
 		return absPos;
 	}
 
+	BoxCoords AbsoluteBounds(){
+		Coord absPos = AbsolutePosition();
+		return {absPos.x, absPos.y, absPos.x + width, absPos.y + height};
+	}
+
+	BoxCoords AbsoluteInnerBounds(){
+		Coord absPos = AbsolutePosition();
+		return {absPos.x + innerContextX, absPos.y + innerContextY, absPos.x + innerContextX + innerWidth, absPos.y + innerContextY + innerHeight};
+	}
+
 	//redraw boxes - these are only relevant to the screen, but drawables don't have a hook on the screen, so it's on this class
 	// accessed through GetTopElement()->AddRedrawBox
 	std::vector<BoxCoords> redrawBoxes = std::vector<BoxCoords>();
@@ -131,7 +143,6 @@ protected:
 	void ClearRedrawBoxes(){
 		redrawBoxes.clear();
 	}
-
 	
 	bool singleContext = false;
 
@@ -302,7 +313,9 @@ public:
 	}
 
 	void BringToFront(){
-		if (parent == NULL){ return; }
+		if (parent == NULL){
+			return;
+		}
 		parent->BringChildToFront(this);
 	}
 
@@ -334,6 +347,15 @@ public:
 		x = posX;
 		y = posY;
 		needsRedraw = true;
+	}
+
+	int RedrawSize(){
+		int totalArea = 0;
+		for (int i = 0; i < redrawBoxes.size(); i++){
+			BoxCoords box = redrawBoxes.at(i);
+			totalArea  += ((box.x2-box.x1) * (box.y2-box.y1));
+		}
+		return totalArea;
 	}
 
 	UIDrawable(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight, drawWidth, drawHeight, 0, 0, true) {
@@ -393,11 +415,12 @@ public:
 	//These methods blit redraw boxes in a stack from bottom to top directly against the screen buffer 
 	void BlitBoxes(GrContext* ontoContext){
 		//consolidate boxes?
+		BoxCoords screenClip = {0,0,width - 1,height - 1};
 		for (int i = 0; i < redrawBoxes.size(); i++){
 			BoxCoords coords = redrawBoxes.at(i);
 			GrSetContext(ontoContext);
 			GrFilledBox(coords.x1,coords.y1,coords.x2,coords.y2,THEME_COLOR_BLACK);
-			BlitBox(coords.x1, coords.y1, coords, ontoContext);
+			BlitBox(coords.x1, coords.y1, coords, ontoContext, screenClip);
 		}
 	}
 
@@ -457,20 +480,33 @@ public:
 
 	clock_t lastUpdate = clock();
 
-	void BlitBox(int screenX, int screenY, BoxCoords coords, GrContext *ontoContext){
-		BoxCoords myCoords = ScreenCoordsToLocalContext(coords);
+	void BlitBox(int screenX, int screenY, BoxCoords coords, GrContext *ontoContext, BoxCoords parentClip){
+		BoxCoords clipped = coords;
+		// if (parent){
+		// 	clipped = BoxIntersection(coords, parent->AbsoluteInnerBounds());
+		// 	if (clipped.x2-clipped.x1 <= 0 || clipped.y2-clipped.y1 <=0 ){ return; }
+		// }
 
+		clipped = BoxIntersection(parentClip, coords);
+		if (clipped.x2-clipped.x1 <= 0 || clipped.y2-clipped.y1 <=0 ){ return; }
+		int plotOffsetX = clipped.x1 - coords.x1; //if local area should be clipped below or after the target coordinate, it needs to be plotted on the screen further down or across
+		int plotOffsetY = clipped.y1 - coords.y1;
+		BoxCoords myCoords = ScreenCoordsToLocalContext(clipped);
+		
 		int mx1 = myCoords.x1 < 0 ? 0 : myCoords.x1;
 		int my1 = myCoords.y1 < 0 ? 0 : myCoords.y1;
 		int mx2 = myCoords.x2 > width - 1 ? width - 1 : myCoords.x2;
 		int my2 = myCoords.y2 > height - 1 ? height - 1 : myCoords.y2;
+
 		if (mx2-mx1 < 0 || my2-my1 < 0){
 			return;
 		}
 		int screenOffsetX = myCoords.x1 < 0 ? 0-myCoords.x1 : 0;
 		int screenOffsetY = myCoords.y1 < 0 ? 0-myCoords.y1 : 0;
+		screenOffsetX += plotOffsetX;
+		screenOffsetY += plotOffsetY;
 		GrBitBlt(ontoContext, screenX + screenOffsetX, screenY + screenOffsetY, ctx, mx1, my1, mx2, my2, GrIMAGE);
-
+		BoxCoords myAbsBox = AbsoluteInnerBounds();
 		int i, o;
 		for (o = 0; o < childDisplayOrderCount; o++){
 			i = childDisplayOrder[o];
@@ -483,7 +519,7 @@ public:
 			// 		continue;
 			// 	}
 				
-			children[i]->BlitBox(screenX, screenY, coords, ontoContext);
+			children[i]->BlitBox(screenX, screenY, coords, ontoContext, myAbsBox);
 		}
 	}
 

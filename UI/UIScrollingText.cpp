@@ -1,6 +1,7 @@
 #ifndef UIScrollingText_cpp
 #define UIScrollingText_cpp
 
+#include <math.h>
 #include <grx20.h>
 #include "AppUI.h"
 #include "UIDrawable.cpp"
@@ -22,6 +23,7 @@ private:
 	BoxCoords yBarSpaceBelow;
     int scrollArrowPad = 4;
 	bool scrollBarVisible = false;
+	int scrollRepeatMS = 250;
 
     void draw_internal(){
 		
@@ -143,26 +145,35 @@ private:
 	}
 
 	void OnKeyUp(int KeyCode, int ShiftState, int Ascii) {
-		if (KeyCode == KEY_UP_ARROW){
-			ScrollTo(ScrollTop-10);
-		} else if (KeyCode == KEY_DOWN_ARROW){
-			ScrollTo(ScrollTop + 10);
-		} else if (KeyCode == KEY_PAGE_DOWN){
-			ScrollPageDown();
-		} else if (KeyCode == KEY_PAGE_UP){
-			ScrollPageUp();
+		clock_t now = clock();
+		if (clockToMilliseconds(now - lastRepeatScroll) > scrollRepeatMS){
+			if (KeyCode == KEY_UP_ARROW){
+				ScrollLineUp();
+			} else if (KeyCode == KEY_DOWN_ARROW){
+				ScrollLineDown();
+			} else if (KeyCode == KEY_PAGE_DOWN){
+				ScrollPageDown();
+			} else if (KeyCode == KEY_PAGE_UP){
+				ScrollPageUp();
+			}
 		}
 	}
 
+	clock_t lastRepeatScroll;
+
 	void CheckInputs(){
-		if (KeyState(KEY_UP_ARROW)){
-			ScrollTo(ScrollTop-1);
-		} else if (KeyState(KEY_DOWN_ARROW)){
-			ScrollTo(ScrollTop+1);
-		} else if (KeyState(KEY_PAGE_UP)){
-			ScrollPageUp();
-		} else if (KeyState(KEY_PAGE_DOWN)){
-			ScrollPageDown();
+		clock_t now = clock();
+		if (clockToMilliseconds(now - lastRepeatScroll) > scrollRepeatMS){
+			if (KeyState(KEY_UP_ARROW)){
+				ScrollLineUp();
+			} else if (KeyState(KEY_DOWN_ARROW)){
+				ScrollLineDown();
+			} else if (KeyState(KEY_PAGE_UP)){
+				ScrollPageUp();
+			} else if (KeyState(KEY_PAGE_DOWN)){
+				ScrollPageDown();
+			}
+			lastRepeatScroll = clock();
 		}
 	}
 
@@ -180,11 +191,21 @@ public:
 	}
 
 	void ScrollPageDown(){
-		ScrollTo(ScrollTop + innerHeight);
+		int linesVisible = floor(innerHeight / (float)_innerText->GetLineHeight());
+		ScrollTo(ScrollTop + (linesVisible * _innerText->GetLineHeight()));
 	}
 
 	void ScrollPageUp(){
-		ScrollTo(ScrollTop - innerHeight);
+		int linesVisible = floor(innerHeight / (float)_innerText->GetLineHeight());
+		ScrollTo(ScrollTop - (linesVisible * _innerText->GetLineHeight()));
+	}
+
+	void ScrollLineUp(){
+		ScrollTo(ScrollTop - _innerText->GetLineHeight());
+	}
+
+	void ScrollLineDown(){
+		ScrollTo(ScrollTop + _innerText->GetLineHeight());
 	}
 
 	void ScrollTo(int top){
@@ -201,6 +222,7 @@ public:
 	}
 
 	UIScrollingText(int width, int height) : UIDrawable(width, height, width - THEME_SCROLLBAR_WIDTH, height, 0, 0, false){
+		lastRepeatScroll = clock();
 		_innerText = new UITextArea(width - THEME_SCROLLBAR_WIDTH - 2, height);
 		AddChild(_innerText);
 		BindEvent("MouseMove", this);

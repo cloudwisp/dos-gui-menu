@@ -23,7 +23,7 @@ private:
 	int _ms_per_update = 16;
 	int _mouse_enabled = 0;
 	bool mouseDebug = false;
-	int lastRedrawCount = 0;
+	int maxRedrawSize = 0;
 	clock_t lastDiag = clock();
 
 	void _loop(){
@@ -74,7 +74,8 @@ private:
 				deltaTime -= CLOCKS_PER_SEC;
 				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
 
-				sprintf(fpsDisplay,"FPS: %.2f \n lag: %.2f \n redraw: %d", frameRate, clockToMilliseconds(lag), lastRedrawCount);
+				sprintf(fpsDisplay,"FPS: %.2f \n lag: %.2f \n max draw sqpx: %d", frameRate, clockToMilliseconds(lag), maxRedrawSize);
+				maxRedrawSize = 0;
 			}
 
 		}
@@ -256,6 +257,10 @@ private:
 		if (diagnostic->visible){ diagnostic->BringToFront(); } //ensure diagnostics are at top
 		if (mousePointer) { mousePointer->BringToFront(); }
 		screen->render();
+		int lastRedraw = screen->RedrawSize();
+		if (lastRedraw > maxRedrawSize){
+			maxRedrawSize = lastRedraw;
+		}
 	}
 
 	virtual void check_inputs(int *cancelInputPropagation) = 0;
@@ -270,7 +275,10 @@ protected:
 	UIPointer *mousePointer = NULL;
 
 public:
-
+	virtual void OnEvent(EventEmitter *source, std::string event, EventData data) {
+		UIWindowController::OnEvent(source, event, data);
+	};
+	
     static CWApplication* GetApplication(){
         return _app;
     }
@@ -317,6 +325,7 @@ public:
 		//diagnostics overlay
 		diagnostic = new UITextArea(100, 40);
 		diagnostic->x = 4;
+		diagnostic->SetFont(&GrFont_PC6x8);
 		diagnostic->y = screenHeight-40;
 
 		screen->AddChild((UIDrawable *) diagnostic);
