@@ -20,11 +20,28 @@ private:
 	int loadDelay = 0;
 	bool imageLoaded = false;
 	UITextArea *loadingText = NULL;
-
-	CWRGB* orderedColors = NULL;
+	int scaledWidth = 0;
+	int scaledHeight = 0;
+	int currentScanLine = 0;
+	int linesPerUpdate = 2;
+	
 	int orderedColorCount = 0;
 
+	PNGScanLines currentImage = {0,0,0,NULL};
+
 	void draw_internal(){
+
+		if (currentScanLine < loadedHeight){
+			for (int i = 0; i <= linesPerUpdate; i++){
+				if (currentScanLine >= loadedHeight){
+					break;
+				}
+				RenderScanline(currentScanLine + 1);
+			}
+			ScaleImage();
+			//needsRedraw = true;
+		}
+
 	    GrSetContext(ctx);
 		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
 		if (scaleToWidth || scaleToHeight){
@@ -37,46 +54,10 @@ private:
 		GrBitBlt(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
 	}
 
-	void readColors(GrContext* context){
-		if (orderedColors){
-			free(orderedColors);
-			orderedColorCount = 0;
-		}
-		GrContext *prevCtx = GrCurrentContext();
-        GrSetContext(context);
-		int w, h;
-        w = GrSizeX();
-        h = GrSizeY();
-		orderedColorCount = w * h;
-		orderedColors = (CWRGB*)malloc(sizeof(struct CWRGB) * orderedColorCount);
-        GrColor *pColors = NULL;
-        pColors = (GrColor*)malloc(w * sizeof(GrColor));
-        if (pColors == NULL){
-            //out of memory?
-            GrSetContext(prevCtx);
-            return;
-        }
-        int y = 0;
-        int x = 0;
-		int ci = 0;
-        for (y = 0; y < h; y++){
-            memcpy(pColors,GrGetScanline(0,w-1,y),sizeof(GrColor)*w);
-            for (x = 0; x < w; x++){
-                int r, g, b;
-                GrQueryColor(pColors[x], &r, &g, &b);
-				CWRGB c;
-				c.r = r;
-				c.g = g;
-				c.b = b;
-				orderedColors[ci] = c;
-				ci++;
-            }
-        }
-        GrSetContext(prevCtx);
-        free(pColors);
-	}
-
 	void _load_image(bool refresh){
+		currentScanLine = 0;
+		loadedWidth = 0;
+		loadedHeight = 0;
         if (!hasImage){ return; }
         if (sizedImg){
             GrImageDestroy(sizedImg);
@@ -90,36 +71,86 @@ private:
 			ResetColors();
 			RefreshOtherImages(); //load other images, so they are allocated colors.
 		}
-        imctx = AppResources::LoadImage(imagePath);
+		if (currentImage.pixelCount > 0 && currentImage.pixels != NULL){
+			free(currentImage.pixels);
+		}
+		currentImage = AppResources::LoadImageScanLines(imagePath);
+		if (currentImage.pixelCount == 0){
+			hasImage = false;
+			return;
+		}
+		loadedWidth = currentImage.width;
+		loadedHeight = currentImage.height;
+		if (imctx != NULL){
+			GrDestroyContext(imctx);
+		}
+		imctx = GrCreateContext(currentImage.width, currentImage.height, NULL, NULL);
+		GrClearContextC(imctx, THEME_COLOR_TRANSPARENT);
+        //imctx = AppResources::LoadImage(imagePath);
 		if (!imctx){
 			hasImage = false;
 			return;
 		}
-		if (preserveColors){
-			readColors(imctx);
+		
+		if (!progressive){
+			for (int i = 0; i < loadedHeight; i++){
+				RenderScanline(i);
+			}
 		}
-		GrContext *prevCtx = GrCurrentContext();
-		GrSetContext(imctx);
-		loadedWidth = GrSizeX();
-		loadedHeight = GrSizeY();
-		GrSetContext(prevCtx);
 		if (!scaleToWidth && !scaleToHeight){
 			return;
 		}
 		img = GrImageFromContext(imctx);
-		int newHeight = height;
-		int newWidth = width;
+		scaledHeight = height;
+		scaledWidth = width;
 		if (!scaleToHeight){
 			//fit to width proportionally
 			double hwratio = (double)loadedHeight/(double)loadedWidth;
-			newHeight = width*hwratio;
+			scaledHeight = width*hwratio;
 		} else if (!scaleToWidth) {
 			//fit to height proportionally
 			double whratio = (double)loadedWidth/(double)loadedHeight;
-			newWidth = height*whratio;
+			scaledWidth = height*whratio;
+		}
+
+		if (!progressive){
+			ScaleImage();
 		}
 		
-		sizedImg = GrImageStretch(img, newWidth, newHeight);
+		//sizedImg = GrImageStretch(img, newWidth, newHeight);
+	}
+
+	void RenderScanline(int lineNumber){
+		if (!hasImage || currentImage.pixelCount == 0){
+			return;
+		}
+		GrColor *pColors = (GrColor*)malloc(currentImage.width * sizeof(GrColor));
+		
+		int lineStart = lineNumber * currentImage.width;
+		int lineEnd = ((lineNumber + 1) * currentImage.width) - 1;
+		int a = 0;
+		for (int i = lineStart; i <= lineEnd; i++){
+			if (i > currentImage.pixelCount - 1){
+				break;
+			}
+			PNGRGB c = currentImage.pixels[i];
+			pColors[a] = GrAllocColor(c.r, c.g, c.b);
+			a++;
+		}
+		GrSetContext(imctx);
+		GrPutScanline(0,currentImage.width - 1, lineNumber, pColors, GrIMAGE);
+		free(pColors);
+		
+		currentScanLine = lineNumber;
+	}
+
+	void ScaleImage(){
+		if (sizedImg){
+			GrImageDestroy(sizedImg);
+		}
+		if (scaleToWidth || scaleToHeight){
+			sizedImg = GrImageStretch(img, scaledWidth, scaledHeight);
+		}
 	}
 
 	void RefreshOtherImages(){
@@ -131,14 +162,31 @@ private:
 		}
 	}
 
+	void ClearImage(){
+		hasImage = false;
+		loadedWidth = 0;
+		loadedHeight = 0;
+		currentScanLine = 0;
+		if (imctx){
+			GrDestroyContext(imctx);
+			imctx = NULL;
+		}
+		if (sizedImg){
+			GrImageDestroy(sizedImg);
+			sizedImg = NULL;
+		}
+		needsRedraw = true;
+	}
+
 protected:
 
 	void ResetColorsExt(){
-		if (orderedColorCount == 0){
+		if (!hasImage){
 			return;
 		}
-		for (int i = 0; i < orderedColorCount; i++){
-			GrAllocColor(orderedColors[i].r, orderedColors[i].g, orderedColors[i].b);
+		int count = currentImage.pixelCount;
+		for (int i = 0; i < count; i++){
+			GrAllocColor(currentImage.pixels[i].r, currentImage.pixels[i].g, currentImage.pixels[i].b);
 		}
 		//_load_image(true);
 	}
@@ -152,6 +200,8 @@ protected:
 				_load_image(false);
 				needsRedraw = true;
 			}
+		} else if (currentScanLine < loadedHeight){
+			needsRedraw = true;
 		}
 	}
 
@@ -161,12 +211,17 @@ public:
 	bool preserveColors = true;
 	bool scaleToWidth = true;
 	bool scaleToHeight = false;
+	bool progressive = false;
 
 	void SetLoadingFont(GrFont *font){
 		loadingText->SetFont(font);
 	}
 
     void SetImage(std::string filename, int delay = 0){
+		if (filename == ""){
+			ClearImage();
+			return;
+		}
         imagePath = std::string(filename);
 		hasImage = true;
 		imageLoaded = false;
@@ -205,9 +260,7 @@ public:
 			}
 		}
 		loadedPanels.erase(loadedPanels.begin()+myIndex);
-		if (orderedColors){
-			free(orderedColors);
-		}
+		
 		delete loadingText;
 	}
 };

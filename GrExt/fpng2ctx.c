@@ -12,7 +12,20 @@
 	(((x) + GrColorInfo->round[n]) & GrColorInfo->mask[n])          \
 )
 
-static int readpng_fast( FILE *f, GrContext *grc, int use_alpha );
+struct PNGRGB {
+  int r;
+  int g;
+  int b;
+};
+
+struct PNGScanLines {
+  int pixelCount;
+  int width;
+  int height;
+  PNGRGB *pixels;
+};
+
+static PNGScanLines readpng_lines( FILE *f, int use_alpha );
 
 /*
 ** GrLoadContextFromPng - Load a context from a PNG file
@@ -32,90 +45,26 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha );
 **         -1 on error
 */
 
-int GrLoadContextFromPngFast( GrContext *grc, char *pngfn, int use_alpha )
+PNGScanLines LoadPngAsScanLines(char *pngfn, int use_alpha)
 {
-  GrContext grcaux;
   FILE *f;
   int r;
+  PNGScanLines result = {0,0,0,NULL};
   
   f = fopen( pngfn,"rb" );
-  if( f == NULL ) return -1;
+  if( f == NULL ) return result;
 
-  GrSaveContext( &grcaux );
-  if( grc != NULL ) GrSetContext( grc );
-  r = readpng_fast( f,grc,use_alpha );
-  GrSetContext( &grcaux );
+  result = readpng_lines( f, use_alpha );
 
   fclose( f );
 
-  return r;
-}
-
-//Stricter color allocation - will re-use an existing color only if the rgb is an exact match.
-GrColor FastAllocColor(int r, int g, int b){
-    int i;
-    for(i = 0; i < (int)GrColorInfo->ncolors; i++) {
-		if(GrColorInfo->ctable[i].defined) {
-		    if(!GrColorInfo->ctable[i].writable) {
-                if (GrColorInfo->ctable[i].r == r && GrColorInfo->ctable[i].g == g && GrColorInfo->ctable[i].b == b){
-                    return ((GrColor)(i));
-                }
-		    }
-		}
-    }
-    GrColor ret = GrAllocCell();
-    GrSetColor(ret, r, g, b);
-    return ret;
-}
-
-GrColor FasterAllocColor(int r,int g,int b)
-{
-    GrColor res;
-
-    res = GrNOCOLOR;
-    r = ROUNDCOLORCOMP(r,0);
-    g = ROUNDCOLORCOMP(g,1);
-    b = ROUNDCOLORCOMP(b,2);
-    if(GrColorInfo->RGBmode) {
-            res = GrBuildRGBcolorT(r,g,b);
-    }
-    else {
-        int i;
-        int free_ = (-1),allfree = (-1),best = (-1);
-        int ndef = (int)GrColorInfo->ncolors - (int)GrColorInfo->nfree;
-        for(i = 0; i < (int)GrColorInfo->ncolors; i++) {
-            if(GrColorInfo->ctable[i].defined) {
-                if(!GrColorInfo->ctable[i].writable) {
-                    if (GrColorInfo->ctable[i].r == r && GrColorInfo->ctable[i].g == g && GrColorInfo->ctable[i].b == b){
-                        return ((GrColor)i);
-                    }
-                    if((free_ <= 0) && !GrColorInfo->ctable[i].nused) {
-                        free_ = i;
-                    }
-                }
-                if(GrColorInfo->ctable[i].nused) ndef--;
-            }
-            else {
-                if(allfree < 0) allfree = i;
-            }
-            if((allfree >= 0) && (ndef <= 0)) {
-                break;
-            }
-        }
-        if(allfree >= 0) {
-            free_ = allfree;
-        }
-        if(free_ >= 0) {
-            GrSetColor((GrColor)free_, r, g, b);
-            return (GrColor)free_;
-        }
-    }
+  return result;
 }
 
 /**/
 
 //uses stricter color allocation to save time loading the image.
-static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
+static PNGScanLines readpng_lines( FILE *f, int use_alpha )
 {
   png_struct *png_ptr = NULL;
   png_info *info_ptr = NULL;
@@ -132,26 +81,27 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
   int i, x, y, r, g, b;
   int alpha = 0, ro, go, bo;
   int maxwidth, maxheight;
-  GrColor *pColors = NULL;
+  PNGScanLines result = {0,0,0,NULL};
+  PNGRGB* image = NULL;
 
   /* is it a PNG file? */
-  if( fread( buf,1,8,f ) != 8 ) return -1;
-  if( ! png_check_sig( buf,8 ) ) return -1;
+  if( fread( buf,1,8,f ) != 8 ) return result;
+  if( ! png_check_sig( buf,8 ) ) return result;
 
   png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
   if( !png_ptr ){
-    return -1;
+    return result;
     }
 
   info_ptr = png_create_info_struct( png_ptr );
   if( !info_ptr ){
     png_destroy_read_struct( &png_ptr,NULL,NULL );
-    return -1;
+    return result;
     }
 
   if( setjmp( png_jmpbuf(png_ptr) ) ){
     png_destroy_read_struct( &png_ptr,&info_ptr,NULL );
-    return -1;
+    return result;
     }
 
   png_init_io( png_ptr,f );
@@ -191,7 +141,7 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
     alpha_present = 1;
   else{
     png_destroy_read_struct( &png_ptr,&info_ptr,NULL );
-    return -1;
+    return result;
     }
 
   row_bytes = png_get_rowbytes( png_ptr,info_ptr );
@@ -199,7 +149,7 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
   png_pixels = (png_byte *) malloc( row_bytes * height * sizeof(png_byte) );
   if( png_pixels == NULL ){
     png_destroy_read_struct( &png_ptr,&info_ptr,NULL );
-    return -1;
+    return result;
     }
 
   row_pointers = (png_byte **) malloc( height * sizeof(png_bytep) );
@@ -207,7 +157,7 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
     png_destroy_read_struct( &png_ptr,&info_ptr,NULL );
     free( png_pixels );
     png_pixels = NULL;
-    return -1;
+    return result;
     }
 
   for( i=0; i<height; i++ )
@@ -222,22 +172,23 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
   /* write data to context */
   maxwidth = (width > GrSizeX()) ? GrSizeX() : width;
   maxheight = (height > GrSizeY()) ? GrSizeY() : height;
-
-  pColors = (GrColor*)malloc( maxwidth * sizeof(GrColor) );
-  if( pColors == NULL ){
+  int npixels = maxwidth * maxheight;
+  result.pixelCount = npixels;
+  result.width = maxwidth;
+  result.height = maxheight;
+  
+  image = (PNGRGB*)malloc(npixels * sizeof(struct PNGRGB));
+  if( image == NULL ){
     free( row_pointers );
     row_pointers = NULL;
     free( png_pixels );
     png_pixels = NULL;
-    return -1;
+    return result;
     }
 
+  int rgbi = 0;
   for( y=0; y<maxheight; y++ ){
     pix_ptr = row_pointers[y];
-    // if( alpha_present && use_alpha ){
-    //   memcpy( pColors,GrGetScanline( 0,maxwidth-1,y ),
-    //           sizeof(GrColor)*maxwidth );
-    //   }
     for( x=0; x<width; x++ ){
       r = *pix_ptr++;
       g = *pix_ptr++;
@@ -246,23 +197,17 @@ static int readpng_fast( FILE *f, GrContext *grc, int use_alpha )
       if( alpha_present )
         alpha = *pix_ptr++;
       if( x < maxwidth ){
-        // if( alpha_present && use_alpha ){
-        //   GrQueryColor( pColors[x],&ro,&go,&bo );
-        //   r = r * (alpha/255.0) + ro * ((255-alpha)/255.0);
-        //   g = g * (alpha/255.0) + go * ((255-alpha)/255.0);
-        //   b = b * (alpha/255.0) + bo * ((255-alpha)/255.0);
-        //   }
-        pColors[x] = FasterAllocColor(r,g,b); //FastAllocColor( r,g,b );
+        image[rgbi] = {r,g,b};
         }
+        rgbi++;
       }
-    GrPutScanline( 0,maxwidth-1,y,pColors,GrWRITE );
     }
 
-  if( pColors) free( pColors );
   if( row_pointers ) free( row_pointers );
   if( png_pixels ) free( png_pixels );
 
-  return 0;
+  result.pixels = image;
+  return result;
 }
 
 #endif

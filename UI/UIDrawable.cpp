@@ -387,6 +387,14 @@ public:
 			GrClearContextC(innerContext, THEME_COLOR_TRANSPARENT);
 		}
 		needsRedraw = true;
+
+		BindEvent("LeftMouseButtonUp", this);
+		BindEvent("LeftMouseButtonDown", this);
+		BindEvent("LeftMouseButtonClick", this);
+		BindEvent("RightMouseButtonUp", this);
+		BindEvent("RightMouseButtonDown", this);
+		BindEvent("RightMouseButtonClick", this);
+		BindEvent("MouseMove", this);
 	}
 
 	~UIDrawable(){

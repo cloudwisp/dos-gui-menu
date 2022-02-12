@@ -6,11 +6,11 @@
 #include "AppUI.h"
 #include "../Common.cpp"
 
-const int THEME_WINDOW_TITLE_HEIGHT = 20;
-const int THEME_WINDOW_BORDER_WIDTH = 2;
-const int THEME_SCROLLBAR_WIDTH = 12;
-char* THEME_WINDOW_TITLE_FONT = "helv11"; // "GrFont_PC6x8";
-char* THEME_DEFAULT_FONT = "helv11";
+int THEME_WINDOW_TITLE_HEIGHT = 20;
+int THEME_WINDOW_BORDER_WIDTH = 1;
+int THEME_SCROLLBAR_WIDTH = 12;
+char* THEME_WINDOW_TITLE_FONT = "helv11.fnt";
+char* THEME_DEFAULT_FONT = "helv11.fnt";
 
 /*
     Theme colors

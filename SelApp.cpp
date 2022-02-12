@@ -88,10 +88,11 @@ private:
         gameDescriptionInner->SizeHeightToContent();
         
 
-        if (thisItem->image == ""){
-            thisItem->image = "noimage.ppm";
+        if (thisItem->image != ""){
+            screenshot->SetImage(thisItem->image, 500);
+        } else {
+            screenshot->SetImage("noimage.png");
         }
-        screenshot->SetImage(thisItem->image, 500);
     }
 
     void _LaunchItem(int itemId){
@@ -160,30 +161,30 @@ public:
         bool scaleHeaderHeight = false;
         bool shortLabels = false;
         if (drawHeight == 600){
-            titleFont = GrLoadFont("fonts/helv22.fnt");
-            titleFontBold = GrLoadFont("fonts/helv22b.fnt");
+            titleFont = GrLoadFont("helv22.fnt");
+            titleFontBold = GrLoadFont("helv22b.fnt");
             titleBarHeight = 32;
             titleFontHeight = 22;
-            textFont = GrLoadFont("fonts/helv15.fnt");
-            textFontBold = GrLoadFont("fonts/helv15b.fnt");
+            textFont = GrLoadFont("helv15.fnt");
+            textFontBold = GrLoadFont("helv15b.fnt");
             textFontHeight = 15;
-            smallFont = GrLoadFont("fonts/helv13.fnt");
-            smallFontBold = GrLoadFont("fonts/helv13b.fnt");
+            smallFont = GrLoadFont("helv13.fnt");
+            smallFontBold = GrLoadFont("helv13b.fnt");
             smallFontHeight = 13;
             defaultMargin = 10;
             detailLabelHeight = 20;
             defaultButtonBorderWidth = 4;
             detailLabelPadding = 2;
         } else if (drawHeight == 480) {
-            titleFont = GrLoadFont("fonts/helv15.fnt");
-            titleFontBold = GrLoadFont("fonts/helv15b.fnt");
+            titleFont = GrLoadFont("helv15.fnt");
+            titleFontBold = GrLoadFont("helv15b.fnt");
             titleFontHeight = 15;
             titleBarHeight = 22;
-            textFont = GrLoadFont("fonts/helv13.fnt");
-            textFontBold = GrLoadFont("fonts/helv13b.fnt");
+            textFont = GrLoadFont("helv13.fnt");
+            textFontBold = GrLoadFont("helv13b.fnt");
             textFontHeight = 13;
-            smallFont = GrLoadFont("fonts/helv11.fnt");
-            smallFontBold = GrLoadFont("fonts/helv11b.fnt");
+            smallFont = GrLoadFont("helv11.fnt");
+            smallFontBold = GrLoadFont("helv11b.fnt");
             smallFontHeight = 11;
             defaultMargin = 8;
             detailLabelHeight = 20;
@@ -191,16 +192,16 @@ public:
             detailLabelPadding = 2;
         } else {
             scaleHeaderHeight = true;
-            titleFont = GrLoadFont("fonts/helv13.fnt");
-            titleFontBold = GrLoadFont("fonts/helv13b.fnt");
+            titleFont = GrLoadFont("helv13.fnt");
+            titleFontBold = GrLoadFont("helv13b.fnt");
             titleFontHeight = 13;
             titleBarHeight = 16;
-            textFont = GrLoadFont("fonts/helv11.fnt");
-            textFontBold = GrLoadFont("fonts/helv11b.fnt");
+            textFont = GrLoadFont("helv11.fnt");
+            textFontBold = GrLoadFont("helv11b.fnt");
             textFontHeight = 11;
             shortLabels = true;
-            smallFont = GrLoadFont("fonts/helv11.fnt");
-            smallFontBold = GrLoadFont("fonts/helv11b.fnt");
+            smallFont = GrLoadFont("helv11.fnt");
+            smallFontBold = GrLoadFont("helv11b.fnt");
             smallFontHeight = GrFontCharHeight(smallFont,"Y");
             detailLabelPadding = 0;
             defaultMargin = 2;
@@ -242,6 +243,7 @@ public:
 
         screenshot = new UIImagePanel(detailRightWidthInner,detailRightWidthInner*1.4);
         screenshot->preserveColors = false;
+        screenshot->progressive = true;
         screenshot->SetLoadingFont(textFont);
         detailRight->AddChild(screenshot);
         screenshot->SendToBack();
@@ -374,6 +376,16 @@ public:
 	}
 
 	SelectorApplication(int screenWidth, int screenHeight): CWApplication (screenWidth, screenHeight, MS_PER_UPDATE) {
+        if (screenHeight == 600){
+            THEME_WINDOW_TITLE_FONT = "helv14.fnt";
+            THEME_WINDOW_TITLE_HEIGHT = 18;
+        } else if (screenHeight == 480){
+            THEME_WINDOW_TITLE_FONT = "helv13.fnt";
+            THEME_WINDOW_TITLE_HEIGHT = 16;
+        } else {
+            THEME_WINDOW_TITLE_FONT = "helv11.fnt";
+            THEME_WINDOW_TITLE_HEIGHT = 14;
+        }
         int optWidth = screenWidth / 2;
         int optHeight = screenHeight / 2;
         options = new AppOptionsWindow(optWidth, optHeight);

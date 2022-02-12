@@ -7,6 +7,7 @@ class AppOptionsWindow : public UITitledWindow {
 private:
 
 public:
+
     AppOptionsWindow(int width, int height) : UITitledWindow(width, height, "Options"){
     }
 };

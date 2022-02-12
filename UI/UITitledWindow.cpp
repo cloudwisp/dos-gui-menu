@@ -16,7 +16,9 @@ private:
 
 	GrTextOption titleTextOptions;
 
-	GrFont* titleFont;
+	GrFont* titleFont = NULL;
+
+	BoxCoords closeButton;
 
 	void draw_internal() override{
 		GrClearContextC(ctx, THEME_WINDOW_BACKGROUND_COLOR);
@@ -26,12 +28,20 @@ private:
 		}
 		
 		GrFilledBox(THEME_WINDOW_BORDER_WIDTH, THEME_WINDOW_BORDER_WIDTH, innerWidth, THEME_WINDOW_TITLE_HEIGHT, THEME_WINDOW_TITLE_BACKGROUND_COLOR);
+		Draw3dButton(ctx, closeButton,THEME_WINDOW_TITLE_BACKGROUND_COLOR,false);
+		
 		int titleTextSize = GrFontStringWidth(titleFont, _title.c_str(), _title.size(), GR_BYTE_TEXT);
 		int fontHeight = GrFontCharHeight(titleFont, "A");
 		int centeredX = (innerWidth / 2);// - (titleTextSize / 2);
 		int centeredY = (THEME_WINDOW_TITLE_HEIGHT / 2);
-		GrDrawString((void*)_title.c_str(), _title.size(), THEME_WINDOW_BORDER_WIDTH + centeredX, THEME_WINDOW_BORDER_WIDTH + centeredY, &titleTextOptions);
+		GrDrawString((void*)_title.c_str(), _title.size(), centeredX, centeredY, &titleTextOptions);
 	}
+
+	void CheckMouseClick(int mouseX, int mouseY){
+        if (CoordsIntersectBox(closeButton, mouseX, mouseY)){
+			Close();
+		}
+    }
 
 protected:
 
@@ -42,6 +52,13 @@ protected:
 	}
 
 public:
+
+    void OnEvent(EventEmitter *source, std::string event, EventData data) {
+        if (event == "LeftMouseButtonUp"){
+            CheckMouseClick(data.data1,data.data2);
+        }
+        UIWindow::OnEvent(source, event, data);
+    }
 
 	void SetTitle(std::string title){
 		_title = title;
@@ -55,7 +72,8 @@ public:
 		innerContextY = THEME_WINDOW_TITLE_HEIGHT + THEME_WINDOW_BORDER_WIDTH;
 		innerContextX = THEME_WINDOW_BORDER_WIDTH;
 
-		titleFont = UIHelpers::ResolveFont(THEME_WINDOW_TITLE_FONT);
+		//titleFont = UIHelpers::ResolveFont(THEME_WINDOW_TITLE_FONT);
+		titleFont = GrLoadFont(THEME_WINDOW_TITLE_FONT);
 
 		titleTextOptions.txo_font = titleFont;
 		titleTextOptions.txo_fgcolor.v = THEME_WINDOW_TITLE_TEXT_COLOR;
@@ -64,6 +82,8 @@ public:
 		titleTextOptions.txo_xalign = GR_ALIGN_CENTER;
 		titleTextOptions.txo_yalign = GR_ALIGN_CENTER;
 		titleTextOptions.txo_chrtype = GR_BYTE_TEXT;
+
+		closeButton = {drawWidth - THEME_WINDOW_TITLE_HEIGHT - (THEME_WINDOW_BORDER_WIDTH * 2), THEME_WINDOW_BORDER_WIDTH * 2, drawWidth - (THEME_WINDOW_BORDER_WIDTH * 4), THEME_WINDOW_TITLE_HEIGHT - THEME_WINDOW_BORDER_WIDTH};
 
 	}
 };

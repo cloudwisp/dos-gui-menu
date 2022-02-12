@@ -13,7 +13,7 @@ SelectorApplication *app = NULL;
 int main(int argc, char *argv[])
 {   
     MenuConfig* config = AppResources::GetMenuConfig();
-    string resolution = config->resolution;
+    std::string resolution = config->resolution;
 
     if (argc > 1){
         resolution = std::string(argv[1]);
@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
     }
     int bitDepth = 8;
     GrSetMode(GR_width_height_bpp_graphics,screenWidth,screenHeight,bitDepth);
+    std::string fontDir = currentDir() + std::string("fonts");
+    GrSetFontPath((char*)fontDir.c_str());
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse(false);

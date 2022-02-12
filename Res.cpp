@@ -154,6 +154,10 @@ private:
         return result;
 	}
 
+    PNGScanLines _LoadPngScanLines(string filename){
+        return LoadPngAsScanLines((char*)filename.c_str(), 0);
+    }
+
     GrContext *_LoadPnm(string filename){
         int w, h, m;
         w = 1;
@@ -591,6 +595,10 @@ public:
     static GrContext *LoadImage(string filename){
         return Current()->_LoadImage(filename);
 	}
+
+    static PNGScanLines LoadImageScanLines(string filename){
+        return Current()->_LoadPngScanLines(filename);
+    }
 
     static vector<DatabaseItem*>* ScanMenuItemFiles(vector<string> scanFolders){
         return Current()->_ScanMenuItemFiles(scanFolders);
