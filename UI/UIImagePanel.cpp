@@ -218,8 +218,9 @@ public:
 	}
 
     void SetImage(std::string filename, int delay = 0){
+		ClearImage();
 		if (filename == ""){
-			ClearImage();
+			//ClearImage();
 			return;
 		}
         imagePath = std::string(filename);

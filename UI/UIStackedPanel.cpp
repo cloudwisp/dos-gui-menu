@@ -20,18 +20,28 @@ private:
 	}
 public:
 
+	void OnEvent(EventEmitter *source, std::string event, EventData data){
+		if (event == "Shown" || event == "Hidden"){
+			ReFlow();
+		}
+		UIDrawable::OnEvent(source, event, data);
+	}
+
 	int GetTailY(){
 		return tailY;
 	}
 
 	void AddChild(UIDrawable* subElement) override {
 		UIDrawable::AddChild(subElement);
+		subElement->BindEvent("Shown", this);
+		subElement->BindEvent("Hidden", this);
 		ReFlow();
 		needsRedraw = true;
 	}
 
 	void RemoveChild(UIDrawable* subElement) override {
 		UIDrawable::RemoveChild(subElement);
+		subElement->UnbindAllEventsForConsumer(this);
 		ReFlow();
 		needsRedraw = true;
 	}

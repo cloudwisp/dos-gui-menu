@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse(false);
-    app->ToggleDiagnostics(true);
+    app->ToggleDiagnostics(false);
 	app->Start();
     AppResources::Destroy();
 

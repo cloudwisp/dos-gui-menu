@@ -62,10 +62,10 @@ protected:
     }
 
     UIDrawable *GetTopElement(){
-        if (parent){
-            return parent->GetTopElement();
-        }
-        return this;
+		if (parent == NULL){
+			return this;
+		}
+        return parent->GetTopElement();
     }
 
     void SendChildToBack(UIDrawable* child){
@@ -242,11 +242,13 @@ public:
 
 	void Show(){
 		visible = 1;
+		EmitEvent("Shown");
 		needsRedraw = true;
 	}
 
 	void Hide(){
 		visible = 0;
+		EmitEvent("Hidden");
 		needsRedraw = true;
 	}
 
