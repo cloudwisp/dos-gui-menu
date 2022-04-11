@@ -134,6 +134,7 @@ private:
     UILabelAndText *gameNotes = NULL;
     UILabelAndText *publishedYear = NULL;
     UILabelAndText *developer = NULL;
+    std::string *lastDescription = NULL;
 
     //fonts & dimensions
     GrFont* titleFont = NULL;
@@ -160,10 +161,17 @@ private:
         gameNotes->SetText(thisItem->notes);
         developer->SetText(thisItem->developer);
         publishedYear->SetText(thisItem->year);
+        if (lastDescription != NULL){
+            gameDescriptionInner->SetText("");
+            delete lastDescription;
+        }
         if (thisItem->readme != ""){
-            gameDescriptionInner->SetText(AppResources::GetReadme(thisItem->readme));
+            lastDescription = AppResources::GetReadme(thisItem->readme);
+            gameDescriptionInner->SetText(*lastDescription);
+            
         } else if (thisItem->inlineDescription) {
-            gameDescriptionInner->SetText(AppResources::GetInlineDescription(thisItem->folder + "\\_menu.cfg", thisItem->name));
+            lastDescription = AppResources::GetInlineDescription(thisItem->folder + "\\_menu.cfg", thisItem->name);
+            gameDescriptionInner->SetText(*lastDescription);
         } else {
             gameDescriptionInner->SetText("");
         }
@@ -378,6 +386,7 @@ private:
     UIStackedPanel *detailLeft = NULL;
     
     UITextArea *gameTitle = NULL;
+    std::string *lastDescription = NULL;
     //UIScrollingText *gameDescription = NULL;
     //UITextArea* gameDescriptionInner = NULL;
     UIImagePanel* screenshot = NULL;
@@ -458,32 +467,42 @@ private:
     }
 
     void ShowDescription() override {
-        if (descriptionWindow != NULL){
-            descriptionWindow->CloseAndDestroy();
-        }
-
         DatabaseItem* thisItem = (*dbItems)[activeItem];
-        std::string text;
         if (thisItem->readme != ""){
-            text = AppResources::GetReadme(thisItem->readme);
+            lastDescription = AppResources::GetReadme(thisItem->readme);
         } else if (thisItem->inlineDescription) {
-            text = AppResources::GetInlineDescription(thisItem->folder + "\\_menu.cfg", thisItem->name);
-        } else {
-            text = "No description found";
+            lastDescription = AppResources::GetInlineDescription(thisItem->folder + "\\_menu.cfg", thisItem->name);
+        } else { 
+            lastDescription = new std::string("No description found");
         }
 
-        int winWidth = width * 0.6;
-        int winHeight = height * 0.6;
-        int winX = (width - winWidth) / 2;
-        int winY = (height - winHeight) / 2;
-        descriptionWindow = new DescriptionWindow(winWidth, winHeight, thisItem->name);
-        descriptionWindow->x = winX;
-        descriptionWindow->y = winY;;
-        descriptionWindow->SetText(text, smallFont);
-        UIWindowController::Get()->AddWindow(descriptionWindow, 1);
+        if (descriptionWindow == NULL){
+            int winWidth = width * 0.6;
+            int winHeight = height * 0.6;
+            int winX = (width - winWidth) / 2;
+            int winY = (height - winHeight) / 2;
+            descriptionWindow = new DescriptionWindow(winWidth, winHeight, thisItem->name);
+            descriptionWindow->x = winX;
+            descriptionWindow->y = winY;
+            UIWindowController::Get()->AddWindow(descriptionWindow);
+            descriptionWindow->BindEvent("Closed", this);
+        }
+        
+        descriptionWindow->SetTitle(thisItem->name);
+        descriptionWindow->SetText(*lastDescription, smallFont);
+        descriptionWindow->Open();
     }
 
 public:
+
+    void OnEvent(EventEmitter *source, std::string event, EventData data){
+        if (descriptionWindow != NULL && event == "Closed" && source == descriptionWindow){
+            descriptionWindow->SetText("", smallFont);
+            delete lastDescription;
+            gameListItems->Focus();
+        } 
+        SelectorMainWindow::OnEvent(source, event, data);
+    }
 
     SelectorLowResWindow(CWApplication* mainApp) : SelectorMainWindow(320, 200){
         app = mainApp;

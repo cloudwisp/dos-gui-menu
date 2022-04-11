@@ -36,6 +36,7 @@ public:
             if (windows[i]->closed && focusedWindow == windows[i]){
                 //window was closed
                 focusedWindow->Hide();
+                focusedWindow->EmitEvent("Closed");
                 if (windows[i]->destroy){
                     RemoveWindow(focusedWindow);
                     screen->RemoveChild(focusedWindow);

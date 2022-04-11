@@ -43,4 +43,26 @@ void debugOut(std::string label, T item){
     file.close();
 }
 
+int phys_mem_left()
+{
+  _go32_dpmi_meminfo info;
+  _go32_dpmi_get_free_memory_information(&info);
+  if (info.available_physical_pages != -1)
+    return info.available_physical_pages * 4096;
+  return info.available_memory;
+}
+
+unsigned long memFreeAtStart = 0;
+void memCounterStart(){
+	memFreeAtStart = phys_mem_left();
+}
+
+unsigned long memUsed(){
+	if (memFreeAtStart == 0){
+		return 0;
+	}
+	unsigned long curFree = phys_mem_left();
+	return memFreeAtStart - curFree;
+}
+
 #endif

@@ -74,7 +74,10 @@ private:
 				deltaTime -= CLOCKS_PER_SEC;
 				averageFrameTimeMilliseconds  = 1000.0/(frameRate==0?0.001:frameRate);
 
-				sprintf(fpsDisplay,"FPS: %.2f \n lag: %.2f \n max draw sqpx: %d", frameRate, clockToMilliseconds(lag), maxRedrawSize);
+
+				unsigned long progMem = memUsed();
+				
+				sprintf(fpsDisplay,"FPS: %.2f \nlag: %.2f \nMem: %i", frameRate, clockToMilliseconds(lag), progMem);
 				maxRedrawSize = 0;
 			}
 

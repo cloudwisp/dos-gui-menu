@@ -189,15 +189,15 @@ private:
 		return ctx;
     }
 
-    std::string _GetReadme(std::string path){
+    std::string* _GetReadme(std::string path){
         fstream rmfile;
-        std::string file_contents;
+        std::string *file_contents = new std::string();
         rmfile.open(path.c_str(),ios::in);
         if (rmfile.is_open()){
             string tp;
             while(getline(rmfile, tp)){
-                file_contents += tp;
-                file_contents.push_back('\n');
+                file_contents->append(tp);
+                file_contents->push_back('\n');
             }
         }
         return file_contents;
@@ -513,9 +513,9 @@ private:
         return items;
     }
 
-    string _GetInlineDescription(string menuFile, string menuItem){
+    string * _GetInlineDescription(string menuFile, string menuItem){
         fstream dbfile;
-        string description;
+        std::string *description = new std::string();
         string currentItemName;
         bool inMatchingItem = false;
         bool capturingDescription = false;
@@ -527,7 +527,7 @@ private:
                 if (tp.length() == 0 && !capturingDescription){
                     continue;
                 } else if (tp.length() == 0 && capturingDescription){
-                    description += "\r\n";
+                    description->append("\r\n");
                     continue;
                 }
                 if (tp.at(0) == 0x5B){
@@ -555,14 +555,16 @@ private:
                                 firstOfDescription = true;
                                 if (tp.length() > i + 1){
                                     string itemValue = tp.substr(i+1);
-                                    description += itemValue + "\r\n";
+                                    description->append(itemValue);
+                                    description->append("\r\n");
                                 }
                             }
                         }
                         key += tp.at(i);
                     }
                     if (!anyDelimInLine && capturingDescription){
-                        description += tp + "\r\n";
+                        description->append(tp);
+                        description->append("\r\n");
                     } else if (anyDelimInLine && !firstOfDescription){
                         capturingDescription = false;
                     }
@@ -612,11 +614,11 @@ public:
         return Current()->_GetCachedMenuItems();
     }
 
-    static std::string GetReadme(string filename){
+    static std::string * GetReadme(string filename){
         return Current()->_GetReadme(filename);
     }
 
-    static std::string GetInlineDescription(string menuFile, string itemName){
+    static std::string * GetInlineDescription(string menuFile, string itemName){
         return Current()->_GetInlineDescription(menuFile, itemName);
     }
 

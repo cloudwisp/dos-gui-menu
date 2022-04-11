@@ -28,7 +28,9 @@ private:
 	
 	void _parse_text(){
 		lineWidths.clear();
+		lineWidths.resize(0);
 		lines.clear();
+		lines.resize(0);
 		if (text.size() == 0){
 			return;
 		}
@@ -53,7 +55,6 @@ private:
 		}
 		words.push_back(current);
 
-		//does not parse at word level
 		int lineWidth, charWidth, globalPos;
 		_charHeight = GrFontCharHeight(textOptions.txo_font,(int) text[0]);
 		lineWidth = 0;

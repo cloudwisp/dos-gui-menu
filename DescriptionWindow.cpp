@@ -10,20 +10,18 @@ private:
 public:
 
     void SetText(std::string text, GrFont *font){
-        if (textPanel != NULL){
-            RemoveChild(textPanel);
-            delete textPanel;
-            textArea = NULL;
+        if (textPanel == NULL){
+            textPanel = new UIScrollingText(innerWidth - 4, innerHeight - 4);
+            textPanel->x = 2;
+            textPanel->y = 2;
+            textArea = textPanel->GetText();
+            AddChild(textPanel);
         }
-        textPanel = new UIScrollingText(innerWidth - 4, innerHeight - 4);
-        textPanel->x = 2;
-        textPanel->y = 2;
-        textArea = textPanel->GetText();
+        
         textArea->SetText(text);
         textArea->SetFont(font);
         textArea->SizeHeightToContent();
-        AddChild(textPanel);
-
+        textPanel->ScrollToTop();
         textPanel->Focus();
     }
 
