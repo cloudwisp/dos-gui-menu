@@ -1,0 +1,33 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Compile and Run",
+            "command": "make",
+            "args": [
+                "all"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Run Makefile conf all",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "Char Editor Build and Run",
+            "command": "make",
+            "args": [
+                "charedit"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Run Makefile conf charedit",
+            "problemMatcher": []
+        }
+    ],
+    "version": "2.0.0"
+}

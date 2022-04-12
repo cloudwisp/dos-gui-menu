@@ -1,0 +1,91 @@
+[Aladdin]
+folder=C:\GAMES\aladdin\
+genre=Platform
+path=C:\GAMES\aladdin\aladdin.exe
+image=C:\GAMES\aladdin\aladdin.png
+developer=
+year=
+notes=
+readme=
+favorite=F
+cd=T
+description=T
+
+[Bio Menace I]
+folder=C:\GAMES\bmenace\
+genre=Platform
+path=C:\GAMES\bmenace\bmenace1.exe
+image=C:\GAMES\bmenace\bmenace.png
+developer=
+year=
+notes=
+readme=C:\GAMES\bmenace\readme.txt
+favorite=F
+cd=F
+description=
+
+[Bio Menace II]
+folder=C:\GAMES\bmenace\
+genre=Platform
+path=C:\GAMES\bmenace\bmenace2.exe
+image=C:\GAMES\bmenace\bmen2.png
+developer=
+year=
+notes=
+readme=C:\GAMES\bmenace\readme.txt
+favorite=F
+cd=F
+description=
+
+[Bio Menace III]
+folder=C:\GAMES\bmenace\
+genre=Platform
+path=C:\GAMES\bmenace\bmenace3.exe
+image=C:\GAMES\bmenace\bmenace.png
+developer=
+year=
+notes=
+readme=C:\GAMES\bmenace\readme.txt
+favorite=F
+cd=F
+description=
+
+[Doom II]
+folder=C:\GAMES\doom2\
+genre=FPS
+path=C:\GAMES\doom2\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=
+readme=
+favorite=F
+cd=F
+description=T
+
+[Laura Bow II: The Dagger of Amon Ra]
+folder=C:\GAMES\lb2\
+genre=Adventure
+path=C:\GAMES\lb2\SCIDHUV.EXE
+image=C:\GAMES\lb2\dagger.png
+developer=Sierra On-Line
+year=
+notes=
+readme=
+favorite=F
+cd=T
+description=T
+
+[Monkey Island 2: LeChuck's Revenge]
+folder=C:\GAMES\monkey2\
+genre=Adventure
+path=C:\GAMES\monkey2\MONKEY2.EXE
+image=C:\GAMES\monkey2\monkey2.png
+developer=Lucasfilm Games
+year=1992
+notes=test
+readme=
+favorite=T
+cd=F
+description=T
+
