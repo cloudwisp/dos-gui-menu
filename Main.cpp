@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);
 	app->EnableMouse(false);
-    app->ToggleDiagnostics(true);
+    app->ToggleDiagnostics(config->diagnosticOverlay);
 	app->Start();
     AppResources::Destroy();
 

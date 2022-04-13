@@ -102,6 +102,7 @@ public:
 
 struct MenuConfig {
     string resolution;
+    bool diagnosticOverlay;
     vector<string> *scanFolders;
 };
 
@@ -381,6 +382,7 @@ private:
 
     void _LoadMenuConfig(string configFile){
         config = new MenuConfig();
+        config->diagnosticOverlay = false;
         fstream dbfile;
         vector<string> * scanFolders = new vector<string>();
         dbfile.open(configFile.c_str(),ios::in);
@@ -396,7 +398,12 @@ private:
                     }
                     continue;
                 }
+                if (tp.at(0) == 0x23){
+                    //comment
+                    continue;
+                }
                 if (tp.at(0) == 0x5B){
+                    //section header
                     string itemName = tp.substr(1,tp.length()-2);
                     if (itemName == "scan"){
                         inFoldersList = true;
@@ -415,6 +422,8 @@ private:
                             string itemValue = tp.substr(i+1);
                             if (key == "resolution"){
                                 config->resolution = itemValue;
+                            } else if (key == "diagnosticOverlay" && itemValue == "true"){
+                                config->diagnosticOverlay = true;
                             }
                             break;
                         }
