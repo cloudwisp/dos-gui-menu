@@ -51,7 +51,7 @@ Configure program options by modifying the menu.cfg file located in the menu pro
 C:\GAMES\
 
 [options]
-#resolution - high or low : high is 800x600, low is 320x200.
+#resolution - high or low : high is 640x480, low is 320x200.
 resolution=high
 #diagnosticOverlay - true for FPS,lag and memory usage
 diagnosticOverlay=false
@@ -68,7 +68,7 @@ Low or High Resolution
 ----------------------
 
 The menu program has two resolution modes.
-* High - 800x600 at 256 colors. This requires a faster PC and video card capable of this mode.
+* High - 640x480 at 256 colors. This requires a faster PC and video card capable of this mode.
 * Low - 320x200 at 256 colors. This is standard VGA and should run on slower machines
 
 Modify this setting in menu.cfg in the folder containing menu.bat/main.exe
