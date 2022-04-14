@@ -176,10 +176,10 @@ private:
             gameDescriptionInner->SetText("");
         }
 
-        gameDescription->ScrollToTop();
-        gameDescriptionInner->SizeHeightToContent();
         
-
+        gameDescriptionInner->SizeHeightToContent();
+        gameDescription->ScrollToTop();
+        
         if (thisItem->image != ""){
             screenshot->SetImage(thisItem->image, 500);
         } else {

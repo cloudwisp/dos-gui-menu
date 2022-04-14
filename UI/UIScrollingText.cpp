@@ -184,9 +184,7 @@ public:
 	}
 
 	bool ScrollToTop(){
-		ScrollTop = 0;
-		SetBoxCoords();
-		needsRedraw = true;
+		ScrollTo(0);
 		return true;
 	}
 
@@ -209,11 +207,11 @@ public:
 	}
 
 	void ScrollTo(int top){
-		if (top < 0){
-			top = 0;
-		}
 		if (top > _innerText->height - height){
 			top = _innerText->height - height;
+		}
+		if (top < 0){
+			top = 0;
 		}
 		ScrollTop = top;
 		_innerText->y = 0-ScrollTop;

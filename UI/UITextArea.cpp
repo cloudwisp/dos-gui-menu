@@ -295,6 +295,7 @@ public:
 		} else {
 			SetDimensions(width, blockHeight);
 		}
+		needsRedraw = true;
 	}
 
 	UITextArea(int drawWidth, int drawHeight) : UITextArea(drawWidth, drawHeight, 0){
