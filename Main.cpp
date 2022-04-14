@@ -27,7 +27,13 @@ int main(int argc, char *argv[])
     }
     int bitDepth = 8;
     GrSetMode(GR_width_height_bpp_graphics,screenWidth,screenHeight,bitDepth);
-    std::string fontDir = currentDir() + std::string("fonts");
+    std::string fontDir = std::string(currentDir());
+    
+    if (fontDir.at(fontDir.size() - 1) != 0x5C){
+        fontDir.append("\\");
+    }
+    fontDir.append("fonts");
+    
     GrSetFontPath((char*)fontDir.c_str());
     SetupThemeColors();
     app = new SelectorApplication(screenWidth, screenHeight);

@@ -23,23 +23,51 @@ private:
 	int scaledWidth = 0;
 	int scaledHeight = 0;
 	int currentScanLine = 0;
-	int linesPerUpdate = 2;
+	int scanRow = 0;
+	int scanRowCount = 0;
+	int scanRowOuter = 0;
+	int scanRowOuterCount = 0;
+	int linesPerUpdate = 5;
 	
 	int orderedColorCount = 0;
+	bool progressiveInterlaced = true;
+	int interlaceSliceCount = 30;
+
 
 	PNGScanLines currentImage = {0,0,0,NULL};
 
 	void draw_internal(){
-
-		if (currentScanLine < loadedHeight){
-			for (int i = 0; i <= linesPerUpdate; i++){
-				if (currentScanLine >= loadedHeight){
-					break;
+		if (progressive && !progressiveInterlaced){
+			if (currentScanLine < loadedHeight){
+				for (int i = 0; i <= linesPerUpdate; i++){
+					if (currentScanLine >= loadedHeight){
+						break;
+					}
+					RenderScanline(currentScanLine + 1);
+					currentScanLine++;
 				}
-				RenderScanline(currentScanLine + 1);
+				ScaleImage();
+				//needsRedraw = true;
 			}
-			ScaleImage();
-			//needsRedraw = true;
+		} else if (progressive && progressiveInterlaced){
+			if (scanRow < scanRowCount){
+				for (int i = 0; i <= linesPerUpdate; i++){
+					if (scanRow > scanRowCount){
+						break;
+					}
+					int thisLine = scanRowCount * scanRowOuter + scanRow;
+					if (thisLine >= loadedHeight){
+						break;
+					}
+					RenderScanline(thisLine);
+					scanRowOuter++;
+					if (scanRowOuter >= scanRowOuterCount){
+						scanRowOuter = 0;
+						scanRow++;
+					}
+				}
+				ScaleImage();
+			}
 		}
 
 	    GrSetContext(ctx);
@@ -56,6 +84,10 @@ private:
 
 	void _load_image(bool refresh){
 		currentScanLine = 0;
+		scanRow = 0;
+		scanRowCount = 0;
+		scanRowOuter = 0;
+		scanRowOuterCount = 0;
 		loadedWidth = 0;
 		loadedHeight = 0;
         if (!hasImage){ return; }
@@ -95,7 +127,11 @@ private:
 		if (!progressive){
 			for (int i = 0; i < loadedHeight; i++){
 				RenderScanline(i);
+				currentScanLine++;
 			}
+		} else if (progressive && progressiveInterlaced){
+			scanRowCount = loadedHeight / (double)interlaceSliceCount;
+			scanRowOuterCount = interlaceSliceCount;
 		}
 		if (!scaleToWidth && !scaleToHeight){
 			return;
@@ -141,7 +177,6 @@ private:
 		GrPutScanline(0,currentImage.width - 1, lineNumber, pColors, GrIMAGE);
 		free(pColors);
 		
-		currentScanLine = lineNumber;
 	}
 
 	void ScaleImage(){
@@ -167,6 +202,10 @@ private:
 		loadedWidth = 0;
 		loadedHeight = 0;
 		currentScanLine = 0;
+		scanRow = 0;
+		scanRowCount = 0;
+		scanRowOuter = 0;
+		scanRowOuterCount = 0;
 		if (imctx){
 			GrDestroyContext(imctx);
 			imctx = NULL;
