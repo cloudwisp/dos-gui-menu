@@ -15,6 +15,7 @@
 #include "SelUI.cpp"
 #include "AppOptions.cpp"
 #include "DescriptionWindow.cpp"
+#include "AboutWindow.cpp"
 
 bool dbsort(DatabaseItem *item1, DatabaseItem *item2){
     return item1->name < item2->name;
@@ -27,6 +28,7 @@ protected:
     UIButton *launch = NULL;
     UIButton *descBtn = NULL;
     UIScrollingListBox *gameListItems = NULL;
+    AboutWindow *about = NULL;
     
 
     DatabaseItem* GetItem(int itemId){
@@ -75,11 +77,33 @@ protected:
         UIWindow::CheckInputs();
     }
 
+    void ShowAbout(){
+        about->Open();
+    }
+
+    void BuildAboutWindow(bool highRes){
+        int dgWidth, dgHeight;
+        if (highRes){
+            dgWidth = 290;
+            dgHeight = 174;
+        } else {
+            dgWidth = 200;
+            dgHeight = 120;
+        }
+        about = new AboutWindow(dgWidth, dgHeight, highRes);
+        about->x = (width - about->width) / 2;
+        about->y = (height - about->height) / 2;
+        UIWindowController::Get()->AddWindow(about, false);
+    }
+
 
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_ESC){
             app->End();
             return;
+        }
+        if (ScanCode == KEY_F1){
+            ShowAbout();
         }
         UIWindow::OnKeyUp(ScanCode, ShiftState, Ascii);
     }
@@ -109,7 +133,7 @@ public:
     }
 
     SelectorMainWindow(int width, int height) : UIWindow(width, height){
-
+        BuildAboutWindow(width == 640);
     }
 };
 
@@ -263,7 +287,7 @@ public:
         gameDetail = new UIImagePanel(rightPaneWidth,rightPaneHeight);
         gameDetail->scaleToWidth = true;
         gameDetail->scaleToHeight = true;
-        gameDetail->SetImage("darkbg3.png");
+        gameDetail->SetImage("darkbg.png");
         gameDetail->x = leftPaneWidth;
         gameDetail->y = titleBarHeight;
         AddChild(gameDetail);
@@ -298,7 +322,7 @@ public:
         gameList = new UIImagePanel(leftPaneWidth,gameListHeight);
         gameList->scaleToHeight = true;
         gameList->scaleToWidth = true;
-        gameList->SetImage("lightbg2.png");
+        gameList->SetImage("lightbg.png");
         gameList->x = 0;
         gameList->y = titleBarHeight;
         gameList->containertabstop = 1;
@@ -546,7 +570,7 @@ public:
         gameDetail = new UIImagePanel(rightPaneWidth,rightPaneHeight);
         gameDetail->scaleToWidth = true;
         gameDetail->scaleToHeight = true;
-        gameDetail->SetImage("darkbg3.png");
+        gameDetail->SetImage("darkbg.png");
         gameDetail->x = leftPaneWidth;
         gameDetail->y = 0; // titleBarHeight;
         AddChild(gameDetail);
@@ -581,7 +605,7 @@ public:
         gameList = new UIImagePanel(leftPaneWidth,gameListHeight);
         gameList->scaleToHeight = true;
         gameList->scaleToWidth = true;
-        //gameList->SetImage("lightbg2.png");
+        //gameList->SetImage("lightbg.png");
         gameList->x = 0;
         gameList->y = 0; // titleBarHeight;
         gameList->containertabstop = 1;

@@ -19,6 +19,7 @@ private:
 	clock_t loadImageStart;
 	int loadDelay = 0;
 	bool imageLoaded = false;
+	bool imageRendered = false;
 	UITextArea *loadingText = NULL;
 	int scaledWidth = 0;
 	int scaledHeight = 0;
@@ -28,6 +29,7 @@ private:
 	int scanRowOuter = 0;
 	int scanRowOuterCount = 0;
 	int linesPerUpdate = 5;
+	GrColor bgColor = THEME_COLOR_TRANSPARENT;
 	
 	int orderedColorCount = 0;
 	bool progressiveInterlaced = true;
@@ -68,17 +70,24 @@ private:
 				}
 				ScaleImage();
 			}
+		} else if (!imageRendered) {
+			for (int i = 0; i < loadedHeight; i++){
+				RenderScanline(i);
+			}
+			ScaleImage();
+			imageRendered = true;
+			needsRedraw = true;
 		}
 
 	    GrSetContext(ctx);
-		GrClearContextC(ctx, THEME_COLOR_TRANSPARENT);
+		GrClearContextC(ctx, bgColor);
 		if (scaleToWidth || scaleToHeight){
-			if (!sizedImg){ return; }
+			if (sizedImg == NULL){ return; }
 			GrImageDisplay(0,0,sizedImg);
 			return;
 		}
 		
-		if (!imctx){ return; }
+		if (imctx == NULL){ return; }
 		GrBitBlt(ctx, 0, 0, imctx, 0, 0, loadedWidth, loadedHeight, GrIMAGE);
 	}
 
@@ -90,12 +99,13 @@ private:
 		scanRowOuterCount = 0;
 		loadedWidth = 0;
 		loadedHeight = 0;
+		imageRendered = false;
         if (!hasImage){ return; }
-        if (sizedImg){
+        if (sizedImg != NULL){
             GrImageDestroy(sizedImg);
 			sizedImg = NULL;
         }
-		if (img){
+		if (img != NULL){
 			GrImageDestroy(img);
 			img = NULL;
 		}
@@ -107,29 +117,25 @@ private:
 			free(currentImage.pixels);
 		}
 		currentImage = AppResources::LoadImageScanLines(imagePath);
+		loadedWidth = currentImage.width;
+		loadedHeight = currentImage.height;
 		if (currentImage.pixelCount == 0){
 			hasImage = false;
 			return;
 		}
-		loadedWidth = currentImage.width;
-		loadedHeight = currentImage.height;
+		
 		if (imctx != NULL){
 			GrDestroyContext(imctx);
 		}
 		imctx = GrCreateContext(currentImage.width, currentImage.height, NULL, NULL);
 		GrClearContextC(imctx, THEME_COLOR_TRANSPARENT);
         //imctx = AppResources::LoadImage(imagePath);
-		if (!imctx){
+		if (imctx == NULL){
 			hasImage = false;
 			return;
 		}
 		
-		if (!progressive){
-			for (int i = 0; i < loadedHeight; i++){
-				RenderScanline(i);
-				currentScanLine++;
-			}
-		} else if (progressive && progressiveInterlaced){
+		if (progressive && progressiveInterlaced){
 			scanRowCount = loadedHeight / (double)interlaceSliceCount;
 			scanRowOuterCount = interlaceSliceCount;
 		}
@@ -149,9 +155,9 @@ private:
 			scaledWidth = height*whratio;
 		}
 
-		if (!progressive){
-			ScaleImage();
-		}
+		// if (!progressive){
+		// 	ScaleImage();
+		// }
 		
 		//sizedImg = GrImageStretch(img, newWidth, newHeight);
 	}
@@ -176,11 +182,10 @@ private:
 		GrSetContext(imctx);
 		GrPutScanline(0,currentImage.width - 1, lineNumber, pColors, GrIMAGE);
 		free(pColors);
-		
 	}
 
 	void ScaleImage(){
-		if (sizedImg){
+		if (sizedImg != NULL){
 			GrImageDestroy(sizedImg);
 		}
 		if (scaleToWidth || scaleToHeight){
@@ -206,11 +211,11 @@ private:
 		scanRowCount = 0;
 		scanRowOuter = 0;
 		scanRowOuterCount = 0;
-		if (imctx){
+		if (imctx != NULL){
 			GrDestroyContext(imctx);
 			imctx = NULL;
 		}
-		if (sizedImg){
+		if (sizedImg != NULL){
 			GrImageDestroy(sizedImg);
 			sizedImg = NULL;
 		}
@@ -256,6 +261,11 @@ public:
 		loadingText->SetFont(font);
 	}
 
+	void SetBackgroundColor(GrColor color){
+		bgColor = color;
+		needsRedraw = true;
+	}
+
     void SetImage(std::string filename, int delay = 0){
 		ClearImage();
 		if (filename == ""){
@@ -273,6 +283,7 @@ public:
 
 		if (delay == 0){
 			loadingText->Hide();
+			imageLoaded = true;
 			_load_image(false);
 			needsRedraw = true;
 			return;
