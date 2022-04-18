@@ -16,6 +16,7 @@
 #include "AppOptions.cpp"
 #include "DescriptionWindow.cpp"
 #include "AboutWindow.cpp"
+#include "RescanWindow.cpp"
 
 bool dbsort(DatabaseItem *item1, DatabaseItem *item2){
     return item1->name < item2->name;
@@ -29,7 +30,7 @@ protected:
     UIButton *descBtn = NULL;
     UIScrollingListBox *gameListItems = NULL;
     AboutWindow *about = NULL;
-    
+    RescanWindow *rescanWindow = NULL;
 
     DatabaseItem* GetItem(int itemId){
         return (*dbItems)[itemId];
@@ -61,6 +62,7 @@ protected:
                 return;
             }
             _ActivateItem(data.data1);
+            return;
         }
         if (event == "Click" && source == launch){
             _LaunchItem(activeItem);
@@ -68,12 +70,20 @@ protected:
         }
         if (descBtn != NULL && event == "Click" && source == descBtn){
             ShowDescription();
+            return;
+        }
+        if (source == rescanWindow && event == "ScanComplete"){
+            dbItems = rescanWindow->DatabaseItems;
+            OnDbItemsLoaded();
+            return;
         }
         UIWindow::OnEvent(source, event, data);
     }
 
     void CheckInputs(){
-        
+        if ((KeyState(KEY_LEFT_CONTROL) || KeyState(KEY_RIGHT_CONTROL)) && KeyState(KEY_R)){
+            RescanFolders();
+        }
         UIWindow::CheckInputs();
     }
 
@@ -96,6 +106,14 @@ protected:
         UIWindowController::Get()->AddWindow(about, false);
     }
 
+    void BuildRescanWindow(){
+        rescanWindow = new RescanWindow(width * 0.3, height * 0.3);
+        rescanWindow->x = (width - rescanWindow->width) / 2;
+        rescanWindow->y = (height - rescanWindow->height) / 2;
+        rescanWindow->BindEvent("ScanComplete", this);
+        UIWindowController::Get()->AddWindow(rescanWindow, false);
+    }
+
 
     void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
         if (ScanCode == KEY_ESC){
@@ -112,11 +130,22 @@ public:
     
     void LoadItems(){
         dbItems = AppResources::GetCachedMenuItems();
-        if (dbItems->size() == 0){
-            dbItems = AppResources::ScanMenuItemFiles();
-        }
 
+        if (dbItems->size() == 0){
+            RescanFolders();
+            return;
+        }
+        OnDbItemsLoaded();
+    }
+
+    void RescanFolders(){
+        rescanWindow->Open();
+        rescanWindow->RescanFolders();
+    }
+
+    void OnDbItemsLoaded(){
         string defaultItem = AppResources::GetDefaultItem();
+        gameListItems->Clear();
         sort(dbItems->begin(), dbItems->end(), dbsort);
         for (int i = 0; i < dbItems->size(); i++){
             gameListItems->AddItem((*dbItems)[i]->name);
@@ -134,6 +163,7 @@ public:
 
     SelectorMainWindow(int width, int height) : UIWindow(width, height){
         BuildAboutWindow(width == 640);
+        BuildRescanWindow();
     }
 };
 

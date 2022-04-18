@@ -162,6 +162,16 @@ public:
         needsRedraw = true;
     }
 
+    void Clear(){
+        for (UITextArea* txt : listItemText){
+            panel->RemoveChild(txt);
+            delete txt;
+        }
+        listItems.clear();
+        listItemText.clear();
+        needsRedraw = true;
+    }
+
     void SetColor(GrColor fg, GrColor bg){
         foreground = fg;
         background = bg;
@@ -190,9 +200,8 @@ public:
         delete panel;
         for (UITextArea* txt : listItemText){
             delete txt;
-            listItems.clear();
-            listItemText.clear();
         }
+        listItemText.clear();
     }
 };
 
