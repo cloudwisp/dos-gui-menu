@@ -14,8 +14,8 @@ private:
 	std::string text = std::string();
 	GrTextOption textOptions;
 	GrColor backgroundColor;
-	std::vector<int> lineWidths = std::vector<int>(1);
-	std::vector<std::string> lines = std::vector<std::string>(1);
+	std::vector<int> lineWidths = std::vector<int>(0);
+	std::vector<std::string> lines = std::vector<std::string>(0);
 	int _charHeight = 0;
 
 	char _horizAlign;
@@ -316,7 +316,9 @@ public:
 	}
 	~UITextArea(){
 	    lines.clear();
+		lines.resize(0);
 	    lineWidths.clear();
+		lineWidths.resize(0);
 	}
 
 };

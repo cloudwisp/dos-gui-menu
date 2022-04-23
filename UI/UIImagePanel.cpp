@@ -39,6 +39,9 @@ private:
 	PNGScanLines currentImage = {0,0,0,NULL};
 
 	void draw_internal(){
+		if (!hasImage){
+			return;
+		}
 		if (progressive && !progressiveInterlaced){
 			if (currentScanLine < loadedHeight){
 				for (int i = 0; i <= linesPerUpdate; i++){
@@ -73,6 +76,7 @@ private:
 		} else if (!imageRendered) {
 			for (int i = 0; i < loadedHeight; i++){
 				RenderScanline(i);
+				currentScanLine++;
 			}
 			ScaleImage();
 			imageRendered = true;
@@ -81,6 +85,7 @@ private:
 
 	    GrSetContext(ctx);
 		GrClearContextC(ctx, bgColor);
+
 		if (scaleToWidth || scaleToHeight){
 			if (sizedImg == NULL){ return; }
 			GrImageDisplay(0,0,sizedImg);

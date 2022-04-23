@@ -1,0 +1,3 @@
+DEL MENU.ARJ
+c:\arj\arj a -r -je1 -xINSTALL.EXE -xGDB.EXE -xMNUCACHE.DB -x*.dmp -xSYMIFY.EXE -xDEFAULT.DAT -xDEBUG.LOG -xdump.sh INSTALL
+

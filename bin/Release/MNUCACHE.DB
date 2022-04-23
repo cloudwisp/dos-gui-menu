@@ -10,7 +10,7 @@ readme=
 setup=
 favorite=F
 cd=F
-description=T
+description=
 
 [Bio Menace I]
 folder=C:\GAMES\bmenace\
@@ -23,7 +23,7 @@ notes=
 readme=C:\GAMES\bmenace\readme.txt
 setup=
 favorite=F
-cd=T
+cd=F
 description=T
 
 [Bio Menace II]
@@ -37,8 +37,8 @@ notes=
 readme=C:\GAMES\bmenace\readme.txt
 setup=
 favorite=F
-cd=F
-description=
+cd=T
+description=T
 
 [Bio Menace III]
 folder=C:\GAMES\bmenace\
@@ -51,8 +51,8 @@ notes=
 readme=C:\GAMES\bmenace\readme.txt
 setup=
 favorite=F
-cd=T
-description=T
+cd=F
+description=
 
 [Doom II]
 folder=C:\GAMES\doom2\
@@ -65,7 +65,7 @@ notes=
 readme=
 setup=
 favorite=F
-cd=T
+cd=F
 description=T
 
 [Laura Bow II: The Dagger of Amon Ra]

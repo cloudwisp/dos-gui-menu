@@ -41,12 +41,16 @@ protected:
     int activeItem = 0;
 
     void _ActivateItem(int itemId){
+        if (dbItems->size() - 1 < itemId){
+            return;
+        }
         activeItem = itemId;
         DatabaseItem* thisItem = (*dbItems)[itemId];
         ActivateItem(thisItem);
     }
 
     virtual void ActivateItem(DatabaseItem* item) = 0;
+    virtual void ClearItemUsage() = 0;
     virtual void ShowDescription(){}
 
     void _LaunchItem(int itemId){
@@ -139,13 +143,28 @@ public:
     }
 
     void RescanFolders(){
+        ClearItems();
         rescanWindow->Open();
         rescanWindow->RescanFolders();
     }
 
+    void ClearItems(){
+        if (dbItems == NULL){
+            return;
+        }
+        gameListItems->Clear();
+        ClearItemUsage();
+        dbItems->resize(0);
+        // for (int i = dbItems->size() - 1; i >= 0; i--){
+        //     if (dbItems->at(i) != NULL){
+        //         delete dbItems->at(i);
+        //     }
+        // }
+        // delete dbItems;
+    }
+
     void OnDbItemsLoaded(){
         string defaultItem = AppResources::GetDefaultItem();
-        gameListItems->Clear();
         sort(dbItems->begin(), dbItems->end(), dbsort);
         for (int i = 0; i < dbItems->size(); i++){
             gameListItems->AddItem((*dbItems)[i]->name);
@@ -209,7 +228,20 @@ private:
     int leftPaneWidth = 0;
     int rightPaneWidth = 0;
 
+    void ClearItemUsage(){
+        gameTitle->SetText("");
+        gameGenre->SetText("");
+        gameNotes->SetText("");
+        developer->SetText("");
+        publishedYear->SetText("");
+        gameDescriptionInner->SetText("");
+        screenshot->SetImage("",0);
+    }
+
     void ActivateItem(DatabaseItem* thisItem){
+        if (thisItem == NULL){
+            return;
+        }
         gameTitle->SetText(thisItem->name);
         gameGenre->SetText(thisItem->genre);
         gameNotes->SetText(thisItem->notes);
@@ -227,7 +259,8 @@ private:
             lastDescription = AppResources::GetInlineDescription(thisItem->folder + "\\_menu.cfg", thisItem->name);
             gameDescriptionInner->SetText(*lastDescription);
         } else {
-            gameDescriptionInner->SetText("");
+            lastDescription = new std::string("");
+            gameDescriptionInner->SetText(*lastDescription);
         }
 
         
@@ -469,7 +502,16 @@ private:
 
     int leftPaneWidth = 0;
     int rightPaneWidth = 0;
-    
+
+    void ClearItemUsage(){
+        gameTitle->SetText("");
+        gameGenre->SetText("");
+        gameNotes->SetText("");
+        developer->SetText("");
+        publishedYear->SetText("");
+        screenshot->SetImage("",0);
+    }
+
     void ActivateItem(DatabaseItem* thisItem){
         gameTitle->SetText(thisItem->name);
         if (thisItem->genre != ""){

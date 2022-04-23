@@ -12,9 +12,9 @@
 
 class UIScrollingListBox : public UIDrawable {
 private:
-    std::vector<std::string> listItems;
-    std::vector<UITextArea*> listItemText;
-    UIStackedPanel *panel;
+    std::vector<std::string> listItems = std::vector<std::string>(0);
+    std::vector<UITextArea*> listItemText = std::vector<UITextArea*>(0);
+    UIStackedPanel *panel = NULL;
     int borderWidth = 2;
     int padding = 0;
     int selectedItem = 0;
@@ -163,12 +163,17 @@ public:
     }
 
     void Clear(){
-        for (UITextArea* txt : listItemText){
-            panel->RemoveChild(txt);
-            delete txt;
+        for (int i = listItemText.size() - 1; i >= 0; i--){
+            if (listItemText.at(i) != NULL){
+                listItemText.at(i)->UnbindAllEventsForConsumer(this);
+                panel->RemoveChild(listItemText.at(i));
+                delete listItemText.at(i);
+            }
         }
         listItems.clear();
+        listItems.resize(0);
         listItemText.clear();
+        listItemText.resize(0);
         needsRedraw = true;
     }
 

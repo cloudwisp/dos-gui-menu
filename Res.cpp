@@ -580,8 +580,8 @@ private:
                 }
             }
             dbfile.close();
-            return description;
         }
+        return description;
     }
 
 public:
