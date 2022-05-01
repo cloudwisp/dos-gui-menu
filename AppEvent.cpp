@@ -39,6 +39,16 @@ class EventEmitter {
 private:
 	EventHandler _handlers[255];
 	int _handlerCount;
+
+	bool AlreadyBound(std::string event, EventConsumer *consumer){
+		for (int i = 0; i < _handlerCount; i++){
+			if (_handlers[i].consumer == consumer && _handlers[i].event == event){
+				return true;
+			}
+		}
+		return false;
+	}
+
 public:
     EventEmitter() {
         _handlerCount = 0;
@@ -70,6 +80,9 @@ public:
 	}
 
 	void BindEvent(std::string event, EventConsumer *consumer){
+		if (AlreadyBound(event, consumer)){
+			return;
+		}
 		EventHandler handlerDef;
 		handlerDef.consumer = consumer;
 		handlerDef.event = event;

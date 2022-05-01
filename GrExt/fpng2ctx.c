@@ -210,4 +210,32 @@ static PNGScanLines readpng_lines( FILE *f, int use_alpha )
   return result;
 }
 
+static PNGScanLines resize_scanlines(PNGScanLines image, int width, int height){
+  double scaleX = (double)width / (double)image.width;
+  double scaleY = (double)height / (double)image.height;
+  int pixIndex = 0;
+  int xNearest = 0;
+  int yNearest = 0;
+  int sourceIndex = 0;
+  PNGScanLines newImage = {0,0,0,NULL};
+  PNGRGB *newPixels = NULL;
+  newImage.width = width;
+  newImage.height = height;
+  int nPixels = width * height;
+  newImage.pixelCount = nPixels;
+  newPixels = (PNGRGB*)malloc(nPixels * sizeof(struct PNGRGB));
+  int x, y;
+  for (y = 1; y <= height; y++){
+    for (x = 1; x <= width; x++){
+      xNearest = round(x/scaleX);
+      yNearest = round(y/scaleY);
+      sourceIndex = ((yNearest - 1) * image.width) + xNearest;
+      newPixels[pixIndex] = {image.pixels[sourceIndex].r, image.pixels[sourceIndex].g, image.pixels[sourceIndex].b};
+      pixIndex++;
+    }              
+  }
+  newImage.pixels = newPixels;
+  return newImage;
+}
+
 #endif

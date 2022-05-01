@@ -60,7 +60,7 @@ protected:
     }
 
 
-    void OnEvent(EventEmitter *source, std::string event, EventData data){
+    void OnEvent(EventEmitter *source, std::string event, EventData data) override {
         if (event == "SelectedItemChanged"){
             if (data.data1 > dbItems->size() - 1){
                 return;
@@ -84,7 +84,7 @@ protected:
         UIWindow::OnEvent(source, event, data);
     }
 
-    void CheckInputs(){
+    void CheckInputs() override {
         if ((KeyState(KEY_LEFT_CONTROL) || KeyState(KEY_RIGHT_CONTROL)) && KeyState(KEY_R)){
             RescanFolders();
         }
@@ -119,7 +119,7 @@ protected:
     }
 
 
-    void OnKeyUp(int ScanCode, int ShiftState, int Ascii){
+    void OnKeyUp(int ScanCode, int ShiftState, int Ascii) override {
         if (ScanCode == KEY_ESC){
             app->End();
             return;
@@ -591,7 +591,7 @@ private:
 
 public:
 
-    void OnEvent(EventEmitter *source, std::string event, EventData data){
+    void OnEvent(EventEmitter *source, std::string event, EventData data) override {
         if (descriptionWindow != NULL && event == "Closed" && source == descriptionWindow){
             descriptionWindow->SetText("", smallFont);
             delete lastDescription;
@@ -790,7 +790,16 @@ private:
 
 public:
 
-	void OnEvent(EventEmitter *source, std::string event, EventData data){
+	void OnEvent(EventEmitter *source, std::string event, EventData data) override {
+        if (source == options && event == "ItemClicked"){
+            if (data.data1 == SELECTOR_MENU_ITEM_EXIT){
+                End();
+                return;
+            } else if (data.data1 == SELECTOR_MENU_ITEM_RESCAN){
+                mainWindow->RescanFolders();
+                return;
+            }
+        }
 		CWApplication::OnEvent(source,event,data);
 	}
 
@@ -812,6 +821,7 @@ public:
         int optWidth = screenWidth / 2;
         int optHeight = screenHeight / 2;
         options = new AppOptionsWindow(optWidth, optHeight);
+        options->BindEvent("ItemClicked", this);
         options->SetPosition(optWidth / 2, optHeight / 2);
         AddWindow(options, 0);
         //mainWindow = new SelectorMainWindow(screenWidth, screenHeight, this);

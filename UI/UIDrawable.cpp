@@ -272,7 +272,10 @@ public:
 		}
 	}
 
-	void PropagateMouseEvent(int subX, int subY, const char *event){
+	void PropagateMouseEvent(int subX, int subY, const char *event, UIDrawable *focusedWindow){
+		if (window != NULL && focusedWindow != NULL && window != focusedWindow){
+			return;
+		}
 		int i, o;
 		
 		for (o = childDisplayOrderCount-1; o >= 0; o--){
@@ -282,13 +285,16 @@ public:
 				 && subX < innerContextX + children[i]->x+children[i]->width
 				 && subY > children[i]->y + innerContextY
 				 && subY < innerContextY + children[i]->y + children[i]->height){
-				children[i]->PropagateMouseEvent(subX-children[i]->x-innerContextX, subY-children[i]->y-innerContextY, event);
+				children[i]->PropagateMouseEvent(subX-children[i]->x-innerContextX, subY-children[i]->y-innerContextY, event, focusedWindow);
 			}
 		}
 		EmitEvent(event, subX, subY);
 	}
 
-	void IdentifyVisibleElementsAtPosition(int subX, int subY, UIDrawableCollection elements, int *elementCount){
+	void IdentifyVisibleElementsAtPosition(int subX, int subY, UIDrawableCollection elements, int *elementCount, UIDrawable* focusedWindow){
+		if (window != NULL && focusedWindow != NULL && window != focusedWindow){
+			return;
+		}
 		int elIndex = *elementCount;
 		elements[elIndex] = this;
 		*elementCount = elIndex + 1;
@@ -304,7 +310,7 @@ public:
 				&& subX < innerContextX + children[i]->x + children[i]->width
 				&& subY > children[i]->y + innerContextY
 				&& subY < innerContextY + children[i]->y + children[i]->height){
-				children[i]->IdentifyVisibleElementsAtPosition(subX-children[i]->x-innerContextX, subY-children[i]->y-innerContextY, elements, elementCount);
+				children[i]->IdentifyVisibleElementsAtPosition(subX-children[i]->x-innerContextX, subY-children[i]->y-innerContextY, elements, elementCount, focusedWindow);
 			}
 		}
 	}
@@ -397,6 +403,8 @@ public:
 		BindEvent("RightMouseButtonDown", this);
 		BindEvent("RightMouseButtonClick", this);
 		BindEvent("MouseMove", this);
+		BindEvent("MouseOver", this);
+		BindEvent("MouseOut", this);
 	}
 
 	~UIDrawable(){

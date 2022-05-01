@@ -54,7 +54,6 @@ private:
 		GrFramedBox(_borderWidth, _borderWidth, width-(_borderWidth*2), height-(_borderWidth*2), _borderWidth, &boxColors);
 	}
 
-
 	int _inMouseOver = 0;
 	clock_t lastClick = clock();
 public:
@@ -101,13 +100,16 @@ public:
 	}
 
 	void Click(){
-		lastClick = clock();
+		clock_t now = clock();
+		if (clockToMilliseconds(now-lastClick) < 250){
+			return; //avoid double fire in short succession.
+		}
+		lastClick = now;
 		EmitEvent("Click");
 	}
 
 	void OnEvent(EventEmitter *source, std::string event, EventData data){
 		if (source == this){
-
 			if (event == "MouseOver"){
 				SetState(BUTTONSTATE_SELECTED);
 				_inMouseOver = 1;
@@ -126,12 +128,9 @@ public:
 				}
 				Click();
 			}
-
 		} else {
 			//handle events from other objects
 		}
-		//pass it on to parent
-		UIDrawable::OnEvent(source,event,data);
 	}
 
 	UIButton (int width, int height) : UIDrawable(width,height) {
@@ -140,10 +139,6 @@ public:
 		textArea->y = _borderWidth;
 		textArea->SetAlign(GR_ALIGN_CENTER,GR_ALIGN_CENTER);
 		AddChild(textArea);
-		BindEvent("MouseOver", (EventConsumer*) this);
-		BindEvent("MouseOut", (EventConsumer*) this);
-		BindEvent("LeftMouseButtonDown", (EventConsumer*) this);
-		BindEvent("LeftMouseButtonUp", (EventConsumer*) this);
 		_fg = THEME_BUTTON_TEXT_PRIMARY;
 		_bg = THEME_BUTTON_BACKGROUND_PRIMARY;
 		highlight = THEME_3D_HIGHLIGHT;

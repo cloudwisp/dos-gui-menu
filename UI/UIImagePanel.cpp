@@ -32,8 +32,9 @@ private:
 	GrColor bgColor = THEME_COLOR_TRANSPARENT;
 	
 	int orderedColorCount = 0;
-	bool progressiveInterlaced = true;
+	bool progressiveInterlaced = false;
 	int interlaceSliceCount = 30;
+	bool preScaled = false;
 
 
 	PNGScanLines currentImage = {0,0,0,NULL};
@@ -45,7 +46,7 @@ private:
 		if (progressive && !progressiveInterlaced){
 			if (currentScanLine < loadedHeight){
 				for (int i = 0; i <= linesPerUpdate; i++){
-					if (currentScanLine >= loadedHeight){
+					if (currentScanLine > loadedHeight){
 						break;
 					}
 					RenderScanline(currentScanLine + 1);
@@ -55,9 +56,9 @@ private:
 				//needsRedraw = true;
 			}
 		} else if (progressive && progressiveInterlaced){
-			if (scanRow < scanRowCount){
+			if (scanRow <= scanRowCount){
 				for (int i = 0; i <= linesPerUpdate; i++){
-					if (scanRow > scanRowCount){
+					if (scanRow >= scanRowCount){
 						break;
 					}
 					int thisLine = scanRowCount * scanRowOuter + scanRow;
@@ -86,7 +87,7 @@ private:
 	    GrSetContext(ctx);
 		GrClearContextC(ctx, bgColor);
 
-		if (scaleToWidth || scaleToHeight){
+		if (!preScaled && (scaleToWidth || scaleToHeight)){
 			if (sizedImg == NULL){ return; }
 			GrImageDisplay(0,0,sizedImg);
 			return;
@@ -124,6 +125,28 @@ private:
 		currentImage = AppResources::LoadImageScanLines(imagePath);
 		loadedWidth = currentImage.width;
 		loadedHeight = currentImage.height;
+		if (scaleToWidth || scaleToHeight){
+			scaledHeight = height;
+			scaledWidth = width;
+			if (!scaleToHeight){
+				//fit to width proportionally
+				double hwratio = (double)loadedHeight/(double)loadedWidth;
+				scaledHeight = width*hwratio;
+			} else if (!scaleToWidth) {
+				//fit to height proportionally
+				double whratio = (double)loadedWidth/(double)loadedHeight;
+				scaledWidth = height*whratio;
+			}
+
+			if (scaledWidth < loadedWidth){
+				PNGScanLines oldImage = currentImage;
+				currentImage = resize_scanlines(currentImage,scaledWidth,scaledHeight);
+				loadedWidth = currentImage.width;
+				loadedHeight = currentImage.height;
+				free(oldImage.pixels);
+				preScaled = true;
+			}
+		}
 		if (currentImage.pixelCount == 0){
 			hasImage = false;
 			return;
@@ -141,24 +164,14 @@ private:
 		}
 		
 		if (progressive && progressiveInterlaced){
-			scanRowCount = loadedHeight / (double)interlaceSliceCount;
+			scanRowCount = ceil(loadedHeight / (double)interlaceSliceCount);
 			scanRowOuterCount = interlaceSliceCount;
 		}
-		if (!scaleToWidth && !scaleToHeight){
+		if (preScaled || (!scaleToWidth && !scaleToHeight)){
 			return;
 		}
 		img = GrImageFromContext(imctx);
-		scaledHeight = height;
-		scaledWidth = width;
-		if (!scaleToHeight){
-			//fit to width proportionally
-			double hwratio = (double)loadedHeight/(double)loadedWidth;
-			scaledHeight = width*hwratio;
-		} else if (!scaleToWidth) {
-			//fit to height proportionally
-			double whratio = (double)loadedWidth/(double)loadedHeight;
-			scaledWidth = height*whratio;
-		}
+		
 
 		// if (!progressive){
 		// 	ScaleImage();
@@ -190,6 +203,9 @@ private:
 	}
 
 	void ScaleImage(){
+		if (preScaled){
+			return;
+		}
 		if (sizedImg != NULL){
 			GrImageDestroy(sizedImg);
 		}
@@ -216,6 +232,7 @@ private:
 		scanRowCount = 0;
 		scanRowOuter = 0;
 		scanRowOuterCount = 0;
+		preScaled = false;
 		if (imctx != NULL){
 			GrDestroyContext(imctx);
 			imctx = NULL;

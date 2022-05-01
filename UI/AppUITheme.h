@@ -48,17 +48,17 @@ static GrColor themecolors[27];
 //actual colors - index must align with above list
 CWRGB sourcecolors[27] = {
     //THEME_WINDOW_BORDER_COLOR
-    {0xFF,0xFF,0xFF},
+    {0x0,0x0,0x0},
     //THEME_WINDOW_BACKGROUND_COLOR
-    {0xCC,0xCC,0xCC},
-    //THEME_WINDOW_TEXT_COLOR
     {0x10,0x10,0x10},
+    //THEME_WINDOW_TEXT_COLOR
+    {0xFF,0xFF,0xFF},
     //THEME_WINDOW_TITLE_BACKGROUND_COLOR
     {0x33,0x33,0x33},
     //THEME_WINDOW_TITLE_TEXT_COLOR
     {0xCA,0xCA,0xCA},
     //THEME_BUTTON_BACKGROUND_PRIMARY
-    {0x10,0x10,0x10},
+    {0x0,0x0,0x0},
     //THEME_BUTTON_TEXT_PRIMARY
     {0xFF,0xFF,0xFF},
     //THEME_BUTTON_BACKGROUND_SECONDARY

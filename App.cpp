@@ -129,6 +129,7 @@ private:
 			if (!found){
 				//MouseOver
 				eventElements[i]->OnMouseOver();
+				eventElements[i]->EmitEvent("MouseOver");
 			}
 		}
 		for (i = 0; i < lastEventElementCount; i++){
@@ -142,6 +143,7 @@ private:
 			if (!found){
 				//MouseOut
 				lastEventElements[i]->OnMouseOut();
+				lastEventElements[i]->EmitEvent("MouseOut");
 			}
 		}
 	}
@@ -155,7 +157,7 @@ private:
 
 		getmousepos(&button, &x, &y);
 
-		screen->IdentifyVisibleElementsAtPosition(x, y, eventElements, &eventElementCount);
+		screen->IdentifyVisibleElementsAtPosition(x, y, eventElements, &eventElementCount, focusedWindow);
 		
 		if (mouseDebug){
 			screen->UnHighlightAllChildren();
@@ -172,37 +174,37 @@ private:
 			EmitEvent("MouseMove", x, y);
 			mousePointer->SetPosition(x, y);
 			_mousein_mouseout();
-			screen->PropagateMouseEvent(x, y, "MouseMove");
+			screen->PropagateMouseEvent(x, y, "MouseMove", focusedWindow);
 		}
 		if (button == 1){
 			if (!mouseState[0]){
 				//first click of left
 				mouseState[0] = 1;
 				EmitEvent("LeftMouseButtonDown", x, y);
-				screen->PropagateMouseEvent(x, y, "LeftMouseButtonDown");
+				screen->PropagateMouseEvent(x, y, "LeftMouseButtonDown", focusedWindow);
 			}
 			//clear right if marked down
 			if (mouseState[1]){
 				mouseState[1] = 0;
 				EmitEvent("RightMouseButtonUp", x, y);
 				EmitEvent("RightMouseButtonClick", x, y);
-				screen->PropagateMouseEvent(x, y, "RightMouseButtonUp");
-				screen->PropagateMouseEvent(x, y, "RightMouseButtonClick");
+				screen->PropagateMouseEvent(x, y, "RightMouseButtonUp", focusedWindow);
+				screen->PropagateMouseEvent(x, y, "RightMouseButtonClick", focusedWindow);
 			}
 		} else if (button == 2){
 			if (!mouseState[1]){
 				//first click of right
 				mouseState[1] = 1;
 				EmitEvent("RightMouseButtonDown", x, y);
-				screen->PropagateMouseEvent(x, y, "RightMouseButtonDown");
+				screen->PropagateMouseEvent(x, y, "RightMouseButtonDown", focusedWindow);
 			}
 			//check left if marked down
 			if (mouseState[0]){
 				mouseState[0] = 0;
 				EmitEvent("LeftMouseButtonUp", x, y);
 				EmitEvent("LeftMouseButtonClick", x, y);
-				screen->PropagateMouseEvent(x, y, "LeftMouseButtonUp");
-				screen->PropagateMouseEvent(x, y, "LeftMouseButtonClick");
+				screen->PropagateMouseEvent(x, y, "LeftMouseButtonUp", focusedWindow);
+				screen->PropagateMouseEvent(x, y, "LeftMouseButtonClick", focusedWindow);
 			}
 		} else {
 			if (mouseState[0]){
@@ -210,16 +212,16 @@ private:
 				mouseState[0] = 0;
 				EmitEvent("LeftMouseButtonUp", x, y);
 				EmitEvent("LeftMouseButtonClick", x, y);
-				screen->PropagateMouseEvent(x, y, "LeftMouseButtonUp");
-				screen->PropagateMouseEvent(x, y, "LeftMouseButtonClick");
+				screen->PropagateMouseEvent(x, y, "LeftMouseButtonUp", focusedWindow);
+				screen->PropagateMouseEvent(x, y, "LeftMouseButtonClick", focusedWindow);
 			}
 			if (mouseState[1]){
 				//clear right - now up
 				mouseState[1] = 0;
 				EmitEvent("RightMouseButtonUp", x, y);
 				EmitEvent("RightMouseButtonClick", x, y);
-				screen->PropagateMouseEvent(x, y, "RightMouseButtonUp");
-				screen->PropagateMouseEvent(x, y, "RightMouseButtonClick");
+				screen->PropagateMouseEvent(x, y, "RightMouseButtonUp", focusedWindow);
+				screen->PropagateMouseEvent(x, y, "RightMouseButtonClick", focusedWindow);
 			}
 		}
 		_copy_last_event_elements();

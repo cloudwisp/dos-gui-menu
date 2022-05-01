@@ -5,18 +5,19 @@
 #include "AppUI.h"
 #include "UIWindow.cpp"
 #include "UIAppScreen.cpp"
+#include "stack"
 
 class UIWindowController;
 UIWindowController *_windowController = NULL;
 
 class UIWindowController {
 private:
-
+    std::stack<UIWindow*> previousWindows;
 protected:
 	UIWindow *windows[255] = {NULL};
     int windowCount = 0;
 	UIWindow *focusedWindow = NULL;
-    UIWindow *lastFocusedWindow = NULL;
+    //UIWindow *lastFocusedWindow = NULL;
 public:
     virtual void OnEvent(EventEmitter *source, std::string event, EventData data) {
         if (event == "RequestOpen"){
@@ -44,10 +45,12 @@ public:
                     focusedWindow = NULL;
                 }
                 //focus on the first window (main)
-                if (lastFocusedWindow){
-                    SetFocusedWindow(lastFocusedWindow);
-                } else {
-                    SetFocusedWindow(windows[0]);
+                if (previousWindows.size() > 0){
+                    SetFocusedWindow(previousWindows.top(), true);
+                    if (previousWindows.size() > 1){
+                        //always leave the first window on the stack.
+                        previousWindows.pop();
+                    }
                 }
             }
         }
@@ -92,11 +95,12 @@ public:
         return focusedWindow;
 	}
 
-	void SetFocusedWindow(UIWindow *window){
-        if (focusedWindow && window != focusedWindow){
-            lastFocusedWindow = focusedWindow;
+	void SetFocusedWindow(UIWindow *window, bool stackOp = false){
+        if (!stackOp && focusedWindow && window != focusedWindow){
+            previousWindows.push(window);
         }
         focusedWindow = window;
+        
         focusedWindow->BringToFront();
 	}
 
