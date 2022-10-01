@@ -19,12 +19,13 @@ private:
 	GrFont* titleFont = NULL;
 
 	BoxCoords closeButton;
+	BoxCoords windowBox;
 
 	void draw_internal() override{
 		GrClearContextC(ctx, THEME_WINDOW_BACKGROUND_COLOR);
 		GrSetContext(ctx);
 		if (THEME_WINDOW_BORDER_WIDTH > 0){
-			GrBox(0,0, width-1, height-1, THEME_WINDOW_BORDER_COLOR);
+			Draw3dButton(ctx, BoxCoords {0,0,width-1,height-1},THEME_WINDOW_BACKGROUND_COLOR,false);
 		}
 		
 		GrFilledBox(THEME_WINDOW_BORDER_WIDTH, THEME_WINDOW_BORDER_WIDTH, innerWidth, THEME_WINDOW_TITLE_HEIGHT, THEME_WINDOW_TITLE_BACKGROUND_COLOR);

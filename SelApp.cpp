@@ -17,6 +17,7 @@
 #include "DescriptionWindow.cpp"
 #include "AboutWindow.cpp"
 #include "RescanWindow.cpp"
+#include "CdCountdownWindow.cpp"
 
 bool dbsort(DatabaseItem *item1, DatabaseItem *item2){
     return item1->name < item2->name;
@@ -31,6 +32,7 @@ protected:
     UIScrollingListBox *gameListItems = NULL;
     AboutWindow *about = NULL;
     RescanWindow *rescanWindow = NULL;
+    CdCountdownWindow *cdCountdown = NULL;
 
     DatabaseItem* GetItem(int itemId){
         return (*dbItems)[itemId];
@@ -54,6 +56,15 @@ protected:
     virtual void ShowDescription(){}
 
     void _LaunchItem(int itemId){
+        DatabaseItem* thisItem = GetItem(itemId);
+        if (thisItem->cd){
+            cdCountdown->Open();
+        } else {
+            _LaunchItemInner(itemId);
+        }
+    }
+
+    void _LaunchItemInner(int itemId){
         DatabaseItem* thisItem = GetItem(itemId);
         AppResources::WriteLaunchBat(thisItem->path, thisItem->name);
         app->End();
@@ -80,6 +91,9 @@ protected:
             dbItems = rescanWindow->DatabaseItems;
             OnDbItemsLoaded();
             return;
+        }
+        if (event == "CountdownEnd"){
+            _LaunchItemInner(activeItem);
         }
         UIWindow::OnEvent(source, event, data);
     }
@@ -116,6 +130,14 @@ protected:
         rescanWindow->y = (height - rescanWindow->height) / 2;
         rescanWindow->BindEvent("ScanComplete", this);
         UIWindowController::Get()->AddWindow(rescanWindow, false);
+    }
+
+    void BuildCountdownWindow(){
+        cdCountdown = new CdCountdownWindow(width * 0.3, height * 0.3);
+        cdCountdown->x = (width - cdCountdown->width) / 2;
+        cdCountdown->y = (height - cdCountdown->height) / 2;
+        cdCountdown->BindEvent("CountdownEnd", this);
+        UIWindowController::Get()->AddWindow(cdCountdown, false);
     }
 
 
@@ -183,6 +205,7 @@ public:
     SelectorMainWindow(int width, int height) : UIWindow(width, height){
         BuildAboutWindow(width == 640);
         BuildRescanWindow();
+        BuildCountdownWindow();
     }
 };
 
@@ -242,7 +265,11 @@ private:
         if (thisItem == NULL){
             return;
         }
-        gameTitle->SetText(thisItem->name);
+        std::string titleString = std::string(thisItem->name);
+        if (thisItem->cd){
+            titleString.append(" [CD]");
+        }
+        gameTitle->SetText(titleString);
         gameGenre->SetText(thisItem->genre);
         gameNotes->SetText(thisItem->notes);
         developer->SetText(thisItem->developer);
@@ -467,7 +494,7 @@ private:
 
     //main panels
     //UIImagePanel *titleBar = NULL;
-    UIImagePanel *gameList = NULL;
+    UIPanel *gameList = NULL;
     UIImagePanel *gameDetail = NULL;
     UIStackedPanel *detailRight = NULL;
     UIStackedPanel *detailLeft = NULL;
@@ -513,7 +540,11 @@ private:
     }
 
     void ActivateItem(DatabaseItem* thisItem){
-        gameTitle->SetText(thisItem->name);
+        std::string titleString = std::string(thisItem->name);
+        if (thisItem->cd){
+            titleString.append(" [CD]");
+        }
+        gameTitle->SetText(titleString);
         if (thisItem->genre != ""){
             gameGenre->SetText(thisItem->genre);
             gameGenre->Show();
@@ -595,6 +626,7 @@ public:
         if (descriptionWindow != NULL && event == "Closed" && source == descriptionWindow){
             descriptionWindow->SetText("", smallFont);
             delete lastDescription;
+            lastDescription = NULL;
             gameListItems->Focus();
         } 
         SelectorMainWindow::OnEvent(source, event, data);
@@ -674,18 +706,13 @@ public:
         // AddChild(titleBar);
 
         //game list
-        gameList = new UIImagePanel(leftPaneWidth,gameListHeight);
-        gameList->scaleToHeight = true;
-        gameList->scaleToWidth = true;
-        //gameList->SetImage("lightbg.png");
-        gameList->x = 0;
-        gameList->y = 0; // titleBarHeight;
+        gameList = new UIPanel(THEME_COLOR_TRANSPARENT, leftPaneWidth,gameListHeight);
         gameList->containertabstop = 1;
         AddChild(gameList);
 
         gameListItems = new UIScrollingListBox(leftPaneWidth-(defaultMargin*2), gameListHeight-(defaultMargin*2), smallFont);
         gameListItems->BindEvent("SelectedItemChanged", this);
-        gameListItems->SetColor(THEME_CONTROL_TEXT, THEME_COLOR_TRANSPARENT);
+        gameListItems->SetColor(THEME_CONTROL_TEXT, THEME_CONTROL_BACKGROUND);
         gameListItems->x = defaultMargin;
         gameListItems->y = defaultMargin;
         gameListItems->tabstop = 1;
@@ -790,7 +817,7 @@ private:
 
 public:
 
-	void OnEvent(EventEmitter *source, std::string event, EventData data) override {
+	void OnEvent(EventEmitter *source, std::string event, EventData data) {
         if (source == options && event == "ItemClicked"){
             if (data.data1 == SELECTOR_MENU_ITEM_EXIT){
                 End();

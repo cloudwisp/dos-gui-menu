@@ -23,7 +23,10 @@ public:
         if (event == "RequestOpen"){
             UIWindow* srcWindow = (UIWindow*)source;
             srcWindow->Show();
-            SetFocusedWindow(srcWindow);
+            if (focusedWindow != srcWindow){
+                SetFocusedWindow(srcWindow);
+            }
+            focusedWindow->EmitEvent("Opened");
         }
     };
     static UIWindowController *Get();

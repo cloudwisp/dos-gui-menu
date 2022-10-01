@@ -11,7 +11,7 @@ UIAppScreen* currentScreen;
 class UIAppScreen : public UIDrawable {
 private:
 
-	bool enableGrid = false;
+	bool enableGrid = true;
 	int gridIncrement = 40;
 
 	void draw_internal(){
@@ -56,12 +56,12 @@ public:
 		Draw(false);
 		BlitBoxes(ctx);
 
-		// //Uncomment if you want temporarily highlight blit boxes for diagnosis
-		// for (int i = 0; i < redrawBoxes.size(); i++){
-		// 	BoxCoords coords = redrawBoxes.at(i);
-		// 	GrSetContext(GrScreenContext());
-		// 	GrBox(coords.x1, coords.y1, coords.x2, coords.y2, THEME_HIGHLIGHT_BORDER);
-		// }
+		//Uncomment if you want temporarily highlight blit boxes for diagnosis
+		for (int i = 0; i < redrawBoxes.size(); i++){
+			BoxCoords coords = redrawBoxes.at(i);
+			GrSetContext(GrScreenContext());
+			GrBox(coords.x1, coords.y1, coords.x2, coords.y2, THEME_HIGHLIGHT_BORDER);
+		}
 
 
 

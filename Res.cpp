@@ -101,38 +101,38 @@ public:
 };
 
 struct MenuConfig {
-    string resolution;
-    bool diagnosticOverlay;
+    string resolution = "";
+    bool diagnosticOverlay = false;
     vector<string> *scanFolders;
 };
 
 struct DatabaseItem {
-    string drive;
-    string folder;
-    string name;
-    string path;
-    string readme;
-    string image;
-    string genre;
-    string year;
-    string developer;
-    string notes;
-    string setup;
-    bool inlineDescription;
-    bool favorite;
-    bool cd;
+    string drive = "";
+    string folder = "";
+    string name = "";
+    string path = "";
+    string readme = "";
+    string image = "";
+    string genre = "";
+    string year = "";
+    string developer = "";
+    string notes = "";
+    string setup = "";
+    bool inlineDescription = false;
+    bool favorite = false;
+    bool cd = false;
 };
 
 struct MenuItemFile {
-    string name;
-    string folder;
-    string menuFile;
+    string name = "";
+    string folder = "";
+    string menuFile = "";
 };
 
 struct PathInfo {
-    string drive;
-    string folder;
-    string file;
+    string drive = "";
+    string folder = "";
+    string file = "";
 };
 
 class AppResources {

@@ -241,12 +241,18 @@ public:
 	}
 
 	void Show(){
+		if (visible){
+			return;
+		}
 		visible = 1;
 		EmitEvent("Shown");
 		needsRedraw = true;
 	}
 
 	void Hide(){
+		if (!visible){
+			return;
+		}
 		visible = 0;
 		EmitEvent("Hidden");
 		needsRedraw = true;
@@ -331,6 +337,10 @@ public:
         GrDestroyContext(ctx);
         width = drawWidth;
         height = drawHeight;
+		if (singleContext){
+			innerHeight = drawHeight;
+			innerWidth = drawWidth;
+		}
         ctx = GrCreateContext(drawWidth, drawHeight, NULL, NULL);
         GrClearContextC(ctx,THEME_COLOR_TRANSPARENT);
 		needsRedraw = true;
@@ -364,6 +374,33 @@ public:
 			totalArea  += ((box.x2-box.x1) * (box.y2-box.y1));
 		}
 		return totalArea;
+	}
+
+	void SizeHeightToContent(int minHeight){
+		int maxHeight = minHeight;
+		int thisMaxY = 0;
+		for (int i = 0; i < childCount; i++){
+			if (!children[i]->visible){
+				continue;
+			}
+			thisMaxY = children[i]->y + children[i]->height;
+			if (thisMaxY > maxHeight){
+				maxHeight = thisMaxY;
+			}
+		}
+		if (!singleContext){
+			int diff = height - innerHeight;
+			int newOuterHeight = maxHeight + diff;
+			if (newOuterHeight < 0){
+				newOuterHeight = maxHeight;
+			}
+
+			SetInnerDimensions(innerWidth, maxHeight, innerContextX, innerContextY);
+			SetDimensions(width, newOuterHeight);
+		} else {
+			SetDimensions(width, maxHeight);
+		}
+		needsRedraw = true;
 	}
 
 	UIDrawable(int drawWidth, int drawHeight) : UIDrawable(drawWidth, drawHeight, drawWidth, drawHeight, 0, 0, true) {
@@ -524,7 +561,7 @@ public:
 		screenOffsetX += plotOffsetX;
 		screenOffsetY += plotOffsetY;
 		GrBitBlt(ontoContext, screenX + screenOffsetX, screenY + screenOffsetY, ctx, mx1, my1, mx2, my2, GrIMAGE);
-		BoxCoords myAbsBox = AbsoluteInnerBounds();
+		BoxCoords myAbsBox = BoxIntersection(parentClip, AbsoluteInnerBounds());
 		int i, o;
 		for (o = 0; o < childDisplayOrderCount; o++){
 			i = childDisplayOrder[o];
@@ -580,9 +617,16 @@ public:
 			}
 			needsRedraw = false;
 			fullContainerRedraw = true; //indicate that the child boxes aren't relevant, since the full drawable was redrawn
+			
 			if (focus){
 				GrSetContext(ctx);
-				GrBox(0, 0, width-1, height-1, GrWhite());
+				GrLineOption mylineop;
+				mylineop.lno_color = GrWhite();
+				mylineop.lno_width = 1;
+				mylineop.lno_pattlen = 2;
+				mylineop.lno_dashpat = (unsigned char *)"\x01\x01";
+				GrCustomBox(0,0,width-1,height-1,&mylineop);
+				//GrBox(0, 0, width-1, height-1, GrWhite());
 			}
 			if (highlight){
 				GrSetContext(ctx);

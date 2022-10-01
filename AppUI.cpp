@@ -19,7 +19,6 @@
 #include "UI/UIMsgBox.cpp"
 #include "UI/UIButton.cpp"
 #include "UI/UITextBox.cpp"
-#include "UI/UIListBox.cpp"
 #include "UI/UIScrollingListBox.cpp"
 #include "UI/UIImagePanel.cpp"
 #include "UI/UIModalWindow.cpp"

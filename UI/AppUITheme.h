@@ -48,7 +48,7 @@ static GrColor themecolors[27];
 //actual colors - index must align with above list
 CWRGB sourcecolors[27] = {
     //THEME_WINDOW_BORDER_COLOR
-    {0x0,0x0,0x0},
+    {0xCC,0xCC,0xCC},
     //THEME_WINDOW_BACKGROUND_COLOR
     {0x10,0x10,0x10},
     //THEME_WINDOW_TEXT_COLOR

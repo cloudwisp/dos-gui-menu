@@ -9,8 +9,8 @@ notes=
 readme=
 setup=
 favorite=F
-cd=T
-description=T
+cd=F
+description=
 
 [Bio Menace I]
 folder=C:\GAMES\bmenace\
@@ -37,8 +37,8 @@ notes=
 readme=C:\GAMES\bmenace\readme.txt
 setup=
 favorite=F
-cd=T
-description=T
+cd=F
+description=
 
 [Bio Menace III]
 folder=C:\GAMES\bmenace\
@@ -51,8 +51,8 @@ notes=
 readme=C:\GAMES\bmenace\readme.txt
 setup=
 favorite=F
-cd=T
-description=T
+cd=F
+description=
 
 [Doom II]
 folder=C:\GAMES\doom2\
@@ -65,7 +65,7 @@ notes=
 readme=
 setup=
 favorite=F
-cd=F
+cd=T
 description=T
 
 [Laura Bow II: The Dagger of Amon Ra]
@@ -93,6 +93,1406 @@ notes=test
 readme=
 setup=
 favorite=T
+cd=F
+description=T
+
+[Game 1]
+folder=C:\GAMES\test\game1\
+genre=FPS
+path=C:\GAMES\test\game1\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 10]
+folder=C:\GAMES\test\game10\
+genre=FPS
+path=C:\GAMES\test\game10\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 100]
+folder=C:\GAMES\test\game100\
+genre=FPS
+path=C:\GAMES\test\game100\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 11]
+folder=C:\GAMES\test\game11\
+genre=FPS
+path=C:\GAMES\test\game11\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 12]
+folder=C:\GAMES\test\game12\
+genre=FPS
+path=C:\GAMES\test\game12\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 13]
+folder=C:\GAMES\test\game13\
+genre=FPS
+path=C:\GAMES\test\game13\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 14]
+folder=C:\GAMES\test\game14\
+genre=FPS
+path=C:\GAMES\test\game14\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 15]
+folder=C:\GAMES\test\game15\
+genre=FPS
+path=C:\GAMES\test\game15\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 16]
+folder=C:\GAMES\test\game16\
+genre=FPS
+path=C:\GAMES\test\game16\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 17]
+folder=C:\GAMES\test\game17\
+genre=FPS
+path=C:\GAMES\test\game17\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 18]
+folder=C:\GAMES\test\game18\
+genre=FPS
+path=C:\GAMES\test\game18\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 19]
+folder=C:\GAMES\test\game19\
+genre=FPS
+path=C:\GAMES\test\game19\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 2]
+folder=C:\GAMES\test\game2\
+genre=FPS
+path=C:\GAMES\test\game2\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 20]
+folder=C:\GAMES\test\game20\
+genre=FPS
+path=C:\GAMES\test\game20\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 21]
+folder=C:\GAMES\test\game21\
+genre=FPS
+path=C:\GAMES\test\game21\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 22]
+folder=C:\GAMES\test\game22\
+genre=FPS
+path=C:\GAMES\test\game22\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 23]
+folder=C:\GAMES\test\game23\
+genre=FPS
+path=C:\GAMES\test\game23\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 24]
+folder=C:\GAMES\test\game24\
+genre=FPS
+path=C:\GAMES\test\game24\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 25]
+folder=C:\GAMES\test\game25\
+genre=FPS
+path=C:\GAMES\test\game25\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 26]
+folder=C:\GAMES\test\game26\
+genre=FPS
+path=C:\GAMES\test\game26\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 27]
+folder=C:\GAMES\test\game27\
+genre=FPS
+path=C:\GAMES\test\game27\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 28]
+folder=C:\GAMES\test\game28\
+genre=FPS
+path=C:\GAMES\test\game28\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 29]
+folder=C:\GAMES\test\game29\
+genre=FPS
+path=C:\GAMES\test\game29\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 3]
+folder=C:\GAMES\test\game3\
+genre=FPS
+path=C:\GAMES\test\game3\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 30]
+folder=C:\GAMES\test\game30\
+genre=FPS
+path=C:\GAMES\test\game30\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 31]
+folder=C:\GAMES\test\game31\
+genre=FPS
+path=C:\GAMES\test\game31\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 32]
+folder=C:\GAMES\test\game32\
+genre=FPS
+path=C:\GAMES\test\game32\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 33]
+folder=C:\GAMES\test\game33\
+genre=FPS
+path=C:\GAMES\test\game33\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 34]
+folder=C:\GAMES\test\game34\
+genre=FPS
+path=C:\GAMES\test\game34\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 35]
+folder=C:\GAMES\test\game35\
+genre=FPS
+path=C:\GAMES\test\game35\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 36]
+folder=C:\GAMES\test\game36\
+genre=FPS
+path=C:\GAMES\test\game36\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 37]
+folder=C:\GAMES\test\game37\
+genre=FPS
+path=C:\GAMES\test\game37\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 38]
+folder=C:\GAMES\test\game38\
+genre=FPS
+path=C:\GAMES\test\game38\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 39]
+folder=C:\GAMES\test\game39\
+genre=FPS
+path=C:\GAMES\test\game39\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 4]
+folder=C:\GAMES\test\game4\
+genre=FPS
+path=C:\GAMES\test\game4\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 40]
+folder=C:\GAMES\test\game40\
+genre=FPS
+path=C:\GAMES\test\game40\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 41]
+folder=C:\GAMES\test\game41\
+genre=FPS
+path=C:\GAMES\test\game41\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 42]
+folder=C:\GAMES\test\game42\
+genre=FPS
+path=C:\GAMES\test\game42\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 43]
+folder=C:\GAMES\test\game43\
+genre=FPS
+path=C:\GAMES\test\game43\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 44]
+folder=C:\GAMES\test\game44\
+genre=FPS
+path=C:\GAMES\test\game44\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 45]
+folder=C:\GAMES\test\game45\
+genre=FPS
+path=C:\GAMES\test\game45\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 46]
+folder=C:\GAMES\test\game46\
+genre=FPS
+path=C:\GAMES\test\game46\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 47]
+folder=C:\GAMES\test\game47\
+genre=FPS
+path=C:\GAMES\test\game47\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 48]
+folder=C:\GAMES\test\game48\
+genre=FPS
+path=C:\GAMES\test\game48\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 49]
+folder=C:\GAMES\test\game49\
+genre=FPS
+path=C:\GAMES\test\game49\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 5]
+folder=C:\GAMES\test\game5\
+genre=FPS
+path=C:\GAMES\test\game5\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 50]
+folder=C:\GAMES\test\game50\
+genre=FPS
+path=C:\GAMES\test\game50\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 51]
+folder=C:\GAMES\test\game51\
+genre=FPS
+path=C:\GAMES\test\game51\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 52]
+folder=C:\GAMES\test\game52\
+genre=FPS
+path=C:\GAMES\test\game52\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 53]
+folder=C:\GAMES\test\game53\
+genre=FPS
+path=C:\GAMES\test\game53\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 54]
+folder=C:\GAMES\test\game54\
+genre=FPS
+path=C:\GAMES\test\game54\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 55]
+folder=C:\GAMES\test\game55\
+genre=FPS
+path=C:\GAMES\test\game55\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 56]
+folder=C:\GAMES\test\game56\
+genre=FPS
+path=C:\GAMES\test\game56\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 57]
+folder=C:\GAMES\test\game57\
+genre=FPS
+path=C:\GAMES\test\game57\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 58]
+folder=C:\GAMES\test\game58\
+genre=FPS
+path=C:\GAMES\test\game58\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 59]
+folder=C:\GAMES\test\game59\
+genre=FPS
+path=C:\GAMES\test\game59\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 6]
+folder=C:\GAMES\test\game6\
+genre=FPS
+path=C:\GAMES\test\game6\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 60]
+folder=C:\GAMES\test\game60\
+genre=FPS
+path=C:\GAMES\test\game60\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 61]
+folder=C:\GAMES\test\game61\
+genre=FPS
+path=C:\GAMES\test\game61\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 62]
+folder=C:\GAMES\test\game62\
+genre=FPS
+path=C:\GAMES\test\game62\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 63]
+folder=C:\GAMES\test\game63\
+genre=FPS
+path=C:\GAMES\test\game63\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 64]
+folder=C:\GAMES\test\game64\
+genre=FPS
+path=C:\GAMES\test\game64\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 65]
+folder=C:\GAMES\test\game65\
+genre=FPS
+path=C:\GAMES\test\game65\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 66]
+folder=C:\GAMES\test\game66\
+genre=FPS
+path=C:\GAMES\test\game66\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 67]
+folder=C:\GAMES\test\game67\
+genre=FPS
+path=C:\GAMES\test\game67\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 68]
+folder=C:\GAMES\test\game68\
+genre=FPS
+path=C:\GAMES\test\game68\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 69]
+folder=C:\GAMES\test\game69\
+genre=FPS
+path=C:\GAMES\test\game69\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 7]
+folder=C:\GAMES\test\game7\
+genre=FPS
+path=C:\GAMES\test\game7\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 70]
+folder=C:\GAMES\test\game70\
+genre=FPS
+path=C:\GAMES\test\game70\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 71]
+folder=C:\GAMES\test\game71\
+genre=FPS
+path=C:\GAMES\test\game71\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 72]
+folder=C:\GAMES\test\game72\
+genre=FPS
+path=C:\GAMES\test\game72\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 73]
+folder=C:\GAMES\test\game73\
+genre=FPS
+path=C:\GAMES\test\game73\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 74]
+folder=C:\GAMES\test\game74\
+genre=FPS
+path=C:\GAMES\test\game74\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 75]
+folder=C:\GAMES\test\game75\
+genre=FPS
+path=C:\GAMES\test\game75\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 76]
+folder=C:\GAMES\test\game76\
+genre=FPS
+path=C:\GAMES\test\game76\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 77]
+folder=C:\GAMES\test\game77\
+genre=FPS
+path=C:\GAMES\test\game77\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 78]
+folder=C:\GAMES\test\game78\
+genre=FPS
+path=C:\GAMES\test\game78\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 79]
+folder=C:\GAMES\test\game79\
+genre=FPS
+path=C:\GAMES\test\game79\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 8]
+folder=C:\GAMES\test\game8\
+genre=FPS
+path=C:\GAMES\test\game8\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 80]
+folder=C:\GAMES\test\game80\
+genre=FPS
+path=C:\GAMES\test\game80\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 81]
+folder=C:\GAMES\test\game81\
+genre=FPS
+path=C:\GAMES\test\game81\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 82]
+folder=C:\GAMES\test\game82\
+genre=FPS
+path=C:\GAMES\test\game82\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 83]
+folder=C:\GAMES\test\game83\
+genre=FPS
+path=C:\GAMES\test\game83\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 84]
+folder=C:\GAMES\test\game84\
+genre=FPS
+path=C:\GAMES\test\game84\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 85]
+folder=C:\GAMES\test\game85\
+genre=FPS
+path=C:\GAMES\test\game85\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 86]
+folder=C:\GAMES\test\game86\
+genre=FPS
+path=C:\GAMES\test\game86\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 87]
+folder=C:\GAMES\test\game87\
+genre=FPS
+path=C:\GAMES\test\game87\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 88]
+folder=C:\GAMES\test\game88\
+genre=FPS
+path=C:\GAMES\test\game88\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 89]
+folder=C:\GAMES\test\game89\
+genre=FPS
+path=C:\GAMES\test\game89\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 9]
+folder=C:\GAMES\test\game9\
+genre=FPS
+path=C:\GAMES\test\game9\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 90]
+folder=C:\GAMES\test\game90\
+genre=FPS
+path=C:\GAMES\test\game90\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 91]
+folder=C:\GAMES\test\game91\
+genre=FPS
+path=C:\GAMES\test\game91\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 92]
+folder=C:\GAMES\test\game92\
+genre=FPS
+path=C:\GAMES\test\game92\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 93]
+folder=C:\GAMES\test\game93\
+genre=FPS
+path=C:\GAMES\test\game93\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 94]
+folder=C:\GAMES\test\game94\
+genre=FPS
+path=C:\GAMES\test\game94\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 95]
+folder=C:\GAMES\test\game95\
+genre=FPS
+path=C:\GAMES\test\game95\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 96]
+folder=C:\GAMES\test\game96\
+genre=FPS
+path=C:\GAMES\test\game96\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 97]
+folder=C:\GAMES\test\game97\
+genre=FPS
+path=C:\GAMES\test\game97\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 98]
+folder=C:\GAMES\test\game98\
+genre=FPS
+path=C:\GAMES\test\game98\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
+cd=F
+description=T
+
+[Game 99]
+folder=C:\GAMES\test\game99\
+genre=FPS
+path=C:\GAMES\test\game99\DOOM2.exe
+image=
+developer=Id Software
+year=1994
+notes=Some Notes
+readme=
+setup=
+favorite=F
 cd=F
 description=T
 
